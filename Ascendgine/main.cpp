@@ -7,6 +7,7 @@
 
 #include "Model.h"
 #include "Effect.h"
+#include "Camera.h"
 
 #ifdef _WIN32
 #undef main
@@ -21,6 +22,7 @@ bool gameRunning = true;
 
 Model* testModel;
 Effect* basicEffect;
+Camera* mainCam;
 
 void sdldie(const char *msg) {
     printf("%s: %s\n", msg, SDL_GetError());
@@ -48,7 +50,7 @@ void Render(SDL_Window* window) {
 	glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	basicEffect->Apply();
+	basicEffect->Apply(mainCam);
 	testModel->RenderOpaque();
 
     SDL_GL_SwapWindow(window);
@@ -66,15 +68,28 @@ Uint32 time_left(void) {
 
 void ProcessMessageQueue(SDL_Event* event) {
 	while (SDL_PollEvent(event)) {
-        switch (event->type) {
-            case SDL_MOUSEBUTTONDOWN: {
-                printf("Mouse button pressed\n");
-            } break;
-            case SDL_QUIT: {
-                printf("Quit requested, quitting.\n");
-                gameRunning = false;
-            } break;
-        }
+		if(event->type == SDL_WINDOWEVENT) {
+			switch (event->window.event) {
+				case SDL_WINDOWEVENT_RESIZED: {
+					printf("Window %d resized to %dx%d", event->window.windowID, event->window.data1, event->window.data2);
+					width = event->window.data1;
+					height = event->window.data2;
+					mainCam->CreatePerspectiveProjection(width, height, 45, 0.1f, 100);
+					glViewport(0, 0, width, height); 
+				} break;
+			}
+		} else {
+			switch (event->type) {
+				case SDL_MOUSEBUTTONDOWN: {
+					printf("Mouse button pressed\n");
+				} break;
+				case SDL_QUIT: {
+					printf("Quit requested, quitting.\n");
+					gameRunning = false;
+				} break;
+			}
+		}
+        
     }
 }
 
@@ -99,7 +114,7 @@ int main(int argc, char* argv[]) {
 		SDL_WINDOWPOS_UNDEFINED,				//    initial y position
 		width,									//    width, in pixels
 		height,									//    height, in pixels
-		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN	//    flags - see below
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE	//    flags - see below
 	);
   
 	// Check that the window was successfully made
@@ -127,6 +142,10 @@ int main(int argc, char* argv[]) {
 
 	testModel = new Model();
 	basicEffect = new Effect("shaders\\SimpleVertexShader.vs", "shaders\\SimpleVertexShader.ps");
+	mainCam = new Camera();
+	mainCam->CreatePerspectiveProjection(width, height, 45, 0.1f, 100.0f);
+	//mainCam->CreateOrthographicProjection(width, height, 0.1f, 100.0f);
+	mainCam->View = glm::lookAt(glm::vec3(0,0,10), glm::vec3(0,0,0), glm::vec3(0,1,0));
 
 	/* Game Loop */
 	next_time = SDL_GetTicks() + TICK_INTERVAL;
@@ -141,6 +160,8 @@ int main(int argc, char* argv[]) {
     }
 
 	delete testModel;
+	delete basicEffect;
+	delete mainCam;
 
     /* Delete our opengl context, destroy our window, and shutdown SDL */
     SDL_GL_DeleteContext(mainContext);

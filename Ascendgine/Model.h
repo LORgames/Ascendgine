@@ -3,9 +3,9 @@
 #include <GL/glew.h>
 
 static const GLfloat g_vertex_buffer_data[] = {
-   -1.0f, -1.0f, 0.0f,
-   1.0f, -1.0f, 0.0f,
-   0.0f,  1.0f, 0.0f,
+   -10.0f, -10.0f, 0.0f,
+    10.0f, -10.0f, 0.0f,
+    00.0f,  10.0f, 0.0f,
 };
 
 class Model {
@@ -17,4 +17,3 @@ class Model {
 
 		void RenderOpaque();
 };
-

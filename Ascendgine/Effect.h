@@ -8,13 +8,19 @@
 
 #include <GL\glew.h>
 
+#include "Camera.h"
+
 class Effect {
 	private:
 		GLuint id;
+
+		GLint vsModelIndex;
+		GLint vsViewIndex;
+		GLint vsProjectionIndex;
 	public:
 		Effect(const char*, const char *);
 		~Effect(void);
 		
-		void Apply(void);
+		void Apply(Camera*);
 };
 
