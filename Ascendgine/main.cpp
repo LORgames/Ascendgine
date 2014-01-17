@@ -135,8 +135,6 @@ int main(int argc, char* argv[]) {
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
-	//atexit(SDL_Quit);
-
 	/* This makes our buffer swap syncronized with the monitor's vertical refresh */
     SDL_GL_SetSwapInterval(1);
 
@@ -144,7 +142,6 @@ int main(int argc, char* argv[]) {
 	basicEffect = new Effect("shaders\\SimpleVertexShader.vs", "shaders\\SimpleVertexShader.ps");
 	mainCam = new Camera();
 	mainCam->CreatePerspectiveProjection(width, height, 45, 0.1f, 100.0f);
-	//mainCam->CreateOrthographicProjection(width, height, 0.1f, 100.0f);
 	mainCam->View = glm::lookAt(glm::vec3(0,0,10), glm::vec3(0,0,0), glm::vec3(0,1,0));
 
 	/* Game Loop */

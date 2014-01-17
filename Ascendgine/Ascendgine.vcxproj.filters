@@ -19,6 +19,12 @@
     <Filter Include="Source Files\Graphics">
       <UniqueIdentifier>{76a94abc-2e94-487f-8fba-9729befccdef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Timing">
+      <UniqueIdentifier>{3e3bd946-cda0-4005-b781-982908ef926b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Timing">
+      <UniqueIdentifier>{5f991c2e-f243-4117-953d-90d590131b30}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

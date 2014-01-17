@@ -80,7 +80,7 @@ Effect::Effect(const char* vertexFile, const char* fragmentFile) {
 
 
 Effect::~Effect(void) {
-
+	glDeleteProgram(id);
 }
 
 void Effect::Apply(Camera* cam) {
