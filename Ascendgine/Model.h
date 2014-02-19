@@ -3,6 +3,9 @@
 #include <GL/glew.h>
 #include <iostream>
 #include <fstream>
+#include "BinaryReaderX.h"
+
+#include "RenderMaterial.h"
 
 typedef struct {
 	float Position[3];
@@ -63,6 +66,8 @@ class Model {
 		GLuint bufferID;
 		GLuint indexBufferID;
 	public:
+		RenderMaterial* Materials;
+
 		Model(void);
 		~Model(void);
 

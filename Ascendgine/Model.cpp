@@ -70,7 +70,43 @@ void Model::LoadFromFile(char* filename) {
 		file.read(memblock, size);
 		file.close();
 
-		sprintf("Loaded mesh %s", filename);
+		BinaryReaderX f = BinaryReaderX(memblock);
+
+		unsigned short version = f.ReadUnsignedShort();
+		short embeddedinfo = f.ReadShort();
+
+		int totalVerts = f.ReadInt();
+		int totalIndcs = f.ReadInt();
+
+		int totalMatrs = f.ReadUnsignedShort();
+		int totalMeshs = f.ReadUnsignedShort();
+
+		Materials = new RenderMaterial[totalMatrs];
+		for(int i = 0; i < totalMatrs; i++) {
+			Materials[i] = RenderMaterial();
+
+			Materials[i].flags = f.ReadShort();
+
+			Materials[i].red = f.ReadByte();
+			Materials[i].green = f.ReadByte();
+			Materials[i].blue = f.ReadByte();
+			Materials[i].opacity = f.ReadByte();
+			Materials[i].specularPower = f.ReadByte();
+
+			if((Materials[i].flags & (1 << 0)) > 0) {
+				Materials[i].diffuseTextureFilename = f.ReadString();
+			}
+			
+			if((Materials[i].flags & (1 << 1)) > 0) {
+				Materials[i].normalTextureFilename = f.ReadString();
+			}
+			
+			if((Materials[i].flags & (1 << 2)) > 0) {
+				Materials[i].specularTextureFilename = f.ReadString();
+			}
+		}
+
+		delete[] memblock;
 	}
 }
 
