@@ -8,17 +8,18 @@ Model::Model(void) {
 	GLenum ErrorCheckValue = glGetError();
 	const size_t BufferSize = sizeof(Vertices);
 	const size_t VertexSize = sizeof(Vertices[0]);
-	const size_t RgbOffset = sizeof(Vertices[0].XYZ);
 	
 	glGenBuffers(1, &bufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
 	glBufferData(GL_ARRAY_BUFFER, BufferSize, Vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VertexSize, 0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)RgbOffset);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)00);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)12);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)24);
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
 	glGenBuffers(1, &indexBufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
@@ -53,6 +54,24 @@ Model::~Model(void) {
 	//	fprintf(stderr, "ERROR: Could not destroy the VBO: %s \n", gluErrorString(ErrorCheckValue));
 	//	exit(-1);
 	//}
+}
+
+void Model::LoadFromFile(char* filename) {
+	std::ifstream file (filename, std::ios::in|std::ios::binary|std::ios::ate);
+
+	std::streampos size;
+	char * memblock;
+
+	if(file.is_open()) {
+		size = file.tellg();
+		memblock = new char[size];
+
+		file.seekg(0, std::ios::beg);
+		file.read(memblock, size);
+		file.close();
+
+		sprintf("Loaded mesh %s", filename);
+	}
 }
 
 void Model::RenderOpaque(void) {

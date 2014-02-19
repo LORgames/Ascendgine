@@ -139,6 +139,8 @@ int main(int argc, char* argv[]) {
     SDL_GL_SetSwapInterval(1);
 
 	testModel = new Model();
+	testModel->LoadFromFile("assets\\Map.lgm");
+
 	basicEffect = new Effect("shaders\\SimpleVertexShader.vs", "shaders\\SimpleVertexShader.ps");
 	mainCam = new Camera();
 	mainCam->CreatePerspectiveProjection(width, height, 45, 0.1f, 100.0f);

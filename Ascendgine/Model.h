@@ -1,10 +1,13 @@
 #pragma once
 
 #include <GL/glew.h>
+#include <iostream>
+#include <fstream>
 
 typedef struct {
-	float XYZ[3];
-	float RGB[3];
+	float Position[3];
+	float Normals[3];
+	float UVs[2];
 } Vertex;
 
 const Vertex Vertices[] = {
@@ -62,6 +65,8 @@ class Model {
 	public:
 		Model(void);
 		~Model(void);
+
+		void LoadFromFile(char* filename);
 
 		void RenderOpaque();
 };
