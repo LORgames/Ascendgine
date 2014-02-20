@@ -5,7 +5,7 @@
 class RenderMaterial {
 public:
 	short flags;
-	char red, green, blue, opacity, specularPower;
+	unsigned char red, green, blue, opacity, specularPower;
 
 	std::string diffuseTextureFilename;
 	std::string normalTextureFilename;

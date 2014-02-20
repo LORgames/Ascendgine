@@ -2,58 +2,20 @@
 
 
 Model::Model(void) {
-	glGenVertexArrays(1, &vaoID);
-	glBindVertexArray(vaoID);
-    
-	GLenum ErrorCheckValue = glGetError();
-	const size_t BufferSize = sizeof(Vertices);
-	const size_t VertexSize = sizeof(Vertices[0]);
 	
-	glGenBuffers(1, &bufferID);
-	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
-	glBufferData(GL_ARRAY_BUFFER, BufferSize, Vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)00);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)12);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)24);
-
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-
-	glGenBuffers(1, &indexBufferID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
-
-	//TODO: Figure out a better error solution for this project
-	//ErrorCheckValue = glGetError();
-	//if (ErrorCheckValue != GL_NO_ERROR) {
-	//	fprintf(stderr, "ERROR: Could not create a VBO: %s \n", gluErrorString(ErrorCheckValue));
-	//	exit(-1);
-	//}
 }
 
 Model::~Model(void) {
-	GLenum ErrorCheckValue = glGetError();
+	for(int i = 0; i < TotalMeshes; i++) {
+		delete Meshes[i];
+	}
 
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(0);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDeleteBuffers(1, &bufferID);
+	for(int i = 0; i < TotalMaterials; i++) {
+		delete Materials[i];
+	}
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glDeleteBuffers(1, &indexBufferID);
-
-	glBindVertexArray(0);
-	glDeleteVertexArrays(1, &vaoID);
-
-	//TODO: Better Error Reporting System
-	//ErrorCheckValue = glGetError();
-	//if (ErrorCheckValue != GL_NO_ERROR) {
-	//	fprintf(stderr, "ERROR: Could not destroy the VBO: %s \n", gluErrorString(ErrorCheckValue));
-	//	exit(-1);
-	//}
+	delete[] Meshes;
+	delete[] Materials;
 }
 
 void Model::LoadFromFile(char* filename) {
@@ -62,9 +24,11 @@ void Model::LoadFromFile(char* filename) {
 	std::streampos size;
 	char * memblock;
 
+	fprintf(stdout, "Loading Mesh: %s\n", filename);
+
 	if(file.is_open()) {
 		size = file.tellg();
-		memblock = new char[size];
+		memblock = new char[(unsigned int)size];
 
 		file.seekg(0, std::ios::beg);
 		file.read(memblock, size);
@@ -78,40 +42,85 @@ void Model::LoadFromFile(char* filename) {
 		int totalVerts = f.ReadInt();
 		int totalIndcs = f.ReadInt();
 
-		int totalMatrs = f.ReadUnsignedShort();
-		int totalMeshs = f.ReadUnsignedShort();
+		TotalMaterials = f.ReadUnsignedShort();
+		TotalMeshes = f.ReadUnsignedShort();
 
-		Materials = new RenderMaterial[totalMatrs];
-		for(int i = 0; i < totalMatrs; i++) {
-			Materials[i] = RenderMaterial();
+		fprintf(stdout, "\tLGM Version: v%i\n\tVertices: %i\n\tIndices: %i\n\tMaterials: %i\n\tMeshes: %i\n", version, totalVerts, totalIndcs, TotalMaterials, TotalMeshes);
 
-			Materials[i].flags = f.ReadShort();
+		Materials = new RenderMaterial*[TotalMaterials];
+		for(int i = 0; i < TotalMaterials; i++) {
+			Materials[i] = new RenderMaterial();
 
-			Materials[i].red = f.ReadByte();
-			Materials[i].green = f.ReadByte();
-			Materials[i].blue = f.ReadByte();
-			Materials[i].opacity = f.ReadByte();
-			Materials[i].specularPower = f.ReadByte();
+			Materials[i]->flags = f.ReadShort();
 
-			if((Materials[i].flags & (1 << 0)) > 0) {
-				Materials[i].diffuseTextureFilename = f.ReadString();
+			Materials[i]->red = f.ReadByte();
+			Materials[i]->green = f.ReadByte();
+			Materials[i]->blue = f.ReadByte();
+			Materials[i]->opacity = f.ReadByte();
+			Materials[i]->specularPower = f.ReadByte();
+
+			fprintf(stdout, "\tReading Material: %i/%i\n\t\tRGBA: %i, %i, %i, %i\n", (i+1), TotalMaterials, Materials[i]->red, Materials[i]->green, Materials[i]->blue, Materials[i]->opacity);
+
+			if((Materials[i]->flags & (1 << 0)) > 0) {
+				Materials[i]->diffuseTextureFilename = f.ReadString();
 			}
 			
-			if((Materials[i].flags & (1 << 1)) > 0) {
-				Materials[i].normalTextureFilename = f.ReadString();
+			if((Materials[i]->flags & (1 << 1)) > 0) {
+				Materials[i]->normalTextureFilename = f.ReadString();
 			}
 			
-			if((Materials[i].flags & (1 << 2)) > 0) {
-				Materials[i].specularTextureFilename = f.ReadString();
+			if((Materials[i]->flags & (1 << 2)) > 0) {
+				Materials[i]->specularTextureFilename = f.ReadString();
 			}
 		}
 
+		Meshes = new Mesh*[TotalMeshes];
+		for(int i = 0; i < TotalMeshes; i++) {
+			short MatID = f.ReadShort();
+
+			int totalVertices = f.ReadInt();
+			int totalIndices = f.ReadInt();
+
+			short flags = f.ReadShort();
+
+			Vertex* _verts = new Vertex[totalVertices];
+			int* _indices = new int[totalIndices];
+
+			bool _Normals = ((flags & (1)) > 0);
+			bool _Unwrapd = ((flags & (2)) > 0);
+
+			fprintf(stdout, "\tReading Mesh: %i/%i\n\t\tVertices: %i\n\t\tIndices: %i\n", (i+1), TotalMeshes, totalVertices, totalIndices);
+
+			for (int j = 0; j < totalVertices; j++) {
+				_verts[j].Position[0] = f.ReadFloat();
+				_verts[j].Position[1] = f.ReadFloat();
+				_verts[j].Position[2] = f.ReadFloat();
+				_verts[j].Normals[0] = f.ReadFloat();
+				_verts[j].Normals[1] = f.ReadFloat();
+				_verts[j].Normals[2] = f.ReadFloat();
+				_verts[j].UVs[0] = f.ReadFloat();
+				_verts[j].UVs[1] = f.ReadFloat();
+			}
+
+			for(int j = 0; j < totalIndices; j++) {
+				_indices[j] = f.ReadInt();
+			}
+
+			Meshes[i] = new Mesh(Materials[MatID], _verts, totalVertices, _indices, totalIndices);
+		}
+
 		delete[] memblock;
+
+		fprintf(stdout, "\tFlushed memory. %i bytes\n\n", (unsigned int)size);
+	} else {
+		fprintf(stdout, "\tFAILED! Could not open file!\n\n");
 	}
 }
 
 void Model::RenderOpaque(void) {
-	// Draw the triangles!
-							  //VVVV 48 = Faces*3 (total indices)
-	glDrawElements(GL_TRIANGLES, 48, GL_UNSIGNED_BYTE, 0);
+	//for(int i = 0; i < TotalMeshes; i++) {
+	//	Meshes[i]->RenderOpaque();
+	//}
+
+	Meshes[0]->RenderOpaque();
 }

@@ -6,67 +6,15 @@
 #include "BinaryReaderX.h"
 
 #include "RenderMaterial.h"
-
-typedef struct {
-	float Position[3];
-	float Normals[3];
-	float UVs[2];
-} Vertex;
-
-const Vertex Vertices[] = {
-    { { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f } },
-    // Top
-    { { -0.2f, 0.8f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-    { { 0.2f, 0.8f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-    { { 0.0f, 0.8f, 0.0f }, { 0.0f, 1.0f, 1.0f } },
-    { { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
-    // Bottom
-    { { -0.2f, -0.8f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-    { { 0.2f, -0.8f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-    { { 0.0f, -0.8f, 0.0f }, { 0.0f, 1.0f, 1.0f } },
-    { { 0.0f, -1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
-    // Left
-    { { -0.8f, -0.2f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-    { { -0.8f, 0.2f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-    { { -0.8f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } },
-    { { -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
-    // Right
-    { { 0.8f, -0.2f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-    { { 0.8f, 0.2f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-    { { 0.8f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } },
-    { { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } }
-};
-
-const GLubyte Indices[] = {
-    // Top
-    0, 1, 3,
-    0, 3, 2,
-    3, 1, 4,
-    3, 4, 2,
-    // Bottom
-    0, 5, 7,
-    0, 7, 6,
-    7, 5, 8,
-    7, 8, 6,
-    // Left
-    0, 9, 11,
-    0, 11, 10,
-    11, 9, 12,
-    11, 12, 10,
-    // Right
-    0, 13, 15,
-    0, 15, 14,
-    15, 13, 16,
-    15, 16, 14
-};
+#include "Mesh.h"
 
 class Model {
-	private:
-		GLuint vaoID;
-		GLuint bufferID;
-		GLuint indexBufferID;
 	public:
-		RenderMaterial* Materials;
+		RenderMaterial** Materials;
+		Mesh** Meshes;
+
+		int TotalMaterials;
+		int TotalMeshes;
 
 		Model(void);
 		~Model(void);

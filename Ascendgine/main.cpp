@@ -74,7 +74,7 @@ void ProcessMessageQueue(SDL_Event* event) {
 					printf("Window %d resized to %dx%d", event->window.windowID, event->window.data1, event->window.data2);
 					width = event->window.data1;
 					height = event->window.data2;
-					mainCam->CreatePerspectiveProjection(width, height, 45, 0.1f, 100);
+					mainCam->CreatePerspectiveProjection(width, height, 45, 0.1f, 10000);
 					glViewport(0, 0, width, height); 
 				} break;
 			}
@@ -139,12 +139,13 @@ int main(int argc, char* argv[]) {
     SDL_GL_SetSwapInterval(1);
 
 	testModel = new Model();
-	testModel->LoadFromFile("assets\\Map.lgm");
+	testModel->LoadFromFile("assets/Map.lgm");
 
-	basicEffect = new Effect("shaders\\SimpleVertexShader.vs", "shaders\\SimpleVertexShader.ps");
+	basicEffect = new Effect("shaders/SimpleVertexShader.vs", "shaders/SimpleVertexShader.ps");
 	mainCam = new Camera();
-	mainCam->CreatePerspectiveProjection(width, height, 45, 0.1f, 100.0f);
-	mainCam->View = glm::lookAt(glm::vec3(0,0,10), glm::vec3(0,0,0), glm::vec3(0,1,0));
+	mainCam->CreatePerspectiveProjection(width, height, 30, 0.1f, 2600.0f);
+	mainCam->View = glm::lookAt(glm::vec3(1000,1000,1000), glm::vec3(0,0,0), glm::vec3(0,1,0));
+	mainCam->Model = glm::mat4();
 
 	/* Game Loop */
 	next_time = SDL_GetTicks() + TICK_INTERVAL;

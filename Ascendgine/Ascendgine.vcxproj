@@ -70,6 +70,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
@@ -77,6 +78,7 @@
     <ClInclude Include="BinaryReaderX.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="RenderMaterial.h" />
     <ClInclude Include="Texture.h" />
