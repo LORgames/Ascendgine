@@ -19,9 +19,9 @@ Mesh::Mesh(RenderMaterial* _mat, Vertex* _verts, int _totalVerts, int* _indices,
 	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
 	glBufferData(GL_ARRAY_BUFFER, BufferSize, vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)00);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)12);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)24);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(0*sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(3*sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(6*sizeof(float)));
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
@@ -53,19 +53,15 @@ Mesh::~Mesh(void) {
 
 	glBindVertexArray(0);
 	glDeleteVertexArrays(1, &vaoID);
-
-	//TODO: Better Error Reporting System
-	//ErrorCheckValue = glGetError();
-	//if (ErrorCheckValue != GL_NO_ERROR) {
-	//	fprintf(stderr, "ERROR: Could not destroy the VBO: %s \n", gluErrorString(ErrorCheckValue));
-	//	exit(-1);
-	//}
 }
 
-void Mesh::RenderOpaque(void) {
+void Mesh::RenderOpaque(Effect* fx) {
+	glBindVertexArray(vaoID);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
+	fx->BindMaterial(Material);
+	
 	// Draw the triangles!
 	glDrawElements(GL_TRIANGLES, totalIndices, GL_UNSIGNED_INT, 0);
 }

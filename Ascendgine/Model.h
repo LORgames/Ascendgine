@@ -7,6 +7,7 @@
 
 #include "RenderMaterial.h"
 #include "Mesh.h"
+#include "Effect.h"
 
 class Model {
 	public:
@@ -21,5 +22,5 @@ class Model {
 
 		void LoadFromFile(char* filename);
 
-		void RenderOpaque();
+		void RenderOpaque(Effect* fx, int passID);
 };

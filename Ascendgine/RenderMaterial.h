@@ -1,15 +1,16 @@
 #pragma once
 
 #include <string.h>
+#include "Texture.h"
 
 class RenderMaterial {
 public:
 	short flags;
 	unsigned char red, green, blue, opacity, specularPower;
 
-	std::string diffuseTextureFilename;
-	std::string normalTextureFilename;
-	std::string specularTextureFilename;
+	Texture* diffuseTexture;
+	Texture* normalsTexture;
+	Texture* specularTexture;
 
 	RenderMaterial(void) {
 

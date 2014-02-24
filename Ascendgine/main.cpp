@@ -15,7 +15,7 @@
 
 #define TICK_INTERVAL	30
 
-int width = 1280, height = 720;
+int width = 1200, height = 900;
 static Uint32 next_time;
 
 bool gameRunning = true;
@@ -23,6 +23,8 @@ bool gameRunning = true;
 Model* testModel;
 Effect* basicEffect;
 Camera* mainCam;
+
+int drawID = 0;
 
 void sdldie(const char *msg) {
     printf("%s: %s\n", msg, SDL_GetError());
@@ -48,10 +50,11 @@ void Update() {
 
 void Render(SDL_Window* window) {
 	glClearColor(1.0, 1.0, 1.0, 1.0);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	basicEffect->Apply(mainCam);
-	testModel->RenderOpaque();
+	testModel->RenderOpaque(basicEffect, drawID);
 
     SDL_GL_SwapWindow(window);
 }
@@ -71,25 +74,36 @@ void ProcessMessageQueue(SDL_Event* event) {
 		if(event->type == SDL_WINDOWEVENT) {
 			switch (event->window.event) {
 				case SDL_WINDOWEVENT_RESIZED: {
-					printf("Window %d resized to %dx%d", event->window.windowID, event->window.data1, event->window.data2);
+					printf("Window %d resized to %dx%d\n", event->window.windowID, event->window.data1, event->window.data2);
 					width = event->window.data1;
 					height = event->window.data2;
-					mainCam->CreatePerspectiveProjection(width, height, 45, 0.1f, 10000);
+					mainCam->CreatePerspectiveProjection((float)width, (float)height, 45, 0.1f, 10000);
 					glViewport(0, 0, width, height); 
 				} break;
 			}
 		} else {
 			switch (event->type) {
-				case SDL_MOUSEBUTTONDOWN: {
-					printf("Mouse button pressed\n");
-				} break;
-				case SDL_QUIT: {
-					printf("Quit requested, quitting.\n");
+				case SDL_KEYDOWN:
+					//printf_s("Key press detected: %i\n", event->key.keysym.scancode);
+					break;
+				case SDL_KEYUP:
+					if(event->key.keysym.scancode == 86) { //Prev mesh
+						drawID--; printf_s("Now drawing: %i\n", drawID);
+					} else if(event->key.keysym.scancode == 87) { //Next mesh
+						drawID++; printf_s("Now drawing: %i\n", drawID);
+					} else {
+						printf_s("Key release detected: %i\n", event->key.keysym.scancode);
+					}
+					break;
+				case SDL_MOUSEBUTTONDOWN:
+					printf_s("Mouse button pressed\n");
+					break;
+				case SDL_QUIT:
+					printf_s("Quit requested, quitting.\n");
 					gameRunning = false;
-				} break;
+					break;
 			}
 		}
-        
     }
 }
 
@@ -143,9 +157,17 @@ int main(int argc, char* argv[]) {
 
 	basicEffect = new Effect("shaders/SimpleVertexShader.vs", "shaders/SimpleVertexShader.ps");
 	mainCam = new Camera();
-	mainCam->CreatePerspectiveProjection(width, height, 30, 0.1f, 2600.0f);
-	mainCam->View = glm::lookAt(glm::vec3(1000,1000,1000), glm::vec3(0,0,0), glm::vec3(0,1,0));
+	mainCam->CreatePerspectiveProjection((float)width, (float)height, 30, 0.1f, 1000.0f);
+	mainCam->View = glm::lookAt(glm::vec3(250,50,250), glm::vec3(0,0,0), glm::vec3(0,1,0));
 	mainCam->Model = glm::mat4();
+
+	//Setup device state :)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glEnable(GL_DEPTH_TEST);
 
 	/* Game Loop */
 	next_time = SDL_GetTicks() + TICK_INTERVAL;

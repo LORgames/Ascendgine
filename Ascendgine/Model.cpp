@@ -25,7 +25,14 @@ void Model::LoadFromFile(char* filename) {
 	char * memblock;
 
 	fprintf(stdout, "Loading Mesh: %s\n", filename);
+	
+	//Setup the strings we'll need
+	char* filewithext = strrchr(filename, '/')+sizeof(char);
+	char* expectedPath = new char[filewithext-filename+1];
+	memcpy(expectedPath, filename, sizeof(char)*(filewithext-filename));
+	expectedPath[filewithext-filename] = 0;
 
+	//Open file and read data into memory
 	if(file.is_open()) {
 		size = file.tellg();
 		memblock = new char[(unsigned int)size];
@@ -59,18 +66,27 @@ void Model::LoadFromFile(char* filename) {
 			Materials[i]->opacity = f.ReadByte();
 			Materials[i]->specularPower = f.ReadByte();
 
-			fprintf(stdout, "\tReading Material: %i/%i\n\t\tRGBA: %i, %i, %i, %i\n", (i+1), TotalMaterials, Materials[i]->red, Materials[i]->green, Materials[i]->blue, Materials[i]->opacity);
+			//printf_s("\tReading Material: %i/%i\n\t\tRGBA: %i, %i, %i, %i\n", (i+1), TotalMaterials, Materials[i]->red, Materials[i]->green, Materials[i]->blue, Materials[i]->opacity);
 
 			if((Materials[i]->flags & (1 << 0)) > 0) {
-				Materials[i]->diffuseTextureFilename = f.ReadString();
+				char* textureName = f.ReadCharString();
+				Materials[i]->diffuseTexture = new Texture();
+				Materials[i]->diffuseTexture->LoadTexture(expectedPath, textureName);
+				delete[] textureName;
 			}
 			
 			if((Materials[i]->flags & (1 << 1)) > 0) {
-				Materials[i]->normalTextureFilename = f.ReadString();
+				char* textureName = f.ReadCharString();
+				Materials[i]->normalsTexture = new Texture();
+				Materials[i]->normalsTexture->LoadTexture(expectedPath, textureName);
+				delete[] textureName;
 			}
 			
 			if((Materials[i]->flags & (1 << 2)) > 0) {
-				Materials[i]->specularTextureFilename = f.ReadString();
+				char* textureName = f.ReadCharString();
+				Materials[i]->specularTexture = new Texture();
+				Materials[i]->specularTexture->LoadTexture(expectedPath, textureName);
+				delete[] textureName;
 			}
 		}
 
@@ -89,7 +105,7 @@ void Model::LoadFromFile(char* filename) {
 			bool _Normals = ((flags & (1)) > 0);
 			bool _Unwrapd = ((flags & (2)) > 0);
 
-			fprintf(stdout, "\tReading Mesh: %i/%i\n\t\tVertices: %i\n\t\tIndices: %i\n", (i+1), TotalMeshes, totalVertices, totalIndices);
+			//printf_s("\tReading Mesh: %i/%i\n\t\tVertices: %i\n\t\tIndices: %i\n", (i+1), TotalMeshes, totalVertices, totalIndices);
 
 			for (int j = 0; j < totalVertices; j++) {
 				_verts[j].Position[0] = f.ReadFloat();
@@ -100,10 +116,12 @@ void Model::LoadFromFile(char* filename) {
 				_verts[j].Normals[2] = f.ReadFloat();
 				_verts[j].UVs[0] = f.ReadFloat();
 				_verts[j].UVs[1] = f.ReadFloat();
+				//printf_s("Vertex %i: %f, %f, %f, %f, %f, %f, %f, %f\n", j, _verts[j].Position[0], _verts[j].Position[1], _verts[j].Position[2], _verts[j].Normals[0], _verts[j].Normals[1], _verts[j].Normals[2], _verts[j].UVs[0], _verts[j].UVs[1]);
 			}
 
 			for(int j = 0; j < totalIndices; j++) {
 				_indices[j] = f.ReadInt();
+				//printf_s("Index %i: %i\n", j, _indices[j]);
 			}
 
 			Meshes[i] = new Mesh(Materials[MatID], _verts, totalVertices, _indices, totalIndices);
@@ -115,12 +133,16 @@ void Model::LoadFromFile(char* filename) {
 	} else {
 		fprintf(stdout, "\tFAILED! Could not open file!\n\n");
 	}
+
+	delete[] expectedPath;
 }
 
-void Model::RenderOpaque(void) {
-	//for(int i = 0; i < TotalMeshes; i++) {
-	//	Meshes[i]->RenderOpaque();
-	//}
-
-	Meshes[0]->RenderOpaque();
+void Model::RenderOpaque(Effect* fx, int passID) {
+	if(passID < 0 || passID >= TotalMeshes) {
+		for(int i = 0; i < TotalMeshes; i++) {
+			Meshes[i]->RenderOpaque(fx);
+		}
+	} else {
+		Meshes[passID]->RenderOpaque(fx);
+	}
 }

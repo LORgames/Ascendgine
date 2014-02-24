@@ -34,6 +34,20 @@ public:
 		unsigned short* p = (unsigned short*)&data[position]; position += 2; return *p;
 	}
 
+	char* ReadCharString(void) {
+		short length = ReadShort();
+
+		unsigned short* p = (unsigned short*)&data[position];
+		
+		char* temp = new char[length+1];
+		memcpy(temp, p, length);
+		temp[length] = 0;
+
+		position += length;
+		
+		return temp;
+	}
+
 	std::string ReadString(void) {
 		short length = ReadShort();
 

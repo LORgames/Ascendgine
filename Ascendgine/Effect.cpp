@@ -73,6 +73,10 @@ Effect::Effect(const char* vertexFile, const char* fragmentFile) {
 	this->vsViewIndex = glGetUniformLocation(id, "View");
 	this->vsProjectionIndex = glGetUniformLocation(id, "Projection");
 
+	this->psDiffuse = glGetUniformLocation(id, "diffuse");
+	this->psNormals = glGetUniformLocation(id, "normals");
+	this->psSpecular = glGetUniformLocation(id, "specular");
+
 	//Clean up
     glDeleteShader(VertexShaderID);
     glDeleteShader(FragmentShaderID);
@@ -89,4 +93,11 @@ void Effect::Apply(Camera* cam) {
 	glUniformMatrix4fv(vsModelIndex,		1, GL_FALSE, glm::value_ptr(cam->Model));
 	glUniformMatrix4fv(vsViewIndex,			1, GL_FALSE, glm::value_ptr(cam->View));
 	glUniformMatrix4fv(vsProjectionIndex,	1, GL_FALSE, glm::value_ptr(cam->Projection));
+}
+
+void Effect::BindMaterial(RenderMaterial* material) {
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, material->diffuseTexture->textureID);
+
+	glUniform1i(psDiffuse, 0);
 }
