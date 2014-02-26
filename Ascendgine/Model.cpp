@@ -138,11 +138,11 @@ void Model::LoadFromFile(char* filename) {
 }
 
 void Model::RenderOpaque(Effect* fx, int passID) {
-	if(passID < 0 || passID >= TotalMeshes) {
+	if(passID == 0) {
 		for(int i = 0; i < TotalMeshes; i++) {
 			Meshes[i]->RenderOpaque(fx);
 		}
 	} else {
-		Meshes[passID]->RenderOpaque(fx);
+		
 	}
 }

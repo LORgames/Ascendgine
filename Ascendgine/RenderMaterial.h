@@ -6,7 +6,7 @@
 class RenderMaterial {
 public:
 	short flags;
-	unsigned char red, green, blue, opacity, specularPower;
+	unsigned char red, green, blue, opacity, specularPower, emission;
 
 	Texture* diffuseTexture;
 	Texture* normalsTexture;

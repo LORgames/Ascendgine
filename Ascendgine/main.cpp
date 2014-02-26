@@ -5,9 +5,7 @@
 #include <SDL/SDL.h>
 #include <glm/glm.hpp>
 
-#include "Model.h"
-#include "Effect.h"
-#include "Camera.h"
+#include "Renderman.h"
 
 #ifdef _WIN32
 #undef main
@@ -20,11 +18,7 @@ static Uint32 next_time;
 
 bool gameRunning = true;
 
-Model* testModel;
-Effect* basicEffect;
-Camera* mainCam;
-
-int drawID = 0;
+Renderman* Renderer;
 
 void sdldie(const char *msg) {
     printf("%s: %s\n", msg, SDL_GetError());
@@ -48,17 +42,6 @@ void Update() {
 
 }
 
-void Render(SDL_Window* window) {
-	glClearColor(1.0, 1.0, 1.0, 1.0);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	basicEffect->Apply(mainCam);
-	testModel->RenderOpaque(basicEffect, drawID);
-
-    SDL_GL_SwapWindow(window);
-}
-
 Uint32 time_left(void) {
     Uint32 now;
 
@@ -77,8 +60,9 @@ void ProcessMessageQueue(SDL_Event* event) {
 					printf("Window %d resized to %dx%d\n", event->window.windowID, event->window.data1, event->window.data2);
 					width = event->window.data1;
 					height = event->window.data2;
-					mainCam->CreatePerspectiveProjection((float)width, (float)height, 45, 0.1f, 10000);
 					glViewport(0, 0, width, height); 
+					Renderer->FixCamera(width, height);
+					Renderer->FixGBuffer(width, height);
 				} break;
 			}
 		} else {
@@ -87,13 +71,7 @@ void ProcessMessageQueue(SDL_Event* event) {
 					//printf_s("Key press detected: %i\n", event->key.keysym.scancode);
 					break;
 				case SDL_KEYUP:
-					if(event->key.keysym.scancode == 86) { //Prev mesh
-						drawID--; printf_s("Now drawing: %i\n", drawID);
-					} else if(event->key.keysym.scancode == 87) { //Next mesh
-						drawID++; printf_s("Now drawing: %i\n", drawID);
-					} else {
-						printf_s("Key release detected: %i\n", event->key.keysym.scancode);
-					}
+					printf_s("Key release detected: %i\n", event->key.keysym.scancode);
 					break;
 				case SDL_MOUSEBUTTONDOWN:
 					printf_s("Mouse button pressed\n");
@@ -152,15 +130,6 @@ int main(int argc, char* argv[]) {
 	/* This makes our buffer swap syncronized with the monitor's vertical refresh */
     SDL_GL_SetSwapInterval(1);
 
-	testModel = new Model();
-	testModel->LoadFromFile("assets/Map.lgm");
-
-	basicEffect = new Effect("shaders/SimpleVertexShader.vs", "shaders/SimpleVertexShader.ps");
-	mainCam = new Camera();
-	mainCam->CreatePerspectiveProjection((float)width, (float)height, 30, 0.1f, 1000.0f);
-	mainCam->View = glm::lookAt(glm::vec3(250,50,250), glm::vec3(0,0,0), glm::vec3(0,1,0));
-	mainCam->Model = glm::mat4();
-
 	//Setup device state :)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -169,21 +138,21 @@ int main(int argc, char* argv[]) {
 
 	glEnable(GL_DEPTH_TEST);
 
+	Renderer = new Renderman(width, height);
+
 	/* Game Loop */
 	next_time = SDL_GetTicks() + TICK_INTERVAL;
     while (gameRunning) {
 		ProcessMessageQueue(&event);
 
         Update();
-		Render(window);
+		Renderer->Render(window);
 
         SDL_Delay(time_left());
         next_time += TICK_INTERVAL;
     }
 
-	delete testModel;
-	delete basicEffect;
-	delete mainCam;
+	delete Renderer;
 
     /* Delete our opengl context, destroy our window, and shutdown SDL */
     SDL_GL_DeleteContext(mainContext);

@@ -69,7 +69,7 @@ Effect::Effect(const char* vertexFile, const char* fragmentFile) {
     fprintf(stdout, "%s\n", &ProgramErrorMessage[0]);
 
 	//Get the references
-	this->vsModelIndex = glGetUniformLocation(id, "Model");
+	this->vsModelIndex = glGetUniformLocation(id, "World");
 	this->vsViewIndex = glGetUniformLocation(id, "View");
 	this->vsProjectionIndex = glGetUniformLocation(id, "Projection");
 

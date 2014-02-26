@@ -38,7 +38,6 @@ Mesh::Mesh(RenderMaterial* _mat, Vertex* _verts, int _totalVerts, int* _indices,
 	}
 }
 
-
 Mesh::~Mesh(void) {
 	GLenum ErrorCheckValue = glGetError();
 
