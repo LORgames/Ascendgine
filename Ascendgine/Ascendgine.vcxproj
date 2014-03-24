@@ -81,6 +81,7 @@
     <ClInclude Include="Effect.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Quad.h" />
     <ClInclude Include="Renderman.h" />
     <ClInclude Include="RenderMaterial.h" />
     <ClInclude Include="Texture.h" />

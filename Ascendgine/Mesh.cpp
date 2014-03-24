@@ -1,8 +1,16 @@
 #include "Mesh.h"
 
+Mesh::Mesh(RenderMaterial* _mat) {
+	Material = _mat;
+	canRender = false;
+}
+
 Mesh::Mesh(RenderMaterial* _mat, Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices) {
 	Material = _mat;
+	CreateMesh(_verts, _totalVerts, _indices, _totalIndices);
+}
 
+void Mesh::CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices) {
 	vertices = _verts;
 	totalVertices = _totalVerts;
 	indices = _indices;
@@ -36,6 +44,8 @@ Mesh::Mesh(RenderMaterial* _mat, Vertex* _verts, int _totalVerts, int* _indices,
 		fprintf(stderr, "ERROR: Could not create a VBO: %s \n", gluErrorString(ErrorCheckValue));
 		exit(-1);
 	}
+
+	canRender = true;
 }
 
 Mesh::~Mesh(void) {
@@ -55,6 +65,8 @@ Mesh::~Mesh(void) {
 }
 
 void Mesh::RenderOpaque(Effect* fx) {
+	if(!canRender) return;
+
 	glBindVertexArray(vaoID);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);

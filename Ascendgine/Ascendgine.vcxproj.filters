@@ -28,6 +28,9 @@
     <Filter Include="Header Files\Helpers">
       <UniqueIdentifier>{c7c049aa-6673-4cdc-bbd2-af71125211fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Graphics\CustomMeshes">
+      <UniqueIdentifier>{11f60823-2a49-40bd-914b-66301ced7075}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -76,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="Renderman.h">
       <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Quad.h">
+      <Filter>Header Files\Graphics\CustomMeshes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

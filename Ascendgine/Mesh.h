@@ -16,7 +16,7 @@ typedef struct {
 } Vertex;
 
 class Mesh {
-	private:
+	protected:
 		GLuint vaoID;
 		GLuint bufferID;
 		GLuint indexBufferID;
@@ -29,9 +29,13 @@ class Mesh {
 
 		RenderMaterial* Material;
 
+		bool canRender;
 	public:
+		Mesh(RenderMaterial* _mat);
 		Mesh(RenderMaterial* _mat, Vertex* _verts, int totalVerts, int* _indices, int totalIndices);
 		~Mesh(void);
+
+		void CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices);
 		
 		void RenderOpaque(Effect* fx);
 };
