@@ -93,25 +93,24 @@ int main(int argc, char* argv[]) {
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO ) < 0)			// Initialize SDL2
 		sdldie("Unable to initialize SDL");		// Or die on error
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 	// Create an application window with the following settings:
-	window = SDL_CreateWindow( 
+	window = SDL_CreateWindow(
 		"Ascendgine",							//    window title
 		SDL_WINDOWPOS_UNDEFINED,				//    initial x position
 		SDL_WINDOWPOS_UNDEFINED,				//    initial y position
 		width,									//    width, in pixels
 		height,									//    height, in pixels
-		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE	//    flags - see below
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE /*| SDL_WINDOW_MAXIMIZED*/
 	);
   
 	// Check that the window was successfully made
-	if(window == NULL){   
-		// In the event that the window could not be made...
+	if(window == NULL){
 		sdldie("Could not create window: %s");
 	}
 
@@ -128,7 +127,7 @@ int main(int argc, char* argv[]) {
 	glBindVertexArray(VertexArrayID);
 
 	/* This makes our buffer swap syncronized with the monitor's vertical refresh */
-    SDL_GL_SetSwapInterval(1);
+  SDL_GL_SetSwapInterval(1);
 
 	//Setup device state :)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
