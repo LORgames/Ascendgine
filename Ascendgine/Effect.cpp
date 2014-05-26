@@ -52,7 +52,8 @@ Effect::Effect(const char* vertexFile, const char* fragmentFile) {
     glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
     std::vector<char> FragmentShaderErrorMessage(InfoLogLength);
     glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-	if(FragmentShaderErrorMessage[0]) fprintf(stdout, "Message: %s\n", &FragmentShaderErrorMessage[0]);
+
+	  if(FragmentShaderErrorMessage[0]) fprintf(stdout, "Message: %s\n", &FragmentShaderErrorMessage[0]);
  
     // Link the program
     fprintf(stdout, "Linking program\n");
@@ -78,8 +79,8 @@ Effect::Effect(const char* vertexFile, const char* fragmentFile) {
 	this->psSpecular = glGetUniformLocation(id, "specular");
 
 	//Clean up
-    glDeleteShader(VertexShaderID);
-    glDeleteShader(FragmentShaderID);
+  glDeleteShader(VertexShaderID);
+  glDeleteShader(FragmentShaderID);
 }
 
 
@@ -90,9 +91,17 @@ Effect::~Effect(void) {
 void Effect::Apply(Camera* cam) {
 	glUseProgram(id);
 
-	glUniformMatrix4fv(vsModelIndex,		1, GL_FALSE, glm::value_ptr(cam->Model));
-	glUniformMatrix4fv(vsViewIndex,			1, GL_FALSE, glm::value_ptr(cam->View));
-	glUniformMatrix4fv(vsProjectionIndex,	1, GL_FALSE, glm::value_ptr(cam->Projection));
+  if(cam)
+  {
+	  glUniformMatrix4fv(vsModelIndex,		  1, GL_FALSE, glm::value_ptr(cam->Model));
+	  glUniformMatrix4fv(vsViewIndex,			  1, GL_FALSE, glm::value_ptr(cam->View));
+	  glUniformMatrix4fv(vsProjectionIndex,	1, GL_FALSE, glm::value_ptr(cam->Projection));
+  }
+  else
+  {
+    glm::mat4 proj = glm::ortho(-1.f, 1.f, -1.f, 1.f, -1.f, 1.f);
+    glUniformMatrix4fv(vsProjectionIndex,	1, GL_FALSE, glm::value_ptr(proj));
+  }
 }
 
 void Effect::BindMaterial(RenderMaterial* material) {
@@ -100,4 +109,18 @@ void Effect::BindMaterial(RenderMaterial* material) {
 	glBindTexture(GL_TEXTURE_2D, material->diffuseTexture->textureID);
 
 	glUniform1i(psDiffuse, 0);
+
+  if(material->normalsTexture)
+  {
+	  glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_2D, material->normalsTexture->textureID);
+	  glUniform1i(psNormals, 1);
+  }
+
+  if(material->specularTexture)
+  {
+	  glActiveTexture(GL_TEXTURE0 + 2);
+    glBindTexture(GL_TEXTURE_2D, material->normalsTexture->textureID);
+  	glUniform1i(psSpecular, 2);
+  }
 }

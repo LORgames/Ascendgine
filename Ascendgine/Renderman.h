@@ -35,6 +35,7 @@ private:
 	GLuint OutputRT;
 
 	//Stored objects
+  Mesh* screenQuad;
 	Model* testModel;
 	Camera* mainCam;
 public:

@@ -13,7 +13,9 @@ public:
 	Texture* specularTexture;
 
 	RenderMaterial(void) {
-
+    diffuseTexture = nullptr;
+    normalsTexture = nullptr;
+    specularTexture = nullptr;
 	}
 
 	~RenderMaterial(void) {

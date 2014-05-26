@@ -71,8 +71,10 @@ void Mesh::RenderOpaque(Effect* fx) {
 	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
-	fx->BindMaterial(Material);
+  if(Material)
+  	fx->BindMaterial(Material);
 	
 	// Draw the triangles!
-	glDrawElements(GL_TRIANGLES, totalIndices, GL_UNSIGNED_INT, 0);
+
+  glDrawElements(GL_TRIANGLES, totalIndices, GL_UNSIGNED_INT, 0);
 }

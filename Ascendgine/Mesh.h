@@ -31,12 +31,12 @@ class Mesh {
 
 		bool canRender;
 	public:
-		Mesh(RenderMaterial* _mat);
+		Mesh(RenderMaterial* _mat = nullptr);
 		Mesh(RenderMaterial* _mat, Vertex* _verts, int totalVerts, int* _indices, int totalIndices);
 		~Mesh(void);
 
 		void CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices);
 		
-		void RenderOpaque(Effect* fx);
+		void RenderOpaque(Effect* fx = nullptr);
 };
 

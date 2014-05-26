@@ -27,9 +27,15 @@ class Effect {
 		Effect(const char*, const char *);
 		~Effect(void);
 		
-		void Apply(Camera*);
+		void Apply(Camera* = nullptr);
 
 		void BindMaterial(RenderMaterial* material);
-		//void BindDiffuse(Texture* texture);
+		
+    //void BindDiffuse(Texture* texture);
+
+    void BindTexture(int slotID)
+    {
+	    glUniform1i(slotID, slotID);
+    }
 };
 

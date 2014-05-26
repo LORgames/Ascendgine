@@ -2,12 +2,50 @@
 #include "mesh.h"
 class Quad: public Mesh {
 	public:
-		Quad(RenderMaterial* _mat) : Mesh(_mat) {
+		Quad(RenderMaterial* _mat = nullptr) : Mesh(_mat)
+    {
+      vertices = new Vertex[4];
+      indices = new int[6];
 
+		  //1.
+      vertices[0].Position[0] = -1.f; vertices[0].Position[1] = 1.f; vertices[0].Position[2] = 0.f;
+      vertices[0].UVs[0] = 0; vertices[0].UVs[1] = 1;
+      vertices[0].Normals[0] = vertices[0].Normals[1] = vertices[0].Normals[2] = 0;
+		  //2.
+      vertices[1].Position[0] = -1.f; vertices[1].Position[1] = -1.f; vertices[1].Position[2] = 0.f;
+      vertices[1].UVs[0] = 0; vertices[1].UVs[1] = 0;
+      vertices[1].Normals[0] = vertices[1].Normals[1] = vertices[1].Normals[2] = 0;
+		  //3.
+      vertices[2].Position[0] = 1.f; vertices[2].Position[1] = -1.f; vertices[2].Position[2] = 0.f;
+      vertices[2].UVs[0] = 1; vertices[2].UVs[1] = 0;
+      vertices[2].Normals[0] = vertices[2].Normals[1] = vertices[2].Normals[2] = 0;
+		  //4.
+      vertices[3].Position[0] = 1.f; vertices[3].Position[1] = 1.f; vertices[3].Position[2] = 0.f;
+      vertices[3].UVs[0] = 1; vertices[3].UVs[1] = 1;
+      vertices[3].Normals[0] = vertices[3].Normals[1] = vertices[3].Normals[2] = 0;
+		  
+      indices[0] = 0;
+		  indices[1] = 1;
+		  indices[2] = 2;
+
+		  indices[3] = 0;
+		  indices[4] = 2;
+		  indices[5] = 3;
+
+      fprintf(stdout, "Creating quad.\n");
+      
+      CreateMesh(vertices, 4, indices, 6);
+
+      for(int i = 0; i < 4; i++)
+      {
+        fprintf(stdout, "\tP%d: %2.2f, %2.2f, %2.2f\n", i, vertices[i].Position[0], vertices[i].Position[1], vertices[i].Position[2]);
+      }
 		}
 
-		~Quad(void) {
+		~Quad(void)
+    {
 
 		}
+  //End public
 };
 

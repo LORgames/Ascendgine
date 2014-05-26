@@ -1,0 +1,31 @@
+#version 330 core
+
+//Other Stuff
+uniform sampler2D diffuse;
+uniform sampler2D normals;
+uniform sampler2D depth;
+
+//Input Format
+in vec2 ex_TextureUVs;
+
+//Output Format
+out vec4 out_Colour;
+ 
+void main() {
+	//get normal data from the normalMap
+	vec4 normalData = texture2D(normals, ex_TextureUVs);
+	
+	//transform normal back into [-1,1] range
+    vec3 normal = 2.0f * normalData.xyz - 1.0f;
+	
+    //surface-to-light vector
+    vec3 lightVector = -normalize(vec3(0, -1, 0));
+	
+    //compute diffuse light
+    float NdL = max(0, dot(normal,lightVector));
+
+	vec3 diffuseColour = texture2D(diffuse, ex_TextureUVs).xyz;
+	
+	//out_Colour = vec4(normal + diffuseColour * NdL * 0.2f + diffuseColour * 0.1f, 1.0f);
+	out_Colour = vec4(diffuseColour * NdL * 0.8f + diffuseColour * 0.2f, 1.0f);
+}
