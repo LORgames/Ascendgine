@@ -21,8 +21,8 @@ void main(){
 
 	//Calculate the matrix thing
 	mat4 matWVP = Projection * View * World;
-	gl_Position = matWVP * vec4(vertexPosition_modelspace, 1.0f);
-	ex_WorldPosition = World * vec4(vertexPosition_modelspace, 1.0f);
+	gl_Position = matWVP * vec4(vertexPosition_modelspace, 1.0);
+	ex_WorldPosition = World * vec4(vertexPosition_modelspace, 1.0);
 	
-	ex_Normals = normalize((World * vec4(vertexNormals, 0.0f)).xyz);
+	ex_Normals = normalize((World * vec4(vertexNormals, 0.0)).xyz);
 }

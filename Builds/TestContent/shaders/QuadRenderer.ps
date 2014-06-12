@@ -16,7 +16,7 @@ void main() {
 	vec4 normalData = texture2D(normals, ex_TextureUVs);
 	
 	//transform normal back into [-1,1] range
-    vec3 normal = 2.0f * normalData.xyz - 1.0f;
+    vec3 normal = 2.0 * normalData.xyz - 1.0;
 	
     //surface-to-light vector
     vec3 lightVector = -normalize(vec3(0, -1, 0));
@@ -26,6 +26,6 @@ void main() {
 
 	vec3 diffuseColour = texture2D(diffuse, ex_TextureUVs).xyz;
 	
-	//out_Colour = vec4(normal + diffuseColour * NdL * 0.2f + diffuseColour * 0.1f, 1.0f);
-	out_Colour = vec4(diffuseColour * NdL * 0.8f + diffuseColour * 0.2f, 1.0f);
+	//out_Colour = vec4(normal + diffuseColour * NdL * 0.2 + diffuseColour * 0.1, 1.0);
+	out_Colour = vec4(diffuseColour * NdL * 0.8 + diffuseColour * 0.2, 1.0);
 }

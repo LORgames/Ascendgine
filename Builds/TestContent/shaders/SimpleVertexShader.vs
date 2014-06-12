@@ -15,7 +15,7 @@ uniform mat4 View;
 uniform mat4 Projection;
 
 void main(){
-	vec4 pos = vec4(vertexPosition_modelspace, 1.0f);
+	vec4 pos = vec4(vertexPosition_modelspace, 1.0);
 	gl_Position = Projection * View * Model * pos;
 	ex_Normals = vertexNormals;
 	ex_TextureUVs = vertexTextureUVs;

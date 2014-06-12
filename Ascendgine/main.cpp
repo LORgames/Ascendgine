@@ -76,6 +76,15 @@ void ProcessMessageQueue(SDL_Event* event) {
 				case SDL_MOUSEBUTTONDOWN:
 					printf_s("Mouse button pressed\n");
 					break;
+        case SDL_FINGERDOWN:
+          printf_s("Finger (%d) touched: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
+          break;
+        case SDL_FINGERUP:
+          printf_s("Finger (%d) removed: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
+          break;
+        case SDL_FINGERMOTION:
+          printf_s("Finger (%d) moved: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
+          break;
 				case SDL_QUIT:
 					printf_s("Quit requested, quitting.\n");
 					gameRunning = false;
@@ -102,11 +111,11 @@ int main(int argc, char* argv[]) {
 	// Create an application window with the following settings:
 	window = SDL_CreateWindow(
 		"Ascendgine",							//    window title
-		SDL_WINDOWPOS_UNDEFINED,				//    initial x position
-		SDL_WINDOWPOS_UNDEFINED,				//    initial y position
-		width,									//    width, in pixels
-		height,									//    height, in pixels
-		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE /*| SDL_WINDOW_MAXIMIZED*/
+		SDL_WINDOWPOS_UNDEFINED,	//    initial x position
+		SDL_WINDOWPOS_UNDEFINED,	//    initial y position
+		width,									  //    width, in pixels
+		height,									  //    height, in pixels
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED
 	);
   
 	// Check that the window was successfully made
@@ -121,6 +130,15 @@ int main(int argc, char* argv[]) {
 	
 	glewExperimental = GL_TRUE;
 	glewInit();
+
+  
+  //Debug some things :)
+  printf("Vendor: %s\n", glGetString(GL_VENDOR));
+  printf("Renderer: %s\n", glGetString(GL_RENDERER));
+  printf("Version: %s\n", glGetString(GL_VERSION));
+  printf("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+  printf("Extensions: %s\n", glGetString(GL_EXTENSIONS));
+
 
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
@@ -151,7 +169,7 @@ int main(int argc, char* argv[]) {
         next_time += TICK_INTERVAL;
     }
 
-	delete Renderer;
+  	delete Renderer;
 
     /* Delete our opengl context, destroy our window, and shutdown SDL */
     SDL_GL_DeleteContext(mainContext);
