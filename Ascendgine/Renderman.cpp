@@ -69,18 +69,10 @@ void Renderman::Render(SDL_Window* window)
     fxPostProcessing->BindTexture(1);
 	}
 
-	//Diffuse
-	//glReadBuffer(GL_COLOR_ATTACHMENT0 + BUFFER_COLOUR);
-	//glBlitFramebuffer(0, 0, 1200, 900, 600, 0, 1200, 450, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-
-	//Normal
-	//glReadBuffer(GL_COLOR_ATTACHMENT0 + BUFFER_NORMAL);
-	//glBlitFramebuffer(0, 0, 1200, 900, 0, 0, 600, 450, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-
   //Setup the post processing stuff
-  
   screenQuad->RenderOpaque(fxPostProcessing);
 
+  //Swap buffers
   SDL_GL_SwapWindow(window);
 }
 

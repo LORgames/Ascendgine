@@ -33,13 +33,7 @@ class Quad: public Mesh {
 		  indices[5] = 3;
 
       fprintf(stdout, "Creating quad.\n");
-      
       CreateMesh(vertices, 4, indices, 6);
-
-      for(int i = 0; i < 4; i++)
-      {
-        fprintf(stdout, "\tP%d: %2.2f, %2.2f, %2.2f\n", i, vertices[i].Position[0], vertices[i].Position[1], vertices[i].Position[2]);
-      }
 		}
 
 		~Quad(void)

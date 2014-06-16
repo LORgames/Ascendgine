@@ -31,6 +31,9 @@
     <Filter Include="Header Files\Graphics\CustomMeshes">
       <UniqueIdentifier>{11f60823-2a49-40bd-914b-66301ced7075}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{6559d143-968f-42de-93c2-d99ba610debd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
