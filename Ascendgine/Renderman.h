@@ -8,6 +8,8 @@
 #include "Camera.h"
 #include "Effect.h"
 
+#include <vector>
+
 class Renderman {
 private:
 	enum BUFFER_TYPE {
@@ -36,7 +38,6 @@ private:
 
 	//Stored objects
   Mesh* screenQuad;
-	Model* testModel;
 	Camera* mainCam;
 public:
 	Renderman(int width, int height);
@@ -46,5 +47,7 @@ public:
 
 	void FixCamera(int width, int height);
 	void FixGBuffer(int width, int height);
+
+  std::vector<Model*> models;
 };
 

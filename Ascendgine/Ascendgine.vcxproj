@@ -24,30 +24,30 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -66,23 +66,28 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Libraries\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\Common Assets\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common Assets\Libraries\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\Builds\$(Platform)$(Configuration)\</OutDir>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Libraries\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\Common Assets\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common Assets\Libraries\x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\Builds\$(Platform)$(Configuration)\</OutDir>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)Includes;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\Common Assets\Includes;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)\Builds\$(Platform)$(Configuration)\</OutDir>
+    <TargetExt>.lib</TargetExt>
+    <LibraryPath>..\..\..\Common Assets\Libraries\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Includes;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\Common Assets\Includes;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)\Builds\$(Platform)$(Configuration)\</OutDir>
-    <LibraryPath>$(SolutionDir)Libraries\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\..\Common Assets\Libraries\x64;$(LibraryPath)</LibraryPath>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -139,7 +144,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Effect.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Renderman.cpp" />
@@ -149,6 +154,7 @@
     <ClInclude Include="BinaryReaderX.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="EngineCore.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Quad.h" />

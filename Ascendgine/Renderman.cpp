@@ -4,9 +4,6 @@
 
 Renderman::Renderman(int width, int height)
 {
-	testModel = new Model();
-	testModel->LoadFromFile("../assets/Map.lgm");
-
 	fxOpaque = new Effect("../shaders/OpaqueShader.vs", "../shaders/OpaqueShader.ps");
   fxPostProcessing = new Effect("../shaders/QuadRenderer.vs", "../shaders/QuadRenderer.ps");
 
@@ -25,7 +22,6 @@ Renderman::Renderman(int width, int height)
 
 Renderman::~Renderman(void)
 {
-	delete testModel;
 	delete fxOpaque;
 	delete mainCam;
 
@@ -45,7 +41,10 @@ void Renderman::Render(SDL_Window* window)
 	fxOpaque->Apply(mainCam);
 
 	//Render the models
-	testModel->RenderOpaque(fxOpaque, 0);
+  for(int i = 0; i < models.size(); i++)
+  {
+    models[i]->RenderOpaque(fxOpaque, 0);
+  }
 	
 	//Fix the states for light rendering
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
