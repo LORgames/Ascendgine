@@ -41,7 +41,7 @@ void Renderman::Render(SDL_Window* window)
 	fxOpaque->Apply(mainCam);
 
 	//Render the models
-  for(int i = 0; i < models.size(); i++)
+  for(int i = 0; i < (int)models.size(); i++)
   {
     models[i]->RenderOpaque(fxOpaque, 0);
   }
