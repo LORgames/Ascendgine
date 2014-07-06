@@ -33,7 +33,12 @@ class Effect {
 		
     void BindTexture(int slotID)
     {
-	    glUniform1i(GL_TEXTURE0 + slotID, slotID);
+      if (slotID == 0)
+        glUniform1i(psDiffuse, slotID);
+      else if (slotID == 1)
+        glUniform1i(psNormals, slotID);
+      else if (slotID == 2)
+        glUniform1i(psSpecular, slotID);
     }
 };
 
