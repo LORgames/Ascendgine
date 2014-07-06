@@ -31,11 +31,9 @@ class Effect {
 
 		void BindMaterial(RenderMaterial* material);
 		
-    //void BindDiffuse(Texture* texture);
-
     void BindTexture(int slotID)
     {
-	    glUniform1i(slotID, slotID);
+	    glUniform1i(GL_TEXTURE0 + slotID, slotID);
     }
 };
 

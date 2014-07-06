@@ -56,16 +56,15 @@ void Renderman::Render(SDL_Window* window)
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  
   fxPostProcessing->Apply();
 
 	//Apply the textures
 	for (unsigned int i = 0; i < TOTAL_BUFFERS; i++)
   {
-	  glActiveTexture(GL_TEXTURE0 + i);		
-		glBindTexture(GL_TEXTURE_2D, InputRT[i]);
+	  glActiveTexture(GL_TEXTURE0 + i);
+	  glBindTexture(GL_TEXTURE_2D, InputRT[i]);
     
-    fxPostProcessing->BindTexture(1);
+    fxPostProcessing->BindTexture(i);
 	}
 
   //Setup the post processing stuff
