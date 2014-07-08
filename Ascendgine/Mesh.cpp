@@ -1,12 +1,18 @@
 #include "Mesh.h"
 
+#include "EngineCore.h"
+
 Mesh::Mesh(RenderMaterial* _mat) {
 	Material = _mat;
+  fx = nullptr;
+
 	canRender = false;
 }
 
 Mesh::Mesh(RenderMaterial* _mat, Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices) {
 	Material = _mat;
+  fx = nullptr;
+
 	CreateMesh(_verts, _totalVerts, _indices, _totalIndices);
 }
 
@@ -64,7 +70,7 @@ Mesh::~Mesh(void) {
 	glDeleteVertexArrays(1, &vaoID);
 }
 
-void Mesh::RenderOpaque(Effect* fx) {
+void Mesh::RenderOpaque() {
 	if(!canRender) return;
 
 	glBindVertexArray(vaoID);
@@ -75,6 +81,5 @@ void Mesh::RenderOpaque(Effect* fx) {
   	fx->BindMaterial(Material);
 	
 	// Draw the triangles!
-
-  glDrawElements(GL_TRIANGLES, totalIndices, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLE_STRIP, totalIndices, GL_UNSIGNED_INT, 0);
 }

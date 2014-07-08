@@ -48,6 +48,8 @@ public:
 	void FixCamera(int width, int height);
 	void FixGBuffer(int width, int height);
 
+  Effect* GetSimpleEffect() { return fxOpaque; }
+
   std::vector<Model*> models;
 };
 

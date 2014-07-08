@@ -1,8 +1,10 @@
 #include "Model.h"
 
+#include "EngineCore.h"
 
 Model::Model(void) {
-	
+  TotalMeshes = 0;
+  TotalMaterials = 0;
 }
 
 Model::~Model(void) {
@@ -14,8 +16,11 @@ Model::~Model(void) {
 		delete Materials[i];
 	}
 
-	delete[] Meshes;
-	delete[] Materials;
+  if (TotalMeshes > 0)
+    delete[] Meshes;
+
+  if (TotalMaterials > 0)
+    delete[] Materials;
 }
 
 void Model::LoadFromFile(char* filename) {
@@ -125,6 +130,7 @@ void Model::LoadFromFile(char* filename) {
 			}
 
 			Meshes[i] = new Mesh(Materials[MatID], _verts, totalVertices, _indices, totalIndices);
+      Meshes[i]->SetEffect(EngineCore::GetRenderer()->GetSimpleEffect());
 		}
 
 		delete[] memblock;
@@ -137,10 +143,10 @@ void Model::LoadFromFile(char* filename) {
 	delete[] expectedPath;
 }
 
-void Model::RenderOpaque(Effect* fx, int passID) {
-	if(passID == 0) {
+void Model::RenderOpaque(int passID) {
+	if(passID == 1) { //Opaque
 		for(int i = 0; i < TotalMeshes; i++) {
-			Meshes[i]->RenderOpaque(fx);
+			Meshes[i]->RenderOpaque();
 		}
 	} else {
 		

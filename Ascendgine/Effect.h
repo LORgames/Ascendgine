@@ -30,15 +30,8 @@ class Effect {
 		void Apply(Camera* = nullptr);
 
 		void BindMaterial(RenderMaterial* material);
-		
-    void BindTexture(int slotID)
-    {
-      if (slotID == 0)
-        glUniform1i(psDiffuse, slotID);
-      else if (slotID == 1)
-        glUniform1i(psNormals, slotID);
-      else if (slotID == 2)
-        glUniform1i(psSpecular, slotID);
-    }
+    void BindTexture(int slotID);
+
+    int GetUniformID(char* name);
 };
 

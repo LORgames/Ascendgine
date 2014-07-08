@@ -18,6 +18,7 @@ Renderman::Renderman(int width, int height)
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 
   screenQuad = new Quad();
+  screenQuad->SetEffect(fxPostProcessing);
 }
 
 Renderman::~Renderman(void)
@@ -43,7 +44,7 @@ void Renderman::Render(SDL_Window* window)
 	//Render the models
   for(int i = 0; i < (int)models.size(); i++)
   {
-    models[i]->RenderOpaque(fxOpaque, 0);
+    models[i]->RenderOpaque(1);
   }
 	
 	//Fix the states for light rendering
@@ -68,7 +69,7 @@ void Renderman::Render(SDL_Window* window)
 	}
 
   //Setup the post processing stuff
-  screenQuad->RenderOpaque(fxPostProcessing);
+  screenQuad->RenderOpaque();
 
   //Swap buffers
   SDL_GL_SwapWindow(window);

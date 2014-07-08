@@ -22,5 +22,5 @@ class Model {
 
 		void LoadFromFile(char* filename);
 
-		void RenderOpaque(Effect* fx, int passID);
+		virtual void RenderOpaque(int passID);
 };
