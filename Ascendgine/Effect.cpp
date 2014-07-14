@@ -133,14 +133,19 @@ void Effect::BindMaterial(RenderMaterial* material)
   }
 }
 
-void Effect::BindTexture(int slotID)
+void Effect::BindTextureAdvanced(int shaderTextureID, int bindedTextureID)
 {
-  if (slotID == 0)
-    glUniform1i(psDiffuse, slotID);
-  else if (slotID == 1)
-    glUniform1i(psNormals, slotID);
-  else if (slotID == 2)
-    glUniform1i(psSpecular, slotID);
+  glUniform1i(shaderTextureID, bindedTextureID);
+}
+
+void Effect::BindTexture(int simpleBindID)
+{
+  if (simpleBindID == 0)
+    glUniform1i(psDiffuse, simpleBindID);
+  else if (simpleBindID == 1)
+    glUniform1i(psNormals, simpleBindID);
+  else if (simpleBindID == 2)
+    glUniform1i(psSpecular, simpleBindID);
 }
 
 int Effect::GetUniformID(char* name)

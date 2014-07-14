@@ -31,6 +31,7 @@ class Effect {
 
 		void BindMaterial(RenderMaterial* material);
     void BindTexture(int slotID);
+    void BindTextureAdvanced(int shaderTextureID, int bindedTextureID);
 
     int GetUniformID(char* name);
 };

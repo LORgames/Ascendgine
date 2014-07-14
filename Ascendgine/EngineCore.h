@@ -34,6 +34,7 @@ public:
 
   //Other controls
   static Renderman* GetRenderer();
+  static Camera* GetMainCamera();
 };
 
 #endif
