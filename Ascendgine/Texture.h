@@ -20,6 +20,9 @@ class Texture {
     void CreateTexture(int width, int height, GLenum colorMode, char* initialData = nullptr);
     void SetData(char* data);
 
+    int Width() { return m_width; }
+    int Height() { return m_height; }
+
 		GLuint textureID;
 };
 

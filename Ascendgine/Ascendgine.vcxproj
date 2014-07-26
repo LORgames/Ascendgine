@@ -166,6 +166,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="QuadRenderer.h" />
+    <ClInclude Include="Rect.h" />
     <ClInclude Include="Renderman.h" />
     <ClInclude Include="RenderMaterial.h" />
     <ClInclude Include="Texture.h" />
