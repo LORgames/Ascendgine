@@ -153,6 +153,7 @@
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="QuadRenderer.cpp" />
     <ClCompile Include="Renderman.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
@@ -164,6 +165,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Quad.h" />
+    <ClInclude Include="QuadRenderer.h" />
     <ClInclude Include="Renderman.h" />
     <ClInclude Include="RenderMaterial.h" />
     <ClInclude Include="Texture.h" />
