@@ -35,15 +35,20 @@ void Texture::LoadTexture(const char* expectedPath, const char* filename)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		if(depth == 3) {
+		if(depth == 3)
+    {
       m_colorMode = GL_RGB;
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 			printf_s("Loaded!\n");
-		} else if(depth == 4) {
+    }
+    else if (depth == 4)
+    {
       m_colorMode = GL_RGBA;
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-			printf_s("Loaded!\n");
-		} else {
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+      printf_s("Loaded!\n");
+    }
+    else
+    {
 			printf_s("Failed (depth)!\n");
 		}
 	} else {

@@ -70,9 +70,6 @@ void Renderman::Render(SDL_Window* window)
 
   //Setup the post processing stuff
   screenQuad->RenderOpaque();
-
-  //Swap buffers
-  SDL_GL_SwapWindow(window);
 }
 
 void Renderman::FixCamera(int width, int height)

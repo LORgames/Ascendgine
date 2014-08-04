@@ -26,6 +26,7 @@ public:
   static bool Init(char* windowTitle, int width, int height);
   static bool UpdateAndRender();
   static bool Cleanup();
+  static void EndFrame();
 
   //Window functions
   static int SetFullscreen(bool fullscren);

@@ -4,8 +4,9 @@
 const int MAXIMUM_QUADS_PER_RENDERER = 1000;
 
 #include <GL/glew.h>
+#include "Texture.h"
 
-struct Vertex
+struct QuadVertex
 {
   float Position[2];
   float UVs[2];
@@ -14,11 +15,13 @@ struct Vertex
 class QuadRenderer
 {
 public:
-  QuadRenderer(GLuint textureID, int texWidth, int texHeight, int overloadMaxQuads = 0);
+  QuadRenderer(Texture* texture, int overloadMaxQuads = 0);
   ~QuadRenderer();
 
   bool AddQuadToRender(float x, float y, float texX, float texY, float texW, float texH);
   void Render();
+
+  static void Resized(int width, int height);
 
 private:
   //Secret functions
@@ -38,7 +41,7 @@ private:
   GLuint indexBufferID;
 
   int* indices;
-  Vertex* vertices;
+  QuadVertex* vertices;
 
   int totalIndices;
   int totalVertices;

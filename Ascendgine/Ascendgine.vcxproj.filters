@@ -34,6 +34,12 @@
     <Filter Include="Header Files\Game">
       <UniqueIdentifier>{6559d143-968f-42de-93c2-d99ba610debd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\UserInterface">
+      <UniqueIdentifier>{e4b64a19-94bb-422f-9d3e-d7dfa21ca267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UserInterface">
+      <UniqueIdentifier>{c19a245b-33d6-4d4d-a585-1b1df9fe146f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Model.cpp">
@@ -59,6 +65,9 @@
     </ClCompile>
     <ClCompile Include="QuadRenderer.cpp">
       <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Source Files\UserInterface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="Rect.h">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Header Files\UserInterface</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -67,7 +67,7 @@ public:
 		char* p = (char*)&data[position]; position++; return *p;
 	}
 
-	unsigned short ReadShort(void)
+	short ReadShort(void)
   {
 		short* p = (short*)&data[position]; position += 2; return *p;
 	}
@@ -92,6 +92,30 @@ public:
 		return temp;
 	}
 
+  void ReadNullTerminatedString(char** ppString)
+  {
+    char temp;
+    int startPoint = position;
+    int endPoint = position;
+
+    temp = data[position];
+
+    while (temp != 0)
+    {
+      endPoint++;
+      temp = data[endPoint];
+    }
+
+    *ppString = new char[endPoint - startPoint + 1];
+
+    for (int i = startPoint; i < endPoint+1; i++)
+    {
+      (*ppString)[i - startPoint] = data[i];
+    }
+
+    position = endPoint + 1;
+  }
+
 	std::string ReadString(void)
   {
 		short length = ReadShort();
@@ -108,5 +132,10 @@ public:
 		
 		return r;
 	}
+
+  void ReadAhead(int numBytes)
+  {
+    position += numBytes;
+  }
 };
 

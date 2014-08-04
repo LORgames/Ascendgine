@@ -1,5 +1,7 @@
 #include "EngineCore.h"
 
+#include "QuadRenderer.h"
+
 int width;
 int height;
 
@@ -57,6 +59,8 @@ void EngineCore::ProcessMessageQueue(SDL_Event* event)
 					glViewport(0, 0, width, height); 
 					renderer->FixCamera(width, height);
 					renderer->FixGBuffer(width, height);
+
+          QuadRenderer::Resized(width, height);
 				} break;
 			}
 		}
@@ -146,6 +150,7 @@ bool EngineCore::Init(char* windowTitle, int width, int height)
 
   // Create our renderer
 	renderer = new Renderman(width, height);
+  QuadRenderer::Resized(width, height);
 
 	//Core loop
 	nextTime = SDL_GetTicks() + TICK_INTERVAL;
@@ -163,6 +168,12 @@ bool EngineCore::UpdateAndRender()
   nextTime += TICK_INTERVAL;
 
   return isRunning;
+}
+
+void EngineCore::EndFrame()
+{
+  //Swap buffers
+  SDL_GL_SwapWindow(window);
 }
 
 bool EngineCore::Cleanup()

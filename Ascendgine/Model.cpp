@@ -96,7 +96,8 @@ void Model::LoadFromFile(char* filename) {
 		}
 
 		Meshes = new Mesh*[TotalMeshes];
-		for(int i = 0; i < TotalMeshes; i++) {
+		for(int i = 0; i < TotalMeshes; i++)
+    {
 			short MatID = f.ReadShort();
 
 			int totalVertices = f.ReadInt();
@@ -116,11 +117,19 @@ void Model::LoadFromFile(char* filename) {
 				_verts[j].Position[0] = f.ReadFloat();
 				_verts[j].Position[1] = f.ReadFloat();
 				_verts[j].Position[2] = f.ReadFloat();
-				_verts[j].Normals[0] = f.ReadFloat();
-				_verts[j].Normals[1] = f.ReadFloat();
-				_verts[j].Normals[2] = f.ReadFloat();
-				_verts[j].UVs[0] = f.ReadFloat();
-				_verts[j].UVs[1] = f.ReadFloat();
+
+        if (_Normals)
+        {
+          _verts[j].Normals[0] = f.ReadFloat();
+          _verts[j].Normals[1] = f.ReadFloat();
+          _verts[j].Normals[2] = f.ReadFloat();
+        }
+
+        if (_Unwrapd)
+        {
+          _verts[j].UVs[0] = f.ReadFloat();
+          _verts[j].UVs[1] = f.ReadFloat();
+        }
 				//printf_s("Vertex %i: %f, %f, %f, %f, %f, %f, %f, %f\n", j, _verts[j].Position[0], _verts[j].Position[1], _verts[j].Position[2], _verts[j].Normals[0], _verts[j].Normals[1], _verts[j].Normals[2], _verts[j].UVs[0], _verts[j].UVs[1]);
 			}
 

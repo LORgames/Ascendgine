@@ -2,19 +2,27 @@
 
 #include <string>
 
-QuadRenderer::QuadRenderer(GLuint textureID, int texWidth, int texHeight, int overloadMaxQuads)
+#include "Effect.h"
+#include "Camera.h"
+
+static Effect* g_QuadRendererShader = nullptr;
+static Camera* g_QuadCam = nullptr;
+
+QuadRenderer::QuadRenderer(Texture* texture, int overloadMaxQuads)
 {
   if (overloadMaxQuads <= 0)
     maxQuads = MAXIMUM_QUADS_PER_RENDERER;
   else
     maxQuads = overloadMaxQuads;
 
-  vertices = new Vertex[maxQuads * 4];
+  vertices = new QuadVertex[maxQuads * 4];
   indices = new int[maxQuads * 6];
 
-  texID = textureID;
-  textureWidth = (float)texWidth;
-  textureHeight = (float)texHeight;
+  texID = texture->textureID;
+  textureWidth = (float)texture->Width();
+  textureHeight = (float)texture->Height();
+
+  usedQuads = 0;
 
   //Create the VBO's
   vertices = vertices;
@@ -23,6 +31,9 @@ QuadRenderer::QuadRenderer(GLuint textureID, int texWidth, int texHeight, int ov
   totalIndices = maxQuads*6;
 
   CreateBuffers();
+
+  if (g_QuadRendererShader == nullptr)
+    g_QuadRendererShader = new Effect("../shaders/ScreenRenderer.vs", "../shaders/ScreenRenderer.ps");
 }
 
 QuadRenderer::~QuadRenderer()
@@ -67,11 +78,18 @@ bool QuadRenderer::AddQuadToRender(float x, float y, float texX, float texY, flo
 
 void QuadRenderer::Render()
 {
+  g_QuadRendererShader->Apply(g_QuadCam);
+
+  glEnable(GL_BLEND);
+  glDisable(GL_DEPTH_TEST);
+  glDepthMask(GL_FALSE);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   glBindVertexArray(vaoID);
   glBindBuffer(GL_ARRAY_BUFFER, bufferID);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
-  glBufferSubData(GL_ARRAY_BUFFER,0, sizeof(Vertex)* 4 * usedQuads, vertices);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(QuadVertex)* 4 * usedQuads, vertices);
   glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(int)*6*usedQuads, indices);
 
   glActiveTexture(GL_TEXTURE0);
@@ -89,8 +107,8 @@ void QuadRenderer::CreateBuffers()
   glBindVertexArray(vaoID);
 
   GLenum ErrorCheckValue = glGetError();
-  const size_t BufferSize = sizeof(Vertex)*totalVertices;
-  const size_t VertexSize = sizeof(Vertex);
+  const size_t BufferSize = sizeof(QuadVertex)*totalVertices;
+  const size_t VertexSize = sizeof(QuadVertex);
 
   glGenBuffers(1, &bufferID);
   glBindBuffer(GL_ARRAY_BUFFER, bufferID);
@@ -111,4 +129,12 @@ void QuadRenderer::CreateBuffers()
     fprintf(stderr, "ERROR: Could not create a VBO: %s \n", gluErrorString(ErrorCheckValue));
     exit(-1);
   }
+}
+
+void QuadRenderer::Resized(int width, int height)
+{
+  if (g_QuadCam == nullptr)
+    g_QuadCam = new Camera();
+
+  g_QuadCam->CreateOrthographicProjection(width, height, -1, 1);
 }
