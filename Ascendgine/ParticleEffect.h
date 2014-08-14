@@ -25,6 +25,6 @@ public:
   ParticleEffect(const char* vertexFile, const char* fragmentFile);
   ~ParticleEffect();
 
-  void ApplyRenderer(Camera* cam, GLuint depthMap, float aspectRatio, float currentTime);
-  void ApplyParticleSystem(ParticleSettings &settings);
+  void ApplyRenderer(Camera* cam, GLuint depthMap, float aspectRatio);
+  void ApplyParticleSystem(ParticleSettings &settings, float currentTime);
 };

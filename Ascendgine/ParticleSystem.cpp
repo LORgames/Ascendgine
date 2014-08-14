@@ -179,7 +179,13 @@ void ParticleSystem::FreeRetiredParticles() {
 /// Draws the particle system.
 /// </summary>
 void ParticleSystem::Render() {
-  particleEffect->ApplyParticleSystem(settings);
+  particleEffect->ApplyParticleSystem(settings, currentTime);
+
+  //Fix the states for light rendering
+  glEnable(GL_BLEND);
+  glBlendEquation(GL_FUNC_ADD);
+  glDepthMask(GL_TRUE);
+  glDisable(GL_DEPTH_TEST);
 
   glBindVertexArray(vaoID);
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);

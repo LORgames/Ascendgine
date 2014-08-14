@@ -28,7 +28,7 @@ ParticleEffect::~ParticleEffect()
 
 }
 
-void ParticleEffect::ApplyRenderer(Camera* cam, GLuint depthMap, float aspectRatio, float currentTime)
+void ParticleEffect::ApplyRenderer(Camera* cam, GLuint depthMap, float aspectRatio)
 {
   this->Apply(cam);
 
@@ -37,14 +37,14 @@ void ParticleEffect::ApplyRenderer(Camera* cam, GLuint depthMap, float aspectRat
   glUniform1i(vsDepthIndex, 1);
   
   glUniform2f(vsViewportScaleIndex, 0.5f / aspectRatio, -0.5f);
-  glUniform1f(vsTimeIndex, currentTime);
 }
 
-void ParticleEffect::ApplyParticleSystem(ParticleSettings &settings)
+void ParticleEffect::ApplyParticleSystem(ParticleSettings &settings, float currentTime)
 {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, settings.TextureID);
   glUniform1i(psDiffuse, 0);
+  glUniform1f(vsTimeIndex, currentTime);
 
   glUniform1f(vsDuration, settings.Duration);
   glUniform1f(vsDurationRandomness, settings.DurationRandomness);
