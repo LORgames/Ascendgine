@@ -13,11 +13,11 @@
 class Renderman {
 private:
 	enum BUFFER_TYPE {
-        BUFFER_COLOUR,
+    BUFFER_COLOUR,
 		BUFFER_NORMAL,
 		BUFFER_DEPTH,
-        TOTAL_BUFFERS
-    };
+    TOTAL_BUFFERS
+  };
 
 	//Rendering to GBuffer
 	Effect* fxOpaque;
@@ -50,6 +50,8 @@ public:
 
   Effect* GetSimpleEffect() { return fxOpaque; }
   Camera* GetMainCamera() { return mainCam; }
+
+  GLuint GetBuffer(int id) { return InputRT[id]; }
 
   std::vector<Model*> models;
 };

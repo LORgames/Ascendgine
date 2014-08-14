@@ -13,7 +13,7 @@
 #include "Texture.h"
 
 class Effect {
-	private:
+	protected:
 		GLuint id;
 
 		GLuint psDiffuse;
@@ -27,7 +27,7 @@ class Effect {
 		Effect(const char*, const char *);
 		~Effect(void);
 		
-		void Apply(Camera* = nullptr);
+		virtual void Apply(Camera* = nullptr);
 
 		void BindMaterial(RenderMaterial* material);
     void BindTexture(int slotID);

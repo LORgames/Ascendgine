@@ -105,6 +105,11 @@ Renderman* EngineCore::GetRenderer()
   return renderer;
 }
 
+Camera* EngineCore::GetMainCamera()
+{
+  return renderer->GetMainCamera();
+}
+
 bool EngineCore::Init(char* windowTitle, int width, int height)
 {
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO ) < 0)			// Initialize SDL2
@@ -158,7 +163,7 @@ bool EngineCore::Init(char* windowTitle, int width, int height)
 	return true;
 }
 
-bool EngineCore::UpdateAndRender()
+bool EngineCore::UpdateAndRender(float* dt, float* totalTime)
 {
   ProcessMessageQueue(&event);
 
@@ -166,6 +171,12 @@ bool EngineCore::UpdateAndRender()
 
   SDL_Delay(TimeLeftThisFrame());
   nextTime += TICK_INTERVAL;
+
+  if (dt != nullptr)
+    *dt = TICK_INTERVAL / 1000.f;
+
+  if (totalTime != nullptr)
+    *totalTime = SDL_GetTicks() / 1000.f;
 
   return isRunning;
 }

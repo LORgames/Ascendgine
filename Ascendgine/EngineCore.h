@@ -24,7 +24,7 @@ private:
 public:
   //Control things :)
   static bool Init(char* windowTitle, int width, int height);
-  static bool UpdateAndRender();
+  static bool UpdateAndRender(float* dt = nullptr, float* totalTime = nullptr);
   static bool Cleanup();
   static void EndFrame();
 

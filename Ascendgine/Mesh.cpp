@@ -81,5 +81,5 @@ void Mesh::RenderOpaque() {
   	fx->BindMaterial(Material);
 	
 	// Draw the triangles!
-  glDrawElements(GL_TRIANGLE_STRIP, totalIndices, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, totalIndices, GL_UNSIGNED_INT, 0);
 }

@@ -154,6 +154,9 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ParticleEffect.cpp" />
+    <ClCompile Include="ParticleEmitter.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="QuadRenderer.cpp" />
     <ClCompile Include="Renderman.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -166,6 +169,10 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ParticleEffect.h" />
+    <ClInclude Include="ParticleEmitter.h" />
+    <ClInclude Include="ParticleSettings.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="QuadRenderer.h" />
     <ClInclude Include="Rect.h" />
