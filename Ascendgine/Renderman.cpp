@@ -74,7 +74,7 @@ void Renderman::Render(SDL_Window* window)
 
 void Renderman::FixCamera(int width, int height)
 {
-	mainCam->CreatePerspectiveProjection((float)width, (float)height, 30, 0.1f, 1000.0f);
+	mainCam->CreatePerspectiveProjection((float)width, (float)height, 30, 0.1f, 2500.0f);
 	mainCam->View = glm::lookAt(glm::vec3(50,50,250), glm::vec3(0,0,0), glm::vec3(0,1,0));
 	mainCam->Model = glm::mat4();
 }

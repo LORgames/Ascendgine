@@ -8,8 +8,8 @@
 
 struct ParticleVertex
 {
-  float Corner[2];   // Stores which corner of the particle quad this vertex represents.
   float Position[3]; // Stores the starting position of the particle.
+  float Corner[2];   // Stores which corner of the particle quad this vertex represents.
   float Velocity[3]; // Stores the starting velocity of the particle.
   float Random[4];   // Four random values, used to make each particle look slightly different.
   float Time;        // The time (in seconds) at which this particle was created.

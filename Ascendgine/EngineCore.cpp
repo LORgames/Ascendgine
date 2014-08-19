@@ -2,6 +2,11 @@
 
 #include "QuadRenderer.h"
 
+//Functions
+void (*keyDown)(int keyCode) = nullptr;
+void (*keyUp)(int keyCode) = nullptr;
+void (*mouseDown)(int x, int y) = nullptr;
+
 int width;
 int height;
 
@@ -69,10 +74,16 @@ void EngineCore::ProcessMessageQueue(SDL_Event* event)
 			switch (event->type)
       {
 				case SDL_KEYDOWN:
-					//printf_s("Key press detected: %i\n", event->key.keysym.scancode);
+          if (keyDown)
+            (*keyDown)(event->key.keysym.scancode);
+          else
+            printf_s("Key press detected (No registered handler!): %i\n", event->key.keysym.scancode);
 					break;
 				case SDL_KEYUP:
-					printf_s("Key release detected: %i\n", event->key.keysym.scancode);
+          if (keyUp)
+            (*keyUp)(event->key.keysym.scancode);
+          else
+            printf_s("Key release detected (No registered handler!): %i\n", event->key.keysym.scancode);
 					break;
 				case SDL_MOUSEBUTTONDOWN:
 					printf_s("Mouse button pressed\n");

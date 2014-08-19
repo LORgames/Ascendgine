@@ -51,8 +51,8 @@ void ParticleSystem::Initialize(ParticleEffect* effect) {
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glBufferData(GL_ARRAY_BUFFER, BufferSize, particles, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(0 * sizeof(float))); // Corner
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(2 * sizeof(float))); // Position
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(0 * sizeof(float))); // Position
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(3 * sizeof(float))); // Corner
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(5 * sizeof(float))); // Velocity
   glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(8 * sizeof(float))); // Random
   glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(12* sizeof(float))); // Time
@@ -214,6 +214,9 @@ void ParticleSystem::Render() {
         glDrawElements(GL_TRIANGLES, firstFreeParticle * 4, GL_UNSIGNED_INT, 0);
     }
   }
+
+  glDisableVertexAttribArray(3);
+  glDisableVertexAttribArray(4);
 
   drawCounter++;
 }

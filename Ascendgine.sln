@@ -1,11 +1,18 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ascendgine", "Ascendgine\Ascendgine.vcxproj", "{8D56DD4A-565C-4338-A487-B1A7986B6BF6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AscendgineTestbed", "..\AscendgineTestbed\AscendgineTestbed\AscendgineTestbed.vcxproj", "{52BC2900-DAF3-4670-BD5C-83435BAE0D15}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8D56DD4A-565C-4338-A487-B1A7986B6BF6} = {8D56DD4A-565C-4338-A487-B1A7986B6BF6}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2640A1B7-642B-46B9-86E5-17869E2740E8}"
+	ProjectSection(SolutionItems) = preProject
+		Performance1.psess = Performance1.psess
 	EndProjectSection
 EndProject
 Global
@@ -35,5 +42,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

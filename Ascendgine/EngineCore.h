@@ -14,6 +14,11 @@
 
 const int TICK_INTERVAL = 30;
 
+//Functions
+extern void(*keyDown)(int keyCode);
+extern void(*keyUp)(int keyCode);
+extern void(*mouseDown)(int x, int y);
+
 class EngineCore
 {
 private:
