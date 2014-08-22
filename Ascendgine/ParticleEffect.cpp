@@ -37,6 +37,7 @@ void ParticleEffect::ApplyRenderer(Camera* cam, GLuint depthMap, float aspectRat
   glUniform1i(vsDepthIndex, 1);
   
   glUniform2f(vsViewportScaleIndex, 0.5f / aspectRatio, -0.5f);
+  //glUniform2f(vsViewportScaleIndex, 1.f / aspectRatio, -1.f);
 }
 
 void ParticleEffect::ApplyParticleSystem(ParticleSettings &settings, float currentTime)

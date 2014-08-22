@@ -40,6 +40,27 @@ void ParticleSystem::Initialize(ParticleEffect* effect) {
   particles = new ParticleVertex[settings.MaxParticles * 4];
   indices = new int[settings.MaxParticles * 6];
 
+  for (int i = 0; i < settings.MaxParticles; i++)
+  {
+    particles[i * 4 + 0].Corner[0] = -1.f;
+    particles[i * 4 + 0].Corner[1] = -1.f;
+    particles[i * 4 + 1].Corner[0] = 1.f;
+    particles[i * 4 + 1].Corner[1] = -1.f;
+    particles[i * 4 + 2].Corner[0] = 1.f;
+    particles[i * 4 + 2].Corner[1] = 1.f;
+    particles[i * 4 + 3].Corner[0] = -1.f;
+    particles[i * 4 + 3].Corner[1] = 1.f;
+  }
+
+  for (int i = 0; i < settings.MaxParticles; i++) {
+    indices[i * 6 + 0] = (i * 4 + 0);
+    indices[i * 6 + 1] = (i * 4 + 1);
+    indices[i * 6 + 2] = (i * 4 + 2);
+    indices[i * 6 + 3] = (i * 4 + 0);
+    indices[i * 6 + 4] = (i * 4 + 2);
+    indices[i * 6 + 5] = (i * 4 + 3);
+  }
+
   glGenVertexArrays(1, &vaoID);
   glBindVertexArray(vaoID);
 
@@ -71,27 +92,6 @@ void ParticleSystem::Initialize(ParticleEffect* effect) {
   if (ErrorCheckValue != GL_NO_ERROR) {
     fprintf(stderr, "ERROR: Could not create a VBO: %s \n", gluErrorString(ErrorCheckValue));
     exit(-1);
-  }
-
-  for (int i = 0; i < settings.MaxParticles; i++)
-  {
-    particles[i * 4 + 0].Corner[0] =-1.f;
-    particles[i * 4 + 0].Corner[1] =-1.f;
-    particles[i * 4 + 1].Corner[0] = 1.f;
-    particles[i * 4 + 1].Corner[1] =-1.f;
-    particles[i * 4 + 2].Corner[0] = 1.f;
-    particles[i * 4 + 2].Corner[1] = 1.f;
-    particles[i * 4 + 3].Corner[0] =-1.f;
-    particles[i * 4 + 3].Corner[1] = 1.f;
-  }
-
-  for (int i = 0; i < settings.MaxParticles; i++) {
-    indices[i * 6 + 0] = (i * 4 + 0);
-    indices[i * 6 + 1] = (i * 4 + 1);
-    indices[i * 6 + 2] = (i * 4 + 2);
-    indices[i * 6 + 3] = (i * 4 + 0);
-    indices[i * 6 + 4] = (i * 4 + 2);
-    indices[i * 6 + 5] = (i * 4 + 3);
   }
 }
 
