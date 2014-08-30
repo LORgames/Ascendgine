@@ -2,21 +2,24 @@
 
 #include "EngineCore.h"
 
-Mesh::Mesh(RenderMaterial* _mat) {
+Mesh::Mesh(RenderMaterial* _mat)
+{
 	Material = _mat;
   fx = nullptr;
 
 	canRender = false;
 }
 
-Mesh::Mesh(RenderMaterial* _mat, Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices) {
+Mesh::Mesh(RenderMaterial* _mat, Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices)
+{
 	Material = _mat;
   fx = nullptr;
 
 	CreateMesh(_verts, _totalVerts, _indices, _totalIndices);
 }
 
-void Mesh::CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices) {
+void Mesh::CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices)
+{
 	vertices = _verts;
 	totalVertices = _totalVerts;
 	indices = _indices;
@@ -46,7 +49,8 @@ void Mesh::CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _total
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*totalIndices, indices, GL_STATIC_DRAW);
 
 	ErrorCheckValue = glGetError();
-	if (ErrorCheckValue != GL_NO_ERROR) {
+	if (ErrorCheckValue != GL_NO_ERROR)
+  {
 		fprintf(stderr, "ERROR: Could not create a VBO: %s \n", gluErrorString(ErrorCheckValue));
 		exit(-1);
 	}
@@ -54,7 +58,8 @@ void Mesh::CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _total
 	canRender = true;
 }
 
-Mesh::~Mesh(void) {
+Mesh::~Mesh(void)
+{
 	GLenum ErrorCheckValue = glGetError();
 
 	glDisableVertexAttribArray(1);
@@ -70,7 +75,8 @@ Mesh::~Mesh(void) {
 	glDeleteVertexArrays(1, &vaoID);
 }
 
-void Mesh::RenderOpaque() {
+void Mesh::RenderOpaque()
+{
 	if(!canRender) return;
 
 	glBindVertexArray(vaoID);

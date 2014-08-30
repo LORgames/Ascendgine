@@ -36,7 +36,7 @@ void ParticleEffect::ApplyRenderer(Camera* cam, GLuint depthMap, float aspectRat
   glBindTexture(GL_TEXTURE_2D, depthMap);
   glUniform1i(vsDepthIndex, 1);
   
-  glUniform2f(vsViewportScaleIndex, 0.5f / aspectRatio, -0.5f);
+  glUniform2f(vsViewportScaleIndex, 0.5f, -0.5f / aspectRatio);
   //glUniform2f(vsViewportScaleIndex, 1.f / aspectRatio, -1.f);
 }
 

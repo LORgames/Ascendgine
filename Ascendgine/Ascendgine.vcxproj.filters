@@ -137,5 +137,8 @@
     <ClInclude Include="ParticleEmitter.h">
       <Filter>Header Files\Particles</Filter>
     </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Header Files\Graphics\CustomMeshes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

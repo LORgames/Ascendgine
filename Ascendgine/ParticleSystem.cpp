@@ -70,7 +70,7 @@ void ParticleSystem::Initialize(ParticleEffect* effect) {
 
   glGenBuffers(1, &vertexBufferID);
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-  glBufferData(GL_ARRAY_BUFFER, BufferSize, particles, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, BufferSize, particles, GL_STREAM_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(0 * sizeof(float))); // Position
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(3 * sizeof(float))); // Corner
@@ -89,7 +89,8 @@ void ParticleSystem::Initialize(ParticleEffect* effect) {
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*settings.MaxParticles*6, indices, GL_STATIC_DRAW);
 
   ErrorCheckValue = glGetError();
-  if (ErrorCheckValue != GL_NO_ERROR) {
+  if (ErrorCheckValue != GL_NO_ERROR)
+  {
     fprintf(stderr, "ERROR: Could not create a VBO: %s \n", gluErrorString(ErrorCheckValue));
     exit(-1);
   }
@@ -178,45 +179,39 @@ void ParticleSystem::FreeRetiredParticles() {
 /// <summary>
 /// Draws the particle system.
 /// </summary>
-void ParticleSystem::Render() {
-  particleEffect->ApplyParticleSystem(settings, currentTime);
-
-  //Fix the states for light rendering
-  glEnable(GL_BLEND);
-  glBlendEquation(GL_FUNC_ADD);
-  glDepthMask(GL_TRUE);
-  glDisable(GL_DEPTH_TEST);
-
+void ParticleSystem::Render()
+{
   glBindVertexArray(vaoID);
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+
+  particleEffect->ApplyParticleSystem(settings, currentTime);
+
+  //Fix the states for light rendering
+  glDisable(GL_BLEND);
+  glBlendEquation(GL_FUNC_ADD);
+  glDepthMask(GL_TRUE);
+  glDisable(GL_DEPTH_TEST);
 
   if (firstNewParticle != firstFreeParticle) {
     AddNewParticlesToVertexBuffer();
   }
 
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glEnableVertexAttribArray(2);
-  glEnableVertexAttribArray(3);
-  glEnableVertexAttribArray(4);
-
   // If there are any active particles, draw them now!
-  if (firstActiveParticle != firstFreeParticle) {
-    if (firstActiveParticle < firstFreeParticle) {
-      glDrawElements(GL_TRIANGLES, (firstFreeParticle - firstActiveParticle) * 6, GL_UNSIGNED_INT, (void*)(firstActiveParticle * 6));
-    }
-    else
-    {
-      glDrawElements(GL_TRIANGLES, (settings.MaxParticles - firstActiveParticle) * 6, GL_UNSIGNED_INT, indices + (firstActiveParticle * 6));
+  //if (firstActiveParticle != firstFreeParticle) {
+  //  if (firstActiveParticle < firstFreeParticle) {
+  //    glDrawElements(GL_TRIANGLES, (firstFreeParticle - firstActiveParticle) * 6, GL_UNSIGNED_INT, (void*)(firstActiveParticle * 6));
+  //  }
+  //  else
+  //  {
+  //    glDrawElements(GL_TRIANGLES, (settings.MaxParticles - firstActiveParticle) * 6, GL_UNSIGNED_INT, indices + (firstActiveParticle * 6));
+  //
+  //    if (firstFreeParticle > 0)
+  //      glDrawElements(GL_TRIANGLES, firstFreeParticle * 4, GL_UNSIGNED_INT, 0);
+  //  }
+  //}
 
-      if (firstFreeParticle > 0)
-        glDrawElements(GL_TRIANGLES, firstFreeParticle * 4, GL_UNSIGNED_INT, 0);
-    }
-  }
-
-  glDisableVertexAttribArray(3);
-  glDisableVertexAttribArray(4);
+  glDrawElements(GL_TRIANGLES, settings.MaxParticles*6, GL_UNSIGNED_INT, 0);
 
   drawCounter++;
 }

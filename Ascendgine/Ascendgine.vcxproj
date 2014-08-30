@@ -178,6 +178,7 @@
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Renderman.h" />
     <ClInclude Include="RenderMaterial.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
