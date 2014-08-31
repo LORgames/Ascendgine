@@ -1,11 +1,13 @@
 ﻿#include "Renderman.h"
 
 #include "Quad.h"
+#include "Sphere.h"
 
 Renderman::Renderman(int width, int height)
 {
 	fxOpaque = new Effect("../shaders/OpaqueShader.vs", "../shaders/OpaqueShader.ps");
   fxPostProcessing = new Effect("../shaders/QuadRenderer.vs", "../shaders/QuadRenderer.ps");
+  fxLightPoint = new Effect("../shaders/PointLight.vs", "../shaders/PointLight.ps");
 
 	mainCam = new Camera();
 	mainCam->Projection = glm::mat4();
@@ -19,12 +21,19 @@ Renderman::Renderman(int width, int height)
 
   screenQuad = new Quad();
   screenQuad->SetEffect(fxPostProcessing);
+
+  lightingSphere = new Sphere();
 }
 
 Renderman::~Renderman(void)
 {
 	delete fxOpaque;
+  delete fxPostProcessing;
+  delete fxLightPoint;
+
 	delete mainCam;
+
+  delete lightingSphere;
 
   delete screenQuad;
 }

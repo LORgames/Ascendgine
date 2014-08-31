@@ -39,6 +39,7 @@ private:
 	//Stored objects
   Mesh* screenQuad;
 	Camera* mainCam;
+  Mesh* lightingSphere;
 public:
 	Renderman(int width, int height);
 	~Renderman(void);
