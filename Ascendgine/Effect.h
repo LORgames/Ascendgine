@@ -27,7 +27,8 @@ class Effect {
 		Effect(const char*, const char *);
 		~Effect(void);
 		
-		virtual void Apply(Camera* = nullptr);
+    virtual void Apply(Camera* = nullptr);
+    void ApplyModelMatrix(glm::mat4x4 modelMatrix);
 
 		void BindMaterial(RenderMaterial* material);
     void BindTexture(int slotID);

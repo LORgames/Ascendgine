@@ -139,7 +139,7 @@ void Model::LoadFromFile(char* filename) {
 			}
 
 			Meshes[i] = new Mesh(Materials[MatID], _verts, totalVertices, _indices, totalIndices);
-      Meshes[i]->SetEffect(EngineCore::GetRenderer()->GetSimpleEffect());
+      Meshes[i]->SetEffect(Render_GetSimpleEffect());
 		}
 
 		delete[] memblock;

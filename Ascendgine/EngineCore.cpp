@@ -11,13 +11,12 @@ int width;
 int height;
 
 Uint32 nextTime;
-Renderman* renderer;
 SDL_Window *window;					// Declare a pointer to an SDL_Window
 SDL_GLContext mainContext;		// Our OpenGL Handle
 SDL_Event event;							// Our event handle
 bool isRunning = true;
 
-void EngineCore::CheckSDLError(int line)
+void CheckSDLError(int line)
 {
 	#ifndef NDEBUG
   const char *error = SDL_GetError();
@@ -31,14 +30,14 @@ void EngineCore::CheckSDLError(int line)
 	#endif
 }
 
-void EngineCore::Quit(const char *msg)
+void Engine_Quit(const char *msg)
 {
   printf("%s: %s\n", msg, SDL_GetError());
   SDL_Quit();
   exit(1);
 }
 
-Uint32 EngineCore::TimeLeftThisFrame()
+Uint32 TimeLeftThisFrame()
 {
   Uint32 now = SDL_GetTicks();
 
@@ -48,7 +47,7 @@ Uint32 EngineCore::TimeLeftThisFrame()
     return nextTime - now;
 }
 
-void EngineCore::ProcessMessageQueue(SDL_Event* event)
+void ProcessMessageQueue(SDL_Event* event)
 {
 	while (SDL_PollEvent(event))
   {
@@ -62,8 +61,8 @@ void EngineCore::ProcessMessageQueue(SDL_Event* event)
 					width = event->window.data1;
 					height = event->window.data2;
 					glViewport(0, 0, width, height); 
-					renderer->FixCamera(width, height);
-					renderer->FixGBuffer(width, height);
+					Render_FixCamera(width, height);
+					Render_FixGBuffer(width, height);
 
           QuadRenderer::Resized(width, height);
 				} break;
@@ -106,25 +105,20 @@ void EngineCore::ProcessMessageQueue(SDL_Event* event)
   }
 }
 
-void EngineCore::Maximize()
+void Engine_Maximize()
 {
   SDL_MaximizeWindow(window);
 }
 
-Renderman* EngineCore::GetRenderer()
+Camera* Engine_GetMainCamera()
 {
-  return renderer;
+  return Render_GetMainCamera();
 }
 
-Camera* EngineCore::GetMainCamera()
-{
-  return renderer->GetMainCamera();
-}
-
-bool EngineCore::Init(char* windowTitle, int width, int height)
+bool Engine_Init(char* windowTitle, int width, int height)
 {
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO ) < 0)			// Initialize SDL2
-		Quit("Unable to initialize SDL");		// Or die on error
+		Engine_Quit("Unable to initialize SDL");		// Or die on error
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
@@ -144,7 +138,7 @@ bool EngineCore::Init(char* windowTitle, int width, int height)
   
 	// Check that the window was successfully made
 	if(window == NULL)
-		Quit("Could not create window: %s");
+		Engine_Quit("Could not create window: %s");
 
 	CheckSDLError(__LINE__);
 
@@ -165,7 +159,7 @@ bool EngineCore::Init(char* windowTitle, int width, int height)
   SDL_GL_SetSwapInterval(1);
 
   // Create our renderer
-	renderer = new Renderman(width, height);
+	Render_Init(width, height);
   QuadRenderer::Resized(width, height);
 
 	//Core loop
@@ -174,11 +168,11 @@ bool EngineCore::Init(char* windowTitle, int width, int height)
 	return true;
 }
 
-bool EngineCore::UpdateAndRender(float* dt, float* totalTime)
+bool Engine_UpdateAndRender(float* dt, float* totalTime)
 {
   ProcessMessageQueue(&event);
 
-	renderer->Render(window);
+	Render_Render(window);
 
   SDL_Delay(TimeLeftThisFrame());
   nextTime += TICK_INTERVAL;
@@ -192,15 +186,15 @@ bool EngineCore::UpdateAndRender(float* dt, float* totalTime)
   return isRunning;
 }
 
-void EngineCore::EndFrame()
+void Engine_EndFrame()
 {
   //Swap buffers
   SDL_GL_SwapWindow(window);
 }
 
-bool EngineCore::Cleanup()
+bool Engine_Cleanup()
 {
-  delete renderer;
+  Render_Cleanup();
 
   /* Delete our opengl context, destroy our window, and shutdown SDL */
   SDL_GL_DeleteContext(mainContext);

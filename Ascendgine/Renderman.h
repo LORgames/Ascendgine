@@ -9,51 +9,20 @@
 #include "Effect.h"
 
 #include <vector>
+extern std::vector<Model*> Render_Models;
 
-class Renderman {
-private:
-	enum BUFFER_TYPE {
-    BUFFER_COLOUR,
-		BUFFER_NORMAL,
-		BUFFER_DEPTH,
-    TOTAL_BUFFERS
-  };
+void Render_Init(int width, int height);
+void Render_Cleanup(void);
 
-	//Rendering to GBuffer
-	Effect* fxOpaque;
-	Effect* fxTransparent;
-	Effect* fxAnimated;
+void Render_Render(SDL_Window* window);
 
-	//Rendering to Screen
-	Effect* fxPostProcessing;
+void Render_FixCamera(int width, int height);
+void Render_FixGBuffer(int width, int height);
 
-	//Rendering lights
-	Effect* fxLightPoint;
-	Effect* fxLightDirectional;
+Effect* Render_GetSimpleEffect();
+Camera* Render_GetMainCamera();
 
-	//RenderTargets
-	GLuint fbo;						//FRAME BUFFER OBJECT
-	GLuint InputRT[TOTAL_BUFFERS];	//GBUFFER TEXTURES
-	GLuint OutputRT;
+GLuint Render_GetBuffer(int id);
 
-	//Stored objects
-  Mesh* screenQuad;
-	Camera* mainCam;
-  Mesh* lightingSphere;
-public:
-	Renderman(int width, int height);
-	~Renderman(void);
-
-	void Render(SDL_Window* window);
-
-	void FixCamera(int width, int height);
-	void FixGBuffer(int width, int height);
-
-  Effect* GetSimpleEffect() { return fxOpaque; }
-  Camera* GetMainCamera() { return mainCam; }
-
-  GLuint GetBuffer(int id) { return InputRT[id]; }
-
-  std::vector<Model*> models;
-};
+void Render_DrawPointLight(glm::vec3 lightPosition, int color, float lightRadius, float lightIntensity);
 

@@ -111,6 +111,11 @@ void Effect::Apply(Camera* cam)
   }
 }
 
+void Effect::ApplyModelMatrix(glm::mat4x4 modelMatrix)
+{
+  glUniformMatrix4fv(vsModelIndex, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+}
+
 void Effect::BindMaterial(RenderMaterial* material)
 {
 	glActiveTexture(GL_TEXTURE0);
