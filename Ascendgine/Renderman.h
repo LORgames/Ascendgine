@@ -24,5 +24,4 @@ Camera* Render_GetMainCamera();
 
 GLuint Render_GetBuffer(int id);
 
-void Render_DrawPointLight(glm::vec3 lightPosition, int color, float lightRadius, float lightIntensity);
-
+void Renderman_DrawPointLight(glm::vec3 lightPosition, glm::vec3 color, float lightRadius, float lightIntensity);

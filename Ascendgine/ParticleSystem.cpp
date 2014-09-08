@@ -188,8 +188,9 @@ void ParticleSystem::Render()
   particleEffect->ApplyParticleSystem(settings, currentTime);
 
   //Fix the states for light rendering
-  glDisable(GL_BLEND);
+  glEnable(GL_BLEND);
   glBlendEquation(GL_FUNC_ADD);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glDepthMask(GL_TRUE);
   glDisable(GL_DEPTH_TEST);
 
@@ -271,7 +272,8 @@ void ParticleSystem::AddNewParticlesToVertexBuffer()
 
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(ParticleVertex)*settings.MaxParticles*4, particles);
 
-  /*if (firstNewParticle < firstFreeParticle)
+  /*
+  if (firstNewParticle < firstFreeParticle)
   {
     // If the new particles are all in one consecutive range,
     // we can upload them all in a single call.

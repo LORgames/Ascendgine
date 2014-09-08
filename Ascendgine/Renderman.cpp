@@ -88,22 +88,32 @@ void Render_Render(SDL_Window* window)
   {
     Render_Models[i]->RenderOpaque(1);
   }
-	
+
 	//Fix the states for light rendering
   glBindFramebuffer(GL_FRAMEBUFFER, Lightfbo);
 	glEnable(GL_BLEND);
-	//glBlendEquation(GL_FUNC_ADD);
-	//glBlendFunc(GL_ONE, GL_ONE);
+	glBlendEquation(GL_FUNC_ADD);
+  glBlendFunc(GL_ONE, GL_ONE);
 	glDepthMask(GL_FALSE);
   glDisable(GL_DEPTH_TEST);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   fxLightPoint->Apply(mainCam);
-  fxLightPoint->ApplyModelMatrix(glm::scale(glm::mat4(), glm::vec3(10.f, 10.f, 10.f)));
-  lightingSphere->RenderOpaque();
+
+  //Apply the textures
+  for (unsigned int i = 0; i < TOTAL_BUFFERS; i++)
+  {
+    glActiveTexture(GL_TEXTURE0 + i);
+    glBindTexture(GL_TEXTURE_2D, InputRT[i]);
+
+    fxLightPoint->BindTexture(i);
+  }
+
+  Renderman_DrawPointLight(glm::vec3(0, 0, 0), glm::vec3(255, 0, 0), 250, 1);
 
   //And do the blending :)
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
   fxPostProcessing->Apply();
 
 	//Apply the textures
@@ -116,9 +126,9 @@ void Render_Render(SDL_Window* window)
 	}
 
   //Upload the lighting map
-  glActiveTexture(GL_TEXTURE0 + 4);
+  glActiveTexture(GL_TEXTURE0 + 3);
   glBindTexture(GL_TEXTURE_2D, LightRT);
-  fxPostProcessing->BindTexture(4);
+  fxPostProcessing->BindTexture(3);
 
   //Render to screen :)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -151,7 +161,7 @@ void Render_FixGBuffer(int width, int height)
 
 	// generate depth texture object
 	glBindTexture(GL_TEXTURE_2D, InputRT[BUFFER_DEPTH]);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT,NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
   glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, InputRT[BUFFER_DEPTH], 0);
 
   GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 }; 
@@ -196,7 +206,7 @@ GLuint Render_GetBuffer(int id)
   return InputRT[id];
 }
 
-/*void Renderman_DrawPointLight(glm::vec3 lightPosition, int color, float lightRadius, float lightIntensity)
+void Renderman_DrawPointLight(glm::vec3 lightPosition, glm::vec3 color, float lightRadius, float lightIntensity)
 {
   //compute the light world matrix
   //scale according to light radius, and translate it to light position
@@ -204,39 +214,29 @@ GLuint Render_GetBuffer(int id)
   fxLightPoint->ApplyModelMatrix(sphereWorldMatrix);
 
   //light position
-  fxLightPoint->GetUniformID("lightPosition");
   glUniform3f(fxLightPoint->GetUniformID("lightPosition"), lightPosition.x, lightPosition.y, lightPosition.z);
 
   //set the color, radius and Intensity
-  EffectLightsPoint.Parameters["Color"].SetValue(color.ToVector3());
+  glUniform3f(fxLightPoint->GetUniformID("Color"), color.x, color.y, color.z);
   glUniform1f(fxLightPoint->GetUniformID("lightRadius"), lightRadius);
   glUniform1f(fxLightPoint->GetUniformID("lightIntensity"), lightIntensity);
 
   //parameters for specular computations
-  EffectLightsPoint.Parameters["cameraPosition"].SetValue(CharacterCamera.Position);
-  EffectLightsPoint.Parameters["InvertViewProjection"].SetValue(Matrix.Invert(CharacterCamera.View * CharacterCamera.Projection));
+  glUniform3f(fxLightPoint->GetUniformID("cameraPosition"), mainCam->Position.x, mainCam->Position.y, mainCam->Position.z);
+  glUniformMatrix4fv(fxLightPoint->GetUniformID("InvertViewProjection"), 1, GL_FALSE, glm::value_ptr(glm::inverse(mainCam->Projection * mainCam->View)));
 
   //calculate the distance between the camera and light center
-  float cameraToCenter = Vector3.Distance(CharacterCamera.Position, lightPosition);
+  float cameraToCenter = glm::distance(mainCam->Position, lightPosition);
 
   //if we are inside the light volume, draw the sphere's inside face
   if (cameraToCenter < lightRadius)
-    Game.device.RasterizerState = RasterizerState.CullClockwise;
+    glCullFace(GL_FRONT);
   else
-    Game.device.RasterizerState = RasterizerState.CullCounterClockwise;
+    glCullFace(GL_BACK);
 
-  Game.device.DepthStencilState = DepthStencilState.None;
+  fxLightPoint->Apply(nullptr);
 
-  EffectLightsPoint.Techniques[0].Passes[0].Apply();
+  lightingSphere->RenderOpaque();
 
-  foreach(ModelMesh mesh in SphereModel.Meshes) {
-    foreach(ModelMeshPart meshPart in mesh.MeshParts) {
-      Game.device.Indices = meshPart.IndexBuffer;
-      Game.device.SetVertexBuffer(meshPart.VertexBuffer);
-      Game.device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, meshPart.NumVertices, meshPart.StartIndex, meshPart.PrimitiveCount);
-    }
-  }
-
-  Game.device.RasterizerState = RasterizerState.CullCounterClockwise;
-  Game.device.DepthStencilState = DepthStencilState.Default;
-}*/
+  glCullFace(GL_BACK);
+}

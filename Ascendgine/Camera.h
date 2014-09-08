@@ -8,6 +8,8 @@ class Camera {
 	public:
 		glm::mat4 Model, View, Projection;
 
+    glm::vec3 Position;
+
 		Camera(void);
 		~Camera(void);
 
