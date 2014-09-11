@@ -34,6 +34,8 @@ Mesh* screenQuad;
 Camera* mainCam;
 Mesh* lightingSphere;
 
+int fxpp_lightMapID = 0;
+
 std::vector<Model*> Render_Models;
 
 void Render_Init(int width, int height)
@@ -41,6 +43,8 @@ void Render_Init(int width, int height)
 	fxOpaque = new Effect("../shaders/OpaqueShader.vs", "../shaders/OpaqueShader.ps");
   fxPostProcessing = new Effect("../shaders/QuadRenderer.vs", "../shaders/QuadRenderer.ps");
   fxLightPoint = new Effect("../shaders/PointLight.vs", "../shaders/PointLight.ps");
+
+  fxpp_lightMapID = fxPostProcessing->GetUniformID("lightMap");
 
 	mainCam = new Camera();
 	mainCam->Projection = glm::mat4();
@@ -113,6 +117,7 @@ void Render_Render(SDL_Window* window)
 
   //And do the blending :)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDisable(GL_BLEND);
 
   fxPostProcessing->Apply();
 
@@ -126,9 +131,9 @@ void Render_Render(SDL_Window* window)
 	}
 
   //Upload the lighting map
-  glActiveTexture(GL_TEXTURE0 + 3);
+  glActiveTexture(GL_TEXTURE0 + 2);
   glBindTexture(GL_TEXTURE_2D, LightRT);
-  fxPostProcessing->BindTexture(3);
+  fxPostProcessing->BindTextureAdvanced(fxpp_lightMapID, 2);
 
   //Render to screen :)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
