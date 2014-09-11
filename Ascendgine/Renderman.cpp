@@ -44,7 +44,7 @@ void Render_Init(int width, int height)
   fxPostProcessing = new Effect("../shaders/QuadRenderer.vs", "../shaders/QuadRenderer.ps");
   fxLightPoint = new Effect("../shaders/PointLight.vs", "../shaders/PointLight.ps");
 
-  fxpp_lightMapID = fxPostProcessing->GetUniformID("lightMap");
+  fxpp_lightMapID = fxPostProcessing->GetUniformID("lightQQ");
 
 	mainCam = new Camera();
 	mainCam->Projection = glm::mat4();
@@ -60,6 +60,7 @@ void Render_Init(int width, int height)
   screenQuad->SetEffect(fxPostProcessing);
 
   lightingSphere = new Sphere();
+  glClearColor(0, 0, 0, 0);
 }
 
 void Render_Cleanup(void)
@@ -97,6 +98,7 @@ void Render_Render(SDL_Window* window)
   glBindFramebuffer(GL_FRAMEBUFFER, Lightfbo);
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glBlendFunc(GL_ONE, GL_ONE);
 	glDepthMask(GL_FALSE);
   glDisable(GL_DEPTH_TEST);
@@ -113,16 +115,22 @@ void Render_Render(SDL_Window* window)
     fxLightPoint->BindTexture(i);
   }
 
-  Renderman_DrawPointLight(glm::vec3(0, 0, 0), glm::vec3(255, 0, 0), 250, 1);
+  Renderman_DrawPointLight(glm::vec3(0, 0, 0), glm::vec3(255, 0, 0), 125, 1);
 
   //And do the blending :)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glDisable(GL_BLEND);
 
   fxPostProcessing->Apply();
 
+  //Upload the lighting map
+  glActiveTexture(GL_TEXTURE0 + 2);
+  glBindTexture(GL_TEXTURE_2D, LightRT);
+  fxPostProcessing->BindTextureAdvanced(fxpp_lightMapID, 2);
+
 	//Apply the textures
-	for (unsigned int i = 0; i < TOTAL_BUFFERS; i++)
+	for (unsigned int i = 0; i < TOTAL_BUFFERS-1; i++)
   {
 	  glActiveTexture(GL_TEXTURE0 + i);
 	  glBindTexture(GL_TEXTURE_2D, InputRT[i]);
@@ -130,19 +138,13 @@ void Render_Render(SDL_Window* window)
     fxPostProcessing->BindTexture(i);
 	}
 
-  //Upload the lighting map
-  glActiveTexture(GL_TEXTURE0 + 2);
-  glBindTexture(GL_TEXTURE_2D, LightRT);
-  fxPostProcessing->BindTextureAdvanced(fxpp_lightMapID, 2);
-
   //Render to screen :)
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
   screenQuad->RenderOpaque();
 }
 
 void Render_FixCamera(int width, int height)
 {
-	mainCam->CreatePerspectiveProjection((float)width, (float)height, 30, 0.1f, 2500.0f);
+	mainCam->CreatePerspectiveProjection((float)width, (float)height, 30, 100.0f, 2500.0f);
 	mainCam->View = glm::lookAt(glm::vec3(50,50,250), glm::vec3(0,0,0), glm::vec3(0,1,0));
 	mainCam->Model = glm::mat4();
 }
@@ -166,7 +168,7 @@ void Render_FixGBuffer(int width, int height)
 
 	// generate depth texture object
 	glBindTexture(GL_TEXTURE_2D, InputRT[BUFFER_DEPTH]);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
   glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, InputRT[BUFFER_DEPTH], 0);
 
   GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 }; 
@@ -182,8 +184,10 @@ void Render_FixGBuffer(int width, int height)
 
   glGenTextures(1, &LightRT);
   glBindTexture(GL_TEXTURE_2D, LightRT);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
   glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, LightRT, 0);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
   GLenum DrawBuffers2[] = { GL_COLOR_ATTACHMENT0 };
   glDrawBuffers(1, DrawBuffers2);
@@ -215,7 +219,8 @@ void Renderman_DrawPointLight(glm::vec3 lightPosition, glm::vec3 color, float li
 {
   //compute the light world matrix
   //scale according to light radius, and translate it to light position
-  glm::mat4x4 sphereWorldMatrix = glm::scale(glm::mat4x4(), glm::vec3(lightRadius, lightRadius, lightRadius)) * glm::translate(glm::mat4x4(), lightPosition);
+  fxLightPoint->Apply(mainCam);
+  glm::mat4x4 sphereWorldMatrix = glm::translate(glm::mat4x4(), lightPosition) * glm::scale(glm::mat4x4(), glm::vec3(lightRadius, lightRadius, lightRadius));
   fxLightPoint->ApplyModelMatrix(sphereWorldMatrix);
 
   //light position
@@ -236,10 +241,6 @@ void Renderman_DrawPointLight(glm::vec3 lightPosition, glm::vec3 color, float li
   //if we are inside the light volume, draw the sphere's inside face
   if (cameraToCenter < lightRadius)
     glCullFace(GL_FRONT);
-  else
-    glCullFace(GL_BACK);
-
-  fxLightPoint->Apply(nullptr);
 
   lightingSphere->RenderOpaque();
 
