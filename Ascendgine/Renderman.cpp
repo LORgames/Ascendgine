@@ -98,6 +98,7 @@ void Render_Render(SDL_Window* window)
   glBindFramebuffer(GL_FRAMEBUFFER, Lightfbo);
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
+  glBlendFunc(GL_ONE, GL_ONE);
   //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glBlendFunc(GL_ONE, GL_ONE);
 	glDepthMask(GL_FALSE);
@@ -115,7 +116,7 @@ void Render_Render(SDL_Window* window)
     fxLightPoint->BindTexture(i);
   }
 
-  Renderman_DrawPointLight(glm::vec3(0, 0, 0), glm::vec3(255, 0, 0), 125, 1);
+  Renderman_DrawPointLight(glm::vec3(0, 0, 0), glm::vec3(1.0f, 1.0f, 1.0f), 125, 1);
 
   //And do the blending :)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -145,7 +146,7 @@ void Render_Render(SDL_Window* window)
 void Render_FixCamera(int width, int height)
 {
 	mainCam->CreatePerspectiveProjection((float)width, (float)height, 30, 100.0f, 2500.0f);
-	mainCam->View = glm::lookAt(glm::vec3(50,50,250), glm::vec3(0,0,0), glm::vec3(0,1,0));
+	mainCam->View = glm::lookAt(glm::vec3(50,50,250), glm::vec3(0,100,0), glm::vec3(0,1,0));
 	mainCam->Model = glm::mat4();
 }
 
@@ -168,7 +169,7 @@ void Render_FixGBuffer(int width, int height)
 
 	// generate depth texture object
 	glBindTexture(GL_TEXTURE_2D, InputRT[BUFFER_DEPTH]);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
   glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, InputRT[BUFFER_DEPTH], 0);
 
   GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 }; 

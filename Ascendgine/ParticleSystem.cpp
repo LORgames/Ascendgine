@@ -199,20 +199,20 @@ void ParticleSystem::Render()
   }
 
   // If there are any active particles, draw them now!
-  //if (firstActiveParticle != firstFreeParticle) {
-  //  if (firstActiveParticle < firstFreeParticle) {
-  //    glDrawElements(GL_TRIANGLES, (firstFreeParticle - firstActiveParticle) * 6, GL_UNSIGNED_INT, (void*)(firstActiveParticle * 6));
-  //  }
-  //  else
-  //  {
-  //    glDrawElements(GL_TRIANGLES, (settings.MaxParticles - firstActiveParticle) * 6, GL_UNSIGNED_INT, indices + (firstActiveParticle * 6));
-  //
-  //    if (firstFreeParticle > 0)
-  //      glDrawElements(GL_TRIANGLES, firstFreeParticle * 4, GL_UNSIGNED_INT, 0);
-  //  }
-  //}
+  if (firstActiveParticle != firstFreeParticle) {
+    if (firstActiveParticle < firstFreeParticle) {
+      glDrawElements(GL_TRIANGLES, (firstFreeParticle - firstActiveParticle) * 6, GL_UNSIGNED_INT, (void*)(firstActiveParticle * 6));
+    }
+    else
+    {
+      glDrawElements(GL_TRIANGLES, (settings.MaxParticles - firstActiveParticle) * 6, GL_UNSIGNED_INT, indices + (firstActiveParticle * 6));
+  
+      if (firstFreeParticle > 0)
+        glDrawElements(GL_TRIANGLES, firstFreeParticle * 6, GL_UNSIGNED_INT, 0);
+    }
+  }
 
-  glDrawElements(GL_TRIANGLES, settings.MaxParticles*6, GL_UNSIGNED_INT, 0);
+  //glDrawElements(GL_TRIANGLES, settings.MaxParticles*6, GL_UNSIGNED_INT, 0);
 
   drawCounter++;
 }
@@ -246,6 +246,11 @@ bool ParticleSystem::AddParticle(glm::vec3 position, glm::vec3 velocity) {
   // Add in some random amount of vertical velocity.
   velocity.y += settings.MinVerticalVelocity + (settings.MaxVerticalVelocity - settings.MinVerticalVelocity) * ((float)rand() / RAND_MAX);
 
+  float rand0 = ((float)rand() / RAND_MAX);
+  float rand1 = ((float)rand() / RAND_MAX);
+  float rand2 = ((float)rand() / RAND_MAX);
+  float rand3 = ((float)rand() / RAND_MAX);
+
   // Fill in the particle vertex structure.
   for (int i = 0; i < 4; i++)
   {
@@ -255,10 +260,10 @@ bool ParticleSystem::AddParticle(glm::vec3 position, glm::vec3 velocity) {
     particles[firstFreeParticle * 4 + i].Velocity[0] = velocity.x;
     particles[firstFreeParticle * 4 + i].Velocity[1] = velocity.y;
     particles[firstFreeParticle * 4 + i].Velocity[2] = velocity.z;
-    particles[firstFreeParticle * 4 + i].Random[0] = ((float)rand() / RAND_MAX);
-    particles[firstFreeParticle * 4 + i].Random[1] = ((float)rand() / RAND_MAX);
-    particles[firstFreeParticle * 4 + i].Random[2] = ((float)rand() / RAND_MAX);
-    particles[firstFreeParticle * 4 + i].Random[3] = ((float)rand() / RAND_MAX);
+    particles[firstFreeParticle * 4 + i].Random[0] = rand0;
+    particles[firstFreeParticle * 4 + i].Random[1] = rand1;
+    particles[firstFreeParticle * 4 + i].Random[2] = rand2;
+    particles[firstFreeParticle * 4 + i].Random[3] = rand3;
     particles[firstFreeParticle * 4 + i].Time = currentTime;
   }
 
