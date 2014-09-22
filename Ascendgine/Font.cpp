@@ -67,7 +67,7 @@ Font::Font(char* filename)
       char flags = file.ReadByte();       //bits 0-6: reserved, bit 7: packed
       char alphaChnl = file.ReadByte();
 
-      if ((flags&0x40 > 0) &&alphaChnl != 1)
+      if (((flags & 0x40) > 0) && (alphaChnl != 1))
       {
         printf_s("Font '%s' could not load as it isn't monochrome! %d\n", fontName, alphaChnl);
         return;
@@ -142,8 +142,8 @@ int Font::GetIDOfCharacter(int c)
 
 void Font::DrawString(char* str, int x, int y)
 {
-  float rX = x;
-  float rY = y;
+  float rX = (float)x;
+  float rY = (float)y;
   int len = strlen(str);
 
   int id;
@@ -167,7 +167,7 @@ void Font::DrawString(char* str, int x, int y)
     else
     {
       //Newline
-      rX = x;
+      rX = (float)x;
       rY += lineHeight;
     }
   }
