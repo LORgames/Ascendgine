@@ -1,7 +1,5 @@
 #include "QuadRenderer.h"
 
-#include <string>
-
 #include "Effect.h"
 #include "Camera.h"
 
