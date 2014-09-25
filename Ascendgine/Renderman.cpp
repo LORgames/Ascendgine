@@ -116,7 +116,7 @@ void Render_Render(SDL_Window* window)
     fxLightPoint->BindTexture(i);
   }
 
-  Renderman_DrawPointLight(glm::vec3(0, 0, 0), glm::vec3(1.0f, 1.0f, 1.0f), 125, 1);
+  Renderman_DrawPointLight(glm::vec3(0, 0, 5), glm::vec3(1.0f, 1.0f, 1.0f), 500, 1);
 
   //And do the blending :)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
