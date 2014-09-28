@@ -3,9 +3,18 @@
 #include "QuadRenderer.h"
 
 //Functions
-void (*keyDown)(int keyCode) = nullptr;
-void (*keyUp)(int keyCode) = nullptr;
-void (*mouseDown)(int x, int y) = nullptr;
+void(*Engine_Resized)(int width, int height) = nullptr;
+
+void(*Engine_KeyDown)(int keyCode) = nullptr;
+void(*Engine_KeyUp)(int keyCode) = nullptr;
+
+void(*Engine_MouseDown)(int x, int y, int buttonID) = nullptr;
+void(*Engine_MouseMove)(int x, int y) = nullptr;
+void(*Engine_MouseUp)(int x, int y, int buttonID) = nullptr;
+
+void(*Engine_TouchDown)(int x, int y, int fingerID, float pressure) = nullptr;
+void(*Engine_TouchMove)(int x, int y, int fingerID, float pressure) = nullptr;
+void(*Engine_TouchUp)(int x, int y, int fingerID, float pressure) = nullptr;
 
 int width;
 int height;
@@ -65,6 +74,9 @@ void ProcessMessageQueue(SDL_Event* event)
 					Render_FixGBuffer(width, height);
 
           QuadRenderer::Resized(width, height);
+
+          if (Engine_Resized)
+            (*Engine_Resized)(width, height);
 				} break;
 			}
 		}
@@ -73,28 +85,50 @@ void ProcessMessageQueue(SDL_Event* event)
 			switch (event->type)
       {
 				case SDL_KEYDOWN:
-          if (keyDown)
-            (*keyDown)(event->key.keysym.scancode);
+          if (Engine_KeyDown)
+            (*Engine_KeyDown)(event->key.keysym.sym);
           else
             printf_s("Key press detected (No registered handler!): %i\n", event->key.keysym.scancode);
 					break;
 				case SDL_KEYUP:
-          if (keyUp)
-            (*keyUp)(event->key.keysym.scancode);
+          if (Engine_KeyUp)
+            (*Engine_KeyUp)(event->key.keysym.sym);
           else
             printf_s("Key release detected (No registered handler!): %i\n", event->key.keysym.scancode);
 					break;
-				case SDL_MOUSEBUTTONDOWN:
-					printf_s("Mouse button pressed\n");
-					break;
+        case SDL_MOUSEMOTION:
+          if (Engine_MouseMove)
+            (*Engine_MouseMove)(event->motion.x, event->motion.y);
+          break;
+        case SDL_MOUSEBUTTONDOWN:
+          if (Engine_MouseDown)
+            (*Engine_MouseDown)(event->motion.x, event->motion.y, event->button.button);
+          else
+            printf_s("Mouse button pressed (x=%d, y=%d, button=%d)\n", event->motion.x, event->motion.y, event->button.button);
+          break;
+        case SDL_MOUSEBUTTONUP:
+          if (Engine_MouseDown)
+            (*Engine_MouseDown)(event->motion.x, event->motion.y, event->button.button);
+          else
+            printf_s("Mouse button released (x=%d, y=%d, button=%d)\n", event->motion.x, event->motion.y, event->button.button);
+          break;
         case SDL_FINGERDOWN:
-          printf_s("Finger (%d) touched: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
+          if (Engine_TouchDown)
+            (*Engine_TouchDown)(event->tfinger.dx, event->tfinger.dy, event->tfinger.fingerId, event->tfinger.pressure);
+          else
+            printf_s("Finger (%d) touched: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
           break;
         case SDL_FINGERUP:
-          printf_s("Finger (%d) removed: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
+          if (Engine_TouchUp)
+            (*Engine_TouchUp)(event->tfinger.dx, event->tfinger.dy, event->tfinger.fingerId, event->tfinger.pressure);
+          else
+            printf_s("Finger (%d) removed: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
           break;
         case SDL_FINGERMOTION:
-          printf_s("Finger (%d) moved: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
+          if (Engine_TouchMove)
+            (*Engine_TouchMove)(event->tfinger.dx, event->tfinger.dy, event->tfinger.fingerId, event->tfinger.pressure);
+          else
+            printf_s("Finger (%d) moved: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
           break;
 				case SDL_QUIT:
 					printf_s("Quit requested, quitting.\n");
@@ -108,6 +142,11 @@ void ProcessMessageQueue(SDL_Event* event)
 void Engine_Maximize()
 {
   SDL_MaximizeWindow(window);
+}
+
+void Engine_SetMinimumWindowSize(int width, int height)
+{
+  SDL_SetWindowMinimumSize(window, width, height);
 }
 
 Camera* Engine_GetMainCamera()

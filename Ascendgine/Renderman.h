@@ -9,7 +9,17 @@
 #include "Effect.h"
 
 #include <vector>
+
+struct LightInfo
+{
+  glm::vec3 position;
+  glm::vec3 colour;
+  float radius;
+  float intensity;
+};
+
 extern std::vector<Model*> Render_Models;
+extern std::vector<LightInfo> Render_Lights;
 
 void Render_Init(int width, int height);
 void Render_Cleanup(void);
@@ -23,5 +33,3 @@ Effect* Render_GetSimpleEffect();
 Camera* Render_GetMainCamera();
 
 GLuint Render_GetBuffer(int id);
-
-void Renderman_DrawPointLight(glm::vec3 lightPosition, glm::vec3 color, float lightRadius, float lightIntensity);

@@ -37,6 +37,10 @@ Mesh* lightingSphere;
 int fxpp_lightMapID = 0;
 
 std::vector<Model*> Render_Models;
+std::vector<LightInfo> Render_Lights;
+
+//Forward declare this :)
+void Renderman_DrawPointLight(glm::vec3 lightPosition, glm::vec3 color, float lightRadius, float lightIntensity);
 
 void Render_Init(int width, int height)
 {
@@ -78,6 +82,13 @@ void Render_Cleanup(void)
 
 void Render_Render(SDL_Window* window)
 {
+  if (Render_Models.size() == 0)
+  {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    return;
+  }
+
 	//Fix the states for opaque rendering
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
 	glDepthMask(GL_TRUE);
@@ -116,7 +127,10 @@ void Render_Render(SDL_Window* window)
     fxLightPoint->BindTexture(i);
   }
 
-  Renderman_DrawPointLight(glm::vec3(0, 0, 5), glm::vec3(1.0f, 1.0f, 1.0f), 500, 1);
+  for (unsigned int i = 0; i < Render_Lights.size(); i++)
+  {
+    Renderman_DrawPointLight(Render_Lights[i].position, Render_Lights[i].colour, Render_Lights[i].radius, Render_Lights[i].intensity);
+  }
 
   //And do the blending :)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);

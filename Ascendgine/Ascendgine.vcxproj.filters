@@ -46,6 +46,12 @@
     <Filter Include="Header Files\Particles">
       <UniqueIdentifier>{46373785-fb72-41c7-8fd3-af507b3a6788}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Audio">
+      <UniqueIdentifier>{80523341-c94f-4805-be5b-da37f501d9fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Audio">
+      <UniqueIdentifier>{de325f7d-4c2a-4861-a737-9cc58d84ee87}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Model.cpp">
@@ -83,6 +89,9 @@
     </ClCompile>
     <ClCompile Include="ParticleEmitter.cpp">
       <Filter>Source Files\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio.cpp">
+      <Filter>Source Files\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="Sphere.h">
       <Filter>Header Files\Graphics\CustomMeshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio.h">
+      <Filter>Header Files\Audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

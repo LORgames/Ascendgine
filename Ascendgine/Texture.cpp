@@ -1,12 +1,18 @@
 #include "Texture.h"
 #include <stb_image.c> //Need this for image loading :)
 
-Texture::Texture(void) {
+Texture::Texture(void)
+{
 
 }
 
+Texture::Texture(const char* filename)
+{
+  LoadTexture("./", filename);
+}
 
-Texture::~Texture(void) {
+Texture::~Texture(void)
+{
 
 }
 

@@ -5,6 +5,7 @@ const int MAXIMUM_QUADS_PER_RENDERER = 1000;
 
 #include <GL/glew.h>
 #include "Texture.h"
+#include "Effect.h"
 
 struct QuadVertex
 {
@@ -15,13 +16,14 @@ struct QuadVertex
 class QuadRenderer
 {
 public:
-  QuadRenderer(Texture* texture, int overloadMaxQuads = 0);
+  QuadRenderer(Texture* texture, int overloadMaxQuads = 0, Effect* overloadedEffect = nullptr);
   ~QuadRenderer();
 
-  bool AddQuadToRender(float x, float y, float texX, float texY, float texW, float texH);
+  bool AddQuadToRender(float x, float y, float texX, float texY, float scrW, float scrH, float texW = 0.f, float texH = 0.f);
   void Render();
 
   static void Resized(int width, int height);
+  static void OverrideDefaultEffect(Effect* effect);
 
 private:
   //Secret functions

@@ -6,7 +6,7 @@
 static Effect* g_QuadRendererShader = nullptr;
 static Camera* g_QuadCam = nullptr;
 
-QuadRenderer::QuadRenderer(Texture* texture, int overloadMaxQuads)
+QuadRenderer::QuadRenderer(Texture* texture, int overloadMaxQuads, Effect* overloadedEffect)
 {
   if (overloadMaxQuads <= 0)
     maxQuads = MAXIMUM_QUADS_PER_RENDERER;
@@ -31,7 +31,16 @@ QuadRenderer::QuadRenderer(Texture* texture, int overloadMaxQuads)
   CreateBuffers();
 
   if (g_QuadRendererShader == nullptr)
-    g_QuadRendererShader = new Effect("../shaders/ScreenRenderer.vs", "../shaders/ScreenRenderer.ps");
+  {
+    if (overloadedEffect == nullptr)
+    {
+      g_QuadRendererShader = new Effect("../shaders/ScreenRenderer.vs", "../shaders/ScreenRenderer.ps");
+    }
+    else
+    {
+      //g_QuadRendererShader = overloadedEffect;
+    }
+  }
 }
 
 QuadRenderer::~QuadRenderer()
@@ -40,28 +49,37 @@ QuadRenderer::~QuadRenderer()
   delete[] indices;
 }
 
-bool QuadRenderer::AddQuadToRender(float x, float y, float texX, float texY, float w, float h)
+bool QuadRenderer::AddQuadToRender(float x, float y, float texX, float texY, float scrW, float scrH, float texW, float texH)
 {
   if (usedQuads == maxQuads)
     return false;
 
+  float rW = texW;
+  float rH = texH;
+
+  if (texW == 0 && texH == 0)
+  {
+    rW = scrW;
+    rH = scrH;
+  }
+
   vertices[usedQuads * 4 + 0].Position[0] = x;
-  vertices[usedQuads * 4 + 0].Position[1] = y + h;
+  vertices[usedQuads * 4 + 0].Position[1] = y + scrH;
   vertices[usedQuads * 4 + 1].Position[0] = x;
   vertices[usedQuads * 4 + 1].Position[1] = y;
-  vertices[usedQuads * 4 + 2].Position[0] = x + w;
+  vertices[usedQuads * 4 + 2].Position[0] = x + scrW;
   vertices[usedQuads * 4 + 2].Position[1] = y;
-  vertices[usedQuads * 4 + 3].Position[0] = x + w;
-  vertices[usedQuads * 4 + 3].Position[1] = y + h;
+  vertices[usedQuads * 4 + 3].Position[0] = x + scrW;
+  vertices[usedQuads * 4 + 3].Position[1] = y + scrH;
 
   vertices[usedQuads * 4 + 0].UVs[0] = (texX + 0) / textureWidth;
-  vertices[usedQuads * 4 + 0].UVs[1] = (texY + h) / textureHeight;
+  vertices[usedQuads * 4 + 0].UVs[1] = (texY + rH) / textureHeight;
   vertices[usedQuads * 4 + 1].UVs[0] = (texX + 0) / textureWidth;
   vertices[usedQuads * 4 + 1].UVs[1] = (texY + 0) / textureHeight;
-  vertices[usedQuads * 4 + 2].UVs[0] = (texX + w) / textureWidth;
+  vertices[usedQuads * 4 + 2].UVs[0] = (texX + rW) / textureWidth;
   vertices[usedQuads * 4 + 2].UVs[1] = (texY + 0) / textureHeight;
-  vertices[usedQuads * 4 + 3].UVs[0] = (texX + w) / textureWidth;
-  vertices[usedQuads * 4 + 3].UVs[1] = (texY + h) / textureHeight;
+  vertices[usedQuads * 4 + 3].UVs[0] = (texX + rW) / textureWidth;
+  vertices[usedQuads * 4 + 3].UVs[1] = (texY + rH) / textureHeight;
 
   indices[usedQuads * 6 + 0] = usedQuads * 4 + 0;
   indices[usedQuads * 6 + 1] = usedQuads * 4 + 1;
@@ -134,5 +152,11 @@ void QuadRenderer::Resized(int width, int height)
   if (g_QuadCam == nullptr)
     g_QuadCam = new Camera();
 
-  g_QuadCam->CreateOrthographicProjection(width, height, -1, 1);
+  g_QuadCam->CreateOrthographicProjection((float)width, (float)height, -1, 1);
+}
+
+
+void QuadRenderer::OverrideDefaultEffect(Effect* effect)
+{
+  g_QuadRendererShader = effect;
 }

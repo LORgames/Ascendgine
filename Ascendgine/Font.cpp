@@ -144,7 +144,7 @@ void Font::DrawString(char* str, int x, int y)
 {
   float rX = (float)x;
   float rY = (float)y;
-  int len = strlen(str);
+  int len = (int)strlen(str);
 
   int id;
 
