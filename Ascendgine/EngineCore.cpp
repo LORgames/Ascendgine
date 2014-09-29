@@ -114,19 +114,19 @@ void ProcessMessageQueue(SDL_Event* event)
           break;
         case SDL_FINGERDOWN:
           if (Engine_TouchDown)
-            (*Engine_TouchDown)(event->tfinger.dx, event->tfinger.dy, event->tfinger.fingerId, event->tfinger.pressure);
+            (*Engine_TouchDown)((int)event->tfinger.dx, (int)event->tfinger.dy, (int)event->tfinger.fingerId, event->tfinger.pressure);
           else
             printf_s("Finger (%d) touched: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
           break;
         case SDL_FINGERUP:
           if (Engine_TouchUp)
-            (*Engine_TouchUp)(event->tfinger.dx, event->tfinger.dy, event->tfinger.fingerId, event->tfinger.pressure);
+            (*Engine_TouchUp)((int)event->tfinger.dx, (int)event->tfinger.dy, (int)event->tfinger.fingerId, event->tfinger.pressure);
           else
             printf_s("Finger (%d) removed: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
           break;
         case SDL_FINGERMOTION:
           if (Engine_TouchMove)
-            (*Engine_TouchMove)(event->tfinger.dx, event->tfinger.dy, event->tfinger.fingerId, event->tfinger.pressure);
+            (*Engine_TouchMove)((int)event->tfinger.dx, (int)event->tfinger.dy, (int)event->tfinger.fingerId, event->tfinger.pressure);
           else
             printf_s("Finger (%d) moved: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
           break;

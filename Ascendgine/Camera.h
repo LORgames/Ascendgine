@@ -14,5 +14,7 @@ class Camera {
 		~Camera(void);
 
 		void CreatePerspectiveProjection(float width, float height, float angle, float near, float far);
-		void CreateOrthographicProjection(float width, float height, float near, float far);
+	
+    void CreateOrthographicProjection(float width, float height, float near, float far);
+    void CreateOrthographicProjection(int width, int height, int near, int far);
 };
