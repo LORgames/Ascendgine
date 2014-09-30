@@ -153,6 +153,7 @@
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="Font.cpp" />
+    <ClCompile Include="LineRenderer.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ParticleEffect.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="Font.h" />
+    <ClInclude Include="LineRenderer.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ParticleEffect.h" />

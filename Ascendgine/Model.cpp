@@ -23,7 +23,8 @@ Model::~Model(void) {
     delete[] Materials;
 }
 
-void Model::LoadFromFile(char* filename) {
+void Model::LoadFromFile(char* filename)
+{
 	std::ifstream file (filename, std::ios::in|std::ios::binary|std::ios::ate);
 
 	std::streampos size;
@@ -73,21 +74,24 @@ void Model::LoadFromFile(char* filename) {
 
 			//printf_s("\tReading Material: %i/%i\n\t\tRGBA: %i, %i, %i, %i\n", (i+1), TotalMaterials, Materials[i]->red, Materials[i]->green, Materials[i]->blue, Materials[i]->opacity);
 
-			if((Materials[i]->flags & (1 << 0)) > 0) {
+			if((Materials[i]->flags & (1 << 0)) > 0)
+      {
 				char* textureName = f.ReadCharString();
 				Materials[i]->diffuseTexture = new Texture();
 				Materials[i]->diffuseTexture->LoadTexture(expectedPath, textureName);
 				delete[] textureName;
 			}
 			
-			if((Materials[i]->flags & (1 << 1)) > 0) {
+			if((Materials[i]->flags & (1 << 1)) > 0)
+      {
 				char* textureName = f.ReadCharString();
 				Materials[i]->normalsTexture = new Texture();
 				Materials[i]->normalsTexture->LoadTexture(expectedPath, textureName);
 				delete[] textureName;
 			}
 			
-			if((Materials[i]->flags & (1 << 2)) > 0) {
+			if((Materials[i]->flags & (1 << 2)) > 0)
+      {
 				char* textureName = f.ReadCharString();
 				Materials[i]->specularTexture = new Texture();
 				Materials[i]->specularTexture->LoadTexture(expectedPath, textureName);
@@ -133,7 +137,8 @@ void Model::LoadFromFile(char* filename) {
 				//printf_s("Vertex %i: %f, %f, %f, %f, %f, %f, %f, %f\n", j, _verts[j].Position[0], _verts[j].Position[1], _verts[j].Position[2], _verts[j].Normals[0], _verts[j].Normals[1], _verts[j].Normals[2], _verts[j].UVs[0], _verts[j].UVs[1]);
 			}
 
-			for(int j = 0; j < totalIndices; j++) {
+			for(int j = 0; j < totalIndices; j++)
+      {
 				_indices[j] = f.ReadInt();
 				//printf_s("Index %i: %i\n", j, _indices[j]);
 			}
@@ -145,19 +150,26 @@ void Model::LoadFromFile(char* filename) {
 		delete[] memblock;
 
 		fprintf(stdout, "\tFlushed memory. %i bytes\n\n", (unsigned int)size);
-	} else {
+	}
+  else
+  {
 		fprintf(stdout, "\tFAILED! Could not open file!\n\n");
 	}
 
 	delete[] expectedPath;
 }
 
-void Model::RenderOpaque(int passID) {
-	if(passID == 1) { //Opaque
-		for(int i = 0; i < TotalMeshes; i++) {
+void Model::RenderOpaque(int passID)
+{
+	if(passID == 1) //Opaque
+  {
+		for(int i = 0; i < TotalMeshes; i++)
+    {
 			Meshes[i]->RenderOpaque();
 		}
-	} else {
+	}
+  else
+  {
 		
 	}
 }
