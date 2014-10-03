@@ -139,6 +139,30 @@ void ProcessMessageQueue(SDL_Event* event)
   }
 }
 
+bool Engine_SetFullscreen(bool fullscreen, bool realFullscreen /* = false */)
+{
+  int result;
+
+  if (fullscreen)
+  {
+    if (realFullscreen)
+    {
+      SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    }
+    else
+    {
+      SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    }
+  }
+  else
+  {
+    SDL_SetWindowFullscreen(window, 0);
+  }
+  
+
+  return result == 0;
+}
+
 void Engine_Maximize()
 {
   SDL_MaximizeWindow(window);
