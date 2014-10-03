@@ -147,19 +147,19 @@ bool Engine_SetFullscreen(bool fullscreen, bool realFullscreen /* = false */)
   {
     if (realFullscreen)
     {
-      SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+      result = SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     }
     else
     {
-      SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+      result = SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
   }
   else
   {
-    SDL_SetWindowFullscreen(window, 0);
+    result = SDL_SetWindowFullscreen(window, 0);
   }
   
-
+  CheckSDLError(__LINE__);
   return result == 0;
 }
 
