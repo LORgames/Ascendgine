@@ -1,100 +1,99 @@
 #include "XboxController.h"
-#include <SDL\SDL_gamecontroller.h>
-#include <SDL\SDL_haptic.h>
 #include <stdio.h>
 #include <string.h>
+#include <windows.h>
+#include <Xinput.h>
 
-#define DEADZONE_LEFT_X 6500
-#define DEADZONE_LEFT_Y 6500
-#define DEADZONE_RIGHT_X 6500
-#define DEADZONE_RIGHT_Y 6500
-#define DEADZONE_LEFT_TRIGGER -20000
-#define DEADZONE_RIGHT_TRIGGER -20000
+XboxController *controllers[XUSER_MAX_COUNT];
 
-SDL_Joystick* controllers[4];
-SDL_Haptic* haptics[4];
-
-int XboxController_GetNumberOfControllers()
+void XboxController_Init()
 {
-  return SDL_NumJoysticks();
+  for (int i = 0; i < XUSER_MAX_COUNT; i++)
+  {
+    controllers[i] = new XboxController();
+    memset(controllers[i], 0, sizeof(XboxController));
+  }
 }
 
-void XboxController_GetController(XboxController* pController, int player, float dt)
+void XboxController_Update(float dt)
 {
-  pController->controllerID = player;
-
-  SDL_GameController* magic = SDL_GameControllerOpen(player);
-
-  controllers[player] = SDL_JoystickOpen(player);
-  if (controllers[player])
+  DWORD dwResult;
+  for (DWORD i = 0; i< XUSER_MAX_COUNT; i++)
   {
-    int16_t leftThumbStickX = SDL_JoystickGetAxis(controllers[player], 0);
-    int16_t leftThumbStickY = SDL_JoystickGetAxis(controllers[player], 1);
-    int16_t rightThumbStickX = SDL_JoystickGetAxis(controllers[player], 2);
-    int16_t rightThumbStickY = SDL_JoystickGetAxis(controllers[player], 3);
-    int16_t leftTrigger = SDL_JoystickGetAxis(controllers[player], 4);
-    int16_t rightTrigger = SDL_JoystickGetAxis(controllers[player], 5);
+    XINPUT_STATE state;
+    memset(&state, 0, sizeof(XINPUT_STATE));
 
-    if (leftThumbStickX < DEADZONE_LEFT_X && leftThumbStickX > -DEADZONE_LEFT_X)
-      leftThumbStickX = 0;
-    if (leftThumbStickY < DEADZONE_LEFT_Y && leftThumbStickY > -DEADZONE_LEFT_Y)
-      leftThumbStickY = 0;
-    if (rightThumbStickX < DEADZONE_RIGHT_X && rightThumbStickX > -DEADZONE_RIGHT_X)
-      rightThumbStickX = 0;
-    if (rightThumbStickY < DEADZONE_RIGHT_Y && rightThumbStickY > -DEADZONE_RIGHT_Y)
-      rightThumbStickY = 0;
-    if (leftTrigger < DEADZONE_LEFT_TRIGGER)
-      leftTrigger = -32768.f;
-    if (rightTrigger < DEADZONE_LEFT_TRIGGER)
-      rightTrigger = -32768.f;
+    // Simply get the state of the controller from XInput.
+    dwResult = XInputGetState(i, &state);
 
-    // 32768 range either side of 0
-    pController->leftThumbX = leftThumbStickX / 32768.f;
-    pController->leftThumbY = leftThumbStickY / 32768.f;
-    pController->rightThumbX = rightThumbStickX / 32768.f;
-    pController->rightThumbY = rightThumbStickY / 32768.f;
-    pController->leftTrigger = (leftTrigger / 32768.f + 1.f) / 2.f;
-    pController->rightTrigger = (rightTrigger / 32768.f + 1.f) / 2.f;
+    if (dwResult == ERROR_SUCCESS)
+    {
+      // Controller is connected 
+      controllers[i]->isConnected = true;
 
-    pController->thumbpadX = SDL_JoystickGetButton(controllers[player], 2) * -1.f + SDL_JoystickGetButton(controllers[player], 3);
-    pController->thumbpadY = SDL_JoystickGetButton(controllers[player], 1) * -1.f + SDL_JoystickGetButton(controllers[player], 0);
-    pController->start = SDL_JoystickGetButton(controllers[player], 4) == 1;
-    pController->back = SDL_JoystickGetButton(controllers[player], 5) == 1;
-    pController->leftStick = SDL_JoystickGetButton(controllers[player], 6) == 1;
-    pController->rightStick = SDL_JoystickGetButton(controllers[player], 7) == 1;
-    pController->leftBumper = SDL_JoystickGetButton(controllers[player], 8) == 1;
-    pController->rightBumper = SDL_JoystickGetButton(controllers[player], 9) == 1;
-    pController->a = SDL_JoystickGetButton(controllers[player], 10) == 1;
-    pController->b = SDL_JoystickGetButton(controllers[player], 11) == 1;
-    pController->x = SDL_JoystickGetButton(controllers[player], 12) == 1;
-    pController->y = SDL_JoystickGetButton(controllers[player], 13) == 1;
-    pController->home = SDL_JoystickGetButton(controllers[player], 14) == 1;
-    pController->isConnected = true;
+      controllers[i]->thumbpadX = (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) * -1.f + (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) * 1.f;
+      controllers[i]->thumbpadY = (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) * -1.f + (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) * 1.f;
+      controllers[i]->a = (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) == XINPUT_GAMEPAD_A;
+      controllers[i]->b = (state.Gamepad.wButtons & XINPUT_GAMEPAD_B) == XINPUT_GAMEPAD_B;
+      controllers[i]->x = (state.Gamepad.wButtons & XINPUT_GAMEPAD_X) == XINPUT_GAMEPAD_X;
+      controllers[i]->y = (state.Gamepad.wButtons & XINPUT_GAMEPAD_Y) == XINPUT_GAMEPAD_Y;
+      controllers[i]->back = (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) == XINPUT_GAMEPAD_BACK;
+      controllers[i]->start = (state.Gamepad.wButtons & XINPUT_GAMEPAD_START) == XINPUT_GAMEPAD_START;
+      controllers[i]->leftBumper = (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) == XINPUT_GAMEPAD_LEFT_SHOULDER;
+      controllers[i]->rightBumper = (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) == XINPUT_GAMEPAD_RIGHT_SHOULDER;
+      controllers[i]->leftStick = (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) == XINPUT_GAMEPAD_LEFT_THUMB;
+      controllers[i]->rightStick = (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) == XINPUT_GAMEPAD_RIGHT_THUMB;
 
-    SDL_JoystickClose(controllers[player]);
+
+      if (abs(state.Gamepad.sThumbLX) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE ||
+        abs(state.Gamepad.sThumbLY) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE){
+        controllers[i]->leftThumbX = state.Gamepad.sThumbLX / 32768.0f;
+        controllers[i]->leftThumbY = state.Gamepad.sThumbLY / 32768.0f;
+      }
+      else {
+        controllers[i]->leftThumbX = 0.0f;
+        controllers[i]->leftThumbY = 0.0f;
+      }
+
+      if (abs(state.Gamepad.sThumbRX) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE ||
+        abs(state.Gamepad.sThumbRY) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE){
+        controllers[i]->rightThumbX = state.Gamepad.sThumbRX / 32768.0f;
+        controllers[i]->rightThumbY = state.Gamepad.sThumbRY / 32768.0f;
+      }
+      else {
+        controllers[i]->rightThumbX = 0.0f;
+        controllers[i]->rightThumbY = 0.0f;
+      }
+
+      if (state.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+        controllers[i]->leftTrigger = state.Gamepad.bLeftTrigger / 255.f;
+      else
+        controllers[i]->leftTrigger = 0;
+
+      if (state.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+        controllers[i]->rightTrigger = state.Gamepad.bRightTrigger / 255.f;
+      else
+        controllers[i]->rightTrigger = 0;
+    }
+    else
+    {
+      // Controller is not connected 
+      controllers[i]->isConnected = false;
+    }
   }
-  else
-    pController->isConnected = false;
+}
 
+void XboxController_Destroy()
+{
+  delete[] controllers;
+}
 
-  if (haptics[player] && pController->hapticFeedbackTimeRemaining > 0.f)
-  {
-    pController->hapticFeedbackTimeRemaining -= dt;
-  }
+void XboxController_GetController(XboxController** pController, int player)
+{
+  *pController = controllers[player];
 }
 
 void XboxController_Rumble(XboxController* pController, float intensity /*= 1.f*/, int millisecondsToRumble /*= 2000*/)
 {
-  if (!haptics[pController->controllerID])
-  {
-    haptics[pController->controllerID] = SDL_HapticOpenFromJoystick(controllers[pController->controllerID]);
-    if (SDL_HapticRumbleInit(haptics[pController->controllerID]) != 0)
-      haptics[pController->controllerID] = nullptr;
-  }
-
-  if (haptics[pController->controllerID])
-  {
-    pController->hapticFeedbackTimeRemaining = millisecondsToRumble;
-    SDL_HapticRumblePlay(haptics[pController->controllerID], intensity, millisecondsToRumble);
-  }
+  // TODO: Code
 }

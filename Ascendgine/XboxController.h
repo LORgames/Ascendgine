@@ -29,6 +29,9 @@ struct XboxController
   float hapticFeedbackTimeRemaining;
 };
 
-int XboxController_GetNumberOfControllers();
-void XboxController_GetController(XboxController* pController, int player, float dt);
-void XboxController_Rumble(XboxController* pController, float intensity = 1.f, int millisecondsToRumble = 2000);
+void XboxController_Init();
+void XboxController_Update(float dt);
+void XboxController_Destroy();
+
+void XboxController_GetController(XboxController** pController, int player);
+void XboxController_Rumble(int player, float intensity = 1.f, int millisecondsToRumble = 2000);
