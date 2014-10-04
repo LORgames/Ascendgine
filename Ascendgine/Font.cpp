@@ -83,7 +83,7 @@ Font::Font(char* filename)
       printf_s("Font '%s' uses texture '%s'\n", fontName, textureName);
 
       texture = new Texture();
-      texture->LoadTexture("../assets/fonts/", textureName);
+      texture->LoadTexture("../content/", textureName);
 
       delete[] textureName;
     }

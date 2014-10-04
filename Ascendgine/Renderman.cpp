@@ -94,7 +94,11 @@ void Render_Render(SDL_Window* window)
 	glDepthMask(GL_TRUE);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
-  glDisable(GL_BLEND);
+
+  //glDisable(GL_BLEND);
+  //glBlendEquation(GL_FUNC_ADD);
+  //glBlendFunc(GL_ONE, GL_ONE);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   //Apply the camera
 	fxOpaque->Apply(mainCam);
