@@ -37,7 +37,7 @@ void Engine_EndFrame();
 //Window functions
 bool Engine_SetFullscreen(bool fullscreen, bool realFullscreen = false);
 void Engine_Maximize();
-void Engine_Quit(const char *msg);
+void Engine_Quit(const char *msg, bool forceQuit = false);
 void Engine_SetMinimumWindowSize(int width, int height);
 
 //Other controls

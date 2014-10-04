@@ -39,11 +39,19 @@ void CheckSDLError(int line)
 	#endif
 }
 
-void Engine_Quit(const char *msg)
+void Engine_Quit(const char *msg, bool forceQuit)
 {
   printf("%s: %s\n", msg, SDL_GetError());
-  SDL_Quit();
-  exit(1);
+
+  if (forceQuit)
+  {
+    SDL_Quit();
+    exit(1);
+  }
+  else
+  {
+    isRunning = false;
+  }
 }
 
 Uint32 TimeLeftThisFrame()
