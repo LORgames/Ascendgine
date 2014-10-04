@@ -93,7 +93,10 @@ void Render_Render(SDL_Window* window)
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
 	glDepthMask(GL_TRUE);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
+  glEnable(GL_DEPTH_TEST);
+
+  glDepthMask(GL_FALSE);
+  glDisable(GL_DEPTH_TEST);
 
   //glDisable(GL_BLEND);
   //glBlendEquation(GL_FUNC_ADD);
@@ -104,7 +107,11 @@ void Render_Render(SDL_Window* window)
 	fxOpaque->Apply(mainCam);
 
 	//Render the models
-  for (int i = 0; i < (int)Render_Models.size(); i++)
+  //for (int i = 0; i < (int)Render_Models.size(); i++)
+  //{
+  //  Render_Models[i]->RenderOpaque(1);
+  //}
+  for (int i = (int)Render_Models.size()-1; i > 0; i--)
   {
     Render_Models[i]->RenderOpaque(1);
   }
