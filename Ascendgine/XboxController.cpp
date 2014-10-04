@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define DEADZONE_LEFT_X 10000
-#define DEADZONE_LEFT_Y 10000
-#define DEADZONE_RIGHT_X 10000
-#define DEADZONE_RIGHT_Y 10000
+#define DEADZONE_LEFT_X 5000
+#define DEADZONE_LEFT_Y 5000
+#define DEADZONE_RIGHT_X 5000
+#define DEADZONE_RIGHT_Y 5000
 #define DEADZONE_LEFT_TRIGGER -20000
 #define DEADZONE_RIGHT_TRIGGER -20000
 
@@ -26,16 +26,6 @@ void XboxController_GetController(XboxController* pController, int player, float
   controllers[player] = SDL_JoystickOpen(player);
   if (controllers[player])
   {
-    SDL_JoystickGUID guid = SDL_JoystickGetGUID(controllers[player]);
-    char guid_str[1024];
-    SDL_JoystickGetGUIDString(guid, guid_str, sizeof(guid_str));
-    const char* name = SDL_JoystickName(controllers[player]);
-
-    int num_axes = SDL_JoystickNumAxes(controllers[player]);
-    int num_buttons = SDL_JoystickNumButtons(controllers[player]);
-    int num_hats = SDL_JoystickNumHats(controllers[player]);
-    int num_balls = SDL_JoystickNumBalls(controllers[player]);
-
     int16_t leftThumbStickX = SDL_JoystickGetAxis(controllers[player], 0);
     int16_t leftThumbStickY = SDL_JoystickGetAxis(controllers[player], 1);
     int16_t rightThumbStickX = SDL_JoystickGetAxis(controllers[player], 2);
@@ -57,12 +47,12 @@ void XboxController_GetController(XboxController* pController, int player, float
       rightTrigger = 0;
 
     // 32768 range either side of 0
-    pController->leftThumbX = leftThumbStickX / 32768;
-    pController->leftThumbY = leftThumbStickY / 32768;
-    pController->rightThumbX = rightThumbStickX / 32768;
-    pController->rightThumbY = rightThumbStickY / 32768;
-    pController->leftTrigger = leftTrigger / 32768;
-    pController->rightTrigger = rightTrigger / 32768;
+    pController->leftThumbX = leftThumbStickX / 32768.f;
+    pController->leftThumbY = leftThumbStickY / 32768.f;
+    pController->rightThumbX = rightThumbStickX / 32768.f;
+    pController->rightThumbY = rightThumbStickY / 32768.f;
+    pController->leftTrigger = leftTrigger / 32768.f;
+    pController->rightTrigger = rightTrigger / 32768.f;
 
     pController->thumbpadX = SDL_JoystickGetButton(controllers[player], 2) * -1.f + SDL_JoystickGetButton(controllers[player], 3);
     pController->thumbpadY = SDL_JoystickGetButton(controllers[player], 1) * -1.f + SDL_JoystickGetButton(controllers[player], 0);
