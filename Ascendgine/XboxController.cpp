@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define DEADZONE_LEFT_X 5000
-#define DEADZONE_LEFT_Y 5000
-#define DEADZONE_RIGHT_X 5000
-#define DEADZONE_RIGHT_Y 5000
+#define DEADZONE_LEFT_X 6500
+#define DEADZONE_LEFT_Y 6500
+#define DEADZONE_RIGHT_X 6500
+#define DEADZONE_RIGHT_Y 6500
 #define DEADZONE_LEFT_TRIGGER -20000
 #define DEADZONE_RIGHT_TRIGGER -20000
 
@@ -22,6 +22,8 @@ int XboxController_GetNumberOfControllers()
 void XboxController_GetController(XboxController* pController, int player, float dt)
 {
   pController->controllerID = player;
+
+  SDL_GameController* magic = SDL_GameControllerOpen(player);
 
   controllers[player] = SDL_JoystickOpen(player);
   if (controllers[player])
@@ -42,17 +44,17 @@ void XboxController_GetController(XboxController* pController, int player, float
     if (rightThumbStickY < DEADZONE_RIGHT_Y && rightThumbStickY > -DEADZONE_RIGHT_Y)
       rightThumbStickY = 0;
     if (leftTrigger < DEADZONE_LEFT_TRIGGER)
-      leftTrigger = 0;
+      leftTrigger = -32768.f;
     if (rightTrigger < DEADZONE_LEFT_TRIGGER)
-      rightTrigger = 0;
+      rightTrigger = -32768.f;
 
     // 32768 range either side of 0
     pController->leftThumbX = leftThumbStickX / 32768.f;
     pController->leftThumbY = leftThumbStickY / 32768.f;
     pController->rightThumbX = rightThumbStickX / 32768.f;
     pController->rightThumbY = rightThumbStickY / 32768.f;
-    pController->leftTrigger = leftTrigger / 32768.f;
-    pController->rightTrigger = rightTrigger / 32768.f;
+    pController->leftTrigger = (leftTrigger / 32768.f + 1.f) / 2.f;
+    pController->rightTrigger = (rightTrigger / 32768.f + 1.f) / 2.f;
 
     pController->thumbpadX = SDL_JoystickGetButton(controllers[player], 2) * -1.f + SDL_JoystickGetButton(controllers[player], 3);
     pController->thumbpadY = SDL_JoystickGetButton(controllers[player], 1) * -1.f + SDL_JoystickGetButton(controllers[player], 0);

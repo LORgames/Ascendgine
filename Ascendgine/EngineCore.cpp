@@ -180,7 +180,7 @@ Camera* Engine_GetMainCamera()
 
 bool Engine_Init(char* windowTitle, int width, int height)
 {
-	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC) < 0)			// Initialize SDL2
+	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMECONTROLLER) < 0)			// Initialize SDL2
 		Engine_Quit("Unable to initialize SDL");		// Or die on error
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
