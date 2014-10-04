@@ -85,7 +85,10 @@ void XboxController_Update(float dt)
 
 void XboxController_Destroy()
 {
-  delete[] controllers;
+  for (int i = 0; i < XUSER_MAX_COUNT; i++)
+  {
+    delete controllers[i];
+  }
 }
 
 void XboxController_GetController(XboxController** pController, int player)
