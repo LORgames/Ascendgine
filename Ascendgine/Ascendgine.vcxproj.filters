@@ -52,6 +52,12 @@
     <Filter Include="Source Files\Audio">
       <UniqueIdentifier>{de325f7d-4c2a-4861-a737-9cc58d84ee87}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Input">
+      <UniqueIdentifier>{4d809997-3986-464b-93a2-dbdb72c6ae09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Input">
+      <UniqueIdentifier>{d6065b07-567c-4980-bb9c-0e81a1fffb3f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Model.cpp">
@@ -95,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="LineRenderer.cpp">
       <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="XboxController.cpp">
+      <Filter>Source Files\Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="LineRenderer.h">
       <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="XboxController.h">
+      <Filter>Header Files\Input</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

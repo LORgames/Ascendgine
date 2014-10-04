@@ -162,6 +162,7 @@
     <ClCompile Include="QuadRenderer.cpp" />
     <ClCompile Include="Renderman.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="XboxController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="RenderMaterial.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="XboxController.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
