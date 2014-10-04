@@ -130,9 +130,6 @@ void ProcessMessageQueue(SDL_Event* event)
           else
             printf_s("Finger (%d) moved: %5.5f, %5.5f, pressure: %5.5f\n", event->tfinger.fingerId, event->tfinger.dx, event->tfinger.dy, event->tfinger.pressure);
           break;
-        case SDL_JOYBUTTONUP:
-          printf_s("Joy %d button %d", event->jbutton.which, event->jbutton.button);
-          break;
 				case SDL_QUIT:
 					printf_s("Quit requested, quitting.\n");
           isRunning = false;
