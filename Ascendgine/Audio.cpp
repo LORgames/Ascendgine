@@ -1,4 +1,5 @@
 #include "Audio.h"
+#include <limits.h>
 #include <FMOD\fmod.hpp>
 
 struct AudioObject
@@ -30,13 +31,14 @@ void Audio_Update(float dt)
     system->update();
 }
 
-void Audio_Play(char* filename, AudioObject* pAudioObject)
+void Audio_Play(char* filename, AudioObject* pAudioObject, bool loop /*= false*/)
 {
   pAudioObject = new AudioObject();
   pAudioObject->sound = nullptr;
 
   FMOD::Sound* sound;
   system->createSound(filename, FMOD_SOFTWARE, 0, &sound);
+  sound->setLoopCount(INT_MAX * (int)loop);
 
   system->playSound(FMOD_CHANNEL_FREE, sound, false, &pAudioObject->sound);
 }
