@@ -54,6 +54,8 @@ void Audio_Cleanup(AudioObject* pAudioObject)
 bool Audio_IsPlaying(AudioObject* pAudioObject)
 {
   bool success = false;
+  if (pAudioObject == nullptr || pAudioObject->sound == nullptr)
+    return success;
   pAudioObject->sound->isPlaying(&success);
   return success;
 }
