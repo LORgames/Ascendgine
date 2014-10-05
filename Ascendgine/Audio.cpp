@@ -31,7 +31,7 @@ void Audio_Update(float dt)
     system->update();
 }
 
-void Audio_Play(char* filename, AudioObject* pAudioObject, bool loop /*= false*/)
+void Audio_Play(char* filename, AudioObject* pAudioObject, float volume /*= 0.5f*/, bool loop /*= false*/)
 {
   pAudioObject = new AudioObject();
   pAudioObject->sound = nullptr;
@@ -41,6 +41,7 @@ void Audio_Play(char* filename, AudioObject* pAudioObject, bool loop /*= false*/
   sound->setLoopCount(INT_MAX * (int)loop);
 
   system->playSound(FMOD_CHANNEL_FREE, sound, false, &pAudioObject->sound);
+  pAudioObject->sound->setVolume(volume);
 }
 
 void Audio_Cleanup(AudioObject* pAudioObject)
@@ -58,4 +59,9 @@ bool Audio_IsPlaying(AudioObject* pAudioObject)
     return success;
   pAudioObject->sound->isPlaying(&success);
   return success;
+}
+
+void Audio_StopPlaying(AudioObject* pAudioObject)
+{
+  pAudioObject->sound->stop();
 }
