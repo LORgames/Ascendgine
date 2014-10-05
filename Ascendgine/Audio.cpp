@@ -63,5 +63,7 @@ bool Audio_IsPlaying(AudioObject* pAudioObject)
 
 void Audio_StopPlaying(AudioObject* pAudioObject)
 {
+  if (pAudioObject == nullptr || pAudioObject->sound == nullptr)
+    return;
   pAudioObject->sound->stop();
 }
