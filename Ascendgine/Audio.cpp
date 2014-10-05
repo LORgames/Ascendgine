@@ -39,6 +39,7 @@ void Audio_Play(char* filename, AudioObject* pAudioObject, float volume /*= 0.5f
   FMOD::Sound* sound;
   system->createSound(filename, FMOD_SOFTWARE, 0, &sound);
   sound->setLoopCount(INT_MAX * (int)loop);
+  sound->setMode(loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF);
 
   system->playSound(FMOD_CHANNEL_FREE, sound, false, &pAudioObject->sound);
   pAudioObject->sound->setVolume(volume);
