@@ -5,9 +5,8 @@
 #include "Camera.h"
 #include "Texture.h"
 
-class ParticleEffect : public Effect
+struct ParticleEffect : public Effect
 {
-private:
   GLint vsViewportScaleIndex;
   GLint vsTimeIndex;
   GLint vsDepthIndex;
@@ -21,10 +20,10 @@ private:
   GLint vsRotateSpeed;
   GLint vsStartSize;
   GLint vsEndSize;
-public:
-  ParticleEffect(const char* vertexFile, const char* fragmentFile);
-  ~ParticleEffect();
-
-  void ApplyRenderer(Camera* cam, GLuint depthMap, float aspectRatio);
-  void ApplyParticleSystem(ParticleSettings &settings, float currentTime);
 };
+
+void ParticleEffect_CreateFromFile(ParticleEffect* pe, const char* vertexFile, const char* fragmentFile);
+void ParticleEffect_Destroy(ParticleEffect* pe);
+
+void ParticleEffect_ApplyRenderer(ParticleEffect* pe, Camera* cam, GLuint depthMap, float aspectRatio);
+void ParticleEffect_ApplyParticleSystem(ParticleEffect* pe, ParticleSettings &settings, float currentTime);

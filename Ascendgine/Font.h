@@ -7,9 +7,8 @@
 
 struct FChar;
 
-class Font
+struct Font
 {
-private:
   QuadRenderer *renderer;
   Texture* texture;
 
@@ -24,12 +23,9 @@ private:
 
   int totalCharacters;
   FChar* characters;
-
-  int GetIDOfCharacter(int c);
-public:
-  Font(char* filename);
-  ~Font();
-
-  void DrawString(char* str, int x, int y);
 };
+
+void Font_Create(Font* font, char* filename);
+void Font_Destroy(Font* font);
+void Font_DrawString(Font* font, char* str, int x, int y, uint32_t colour);
 

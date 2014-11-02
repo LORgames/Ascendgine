@@ -1,5 +1,6 @@
 ﻿#include "Renderman.h"
 
+#include "Effect.h"
 #include "Quad.h"
 #include "Sphere.h"
 
@@ -11,16 +12,16 @@ enum BUFFER_TYPE {
 };
 
 //Rendering to GBuffer
-Effect* fxOpaque;
-Effect* fxTransparent;
-Effect* fxAnimated;
+Effect fxOpaque;
+Effect fxTransparent;
+Effect fxAnimated;
 
 //Rendering to Screen
-Effect* fxPostProcessing;
+Effect fxPostProcessing;
 
 //Rendering lights
-Effect* fxLightPoint;
-Effect* fxLightDirectional;
+Effect fxLightPoint;
+Effect fxLightDirectional;
 
 //RenderTargets
 GLuint fbo;						//FRAME BUFFER OBJECT
@@ -44,11 +45,11 @@ void Renderman_DrawPointLight(glm::vec3 lightPosition, glm::vec3 color, float li
 
 void Render_Init(int width, int height)
 {
-	fxOpaque = new Effect("../shaders/OpaqueShader.vs", "../shaders/OpaqueShader.ps");
-  fxPostProcessing = new Effect("../shaders/QuadRenderer.vs", "../shaders/QuadRenderer.ps");
-  fxLightPoint = new Effect("../shaders/PointLight.vs", "../shaders/PointLight.ps");
+	Effect_CreateFromFile(&fxOpaque, "../shaders/OpaqueShader.vs", "../shaders/OpaqueShader.ps");
+  Effect_CreateFromFile(&fxPostProcessing, "../shaders/QuadRenderer.vs", "../shaders/QuadRenderer.ps");
+  Effect_CreateFromFile(&fxLightPoint, "../shaders/PointLight.vs", "../shaders/PointLight.ps");
 
-  fxpp_lightMapID = fxPostProcessing->GetUniformID("lightQQ");
+  fxpp_lightMapID = Effect_GetUniformID(&fxPostProcessing, "lightQQ");
 
 	mainCam = new Camera();
 	mainCam->Projection = glm::mat4();
@@ -61,7 +62,7 @@ void Render_Init(int width, int height)
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 
   screenQuad = new Quad();
-  screenQuad->SetEffect(fxPostProcessing);
+  screenQuad->SetEffect(&fxPostProcessing);
 
   lightingSphere = new Sphere();
   glClearColor(0, 0, 0, 0);
@@ -69,14 +70,12 @@ void Render_Init(int width, int height)
 
 void Render_Cleanup(void)
 {
-	delete fxOpaque;
-  delete fxPostProcessing;
-  delete fxLightPoint;
+	Effect_Destroy(&fxOpaque);
+  Effect_Destroy(&fxPostProcessing);
+  Effect_Destroy(&fxLightPoint);
 
 	delete mainCam;
-
   delete lightingSphere;
-
   delete screenQuad;
 }
 
@@ -95,23 +94,19 @@ void Render_Render(SDL_Window* window)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
 
-  glDepthMask(GL_FALSE);
-  glDisable(GL_DEPTH_TEST);
+  //glDepthMask(GL_FALSE);
+  //glDisable(GL_DEPTH_TEST);
 
-  //glDisable(GL_BLEND);
+  glDisable(GL_BLEND);
   //glBlendEquation(GL_FUNC_ADD);
   //glBlendFunc(GL_ONE, GL_ONE);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   //Apply the camera
-	fxOpaque->Apply(mainCam);
+  Effect_Apply(&fxOpaque, mainCam);
 
 	//Render the models
-  //for (int i = 0; i < (int)Render_Models.size(); i++)
-  //{
-  //  Render_Models[i]->RenderOpaque(1);
-  //}
-  for (int i = (int)Render_Models.size()-1; i > 0; i--)
+  for (int i = (int)Render_Models.size()-1; i >= 0; i--)
   {
     Render_Models[i]->RenderOpaque(1);
   }
@@ -127,7 +122,7 @@ void Render_Render(SDL_Window* window)
   glDisable(GL_DEPTH_TEST);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  fxLightPoint->Apply(mainCam);
+  Effect_Apply(&fxLightPoint, mainCam);
 
   //Apply the textures
   for (unsigned int i = 0; i < TOTAL_BUFFERS; i++)
@@ -135,7 +130,7 @@ void Render_Render(SDL_Window* window)
     glActiveTexture(GL_TEXTURE0 + i);
     glBindTexture(GL_TEXTURE_2D, InputRT[i]);
 
-    fxLightPoint->BindTexture(i);
+    Effect_BindTexture(&fxLightPoint, i);
   }
 
   for (unsigned int i = 0; i < Render_Lights.size(); i++)
@@ -148,12 +143,12 @@ void Render_Render(SDL_Window* window)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glDisable(GL_BLEND);
 
-  fxPostProcessing->Apply();
+  Effect_Apply(&fxPostProcessing);
 
   //Upload the lighting map
   glActiveTexture(GL_TEXTURE0 + 2);
   glBindTexture(GL_TEXTURE_2D, LightRT);
-  fxPostProcessing->BindTextureAdvanced(fxpp_lightMapID, 2);
+  Effect_BindTextureAdvanced(&fxPostProcessing, fxpp_lightMapID, 2);
 
 	//Apply the textures
 	for (unsigned int i = 0; i < TOTAL_BUFFERS-1; i++)
@@ -161,7 +156,7 @@ void Render_Render(SDL_Window* window)
 	  glActiveTexture(GL_TEXTURE0 + i);
 	  glBindTexture(GL_TEXTURE_2D, InputRT[i]);
     
-    fxPostProcessing->BindTexture(i);
+    Effect_BindTexture(&fxPostProcessing, i);
 	}
 
   //Render to screen :)
@@ -228,7 +223,7 @@ void Render_FixGBuffer(int width, int height)
 
 Effect* Render_GetSimpleEffect()
 {
-  return fxOpaque;
+  return &fxOpaque;
 }
 
 Camera* Render_GetMainCamera()
@@ -245,21 +240,21 @@ void Renderman_DrawPointLight(glm::vec3 lightPosition, glm::vec3 color, float li
 {
   //compute the light world matrix
   //scale according to light radius, and translate it to light position
-  fxLightPoint->Apply(mainCam);
+  Effect_Apply(&fxLightPoint, mainCam);
   glm::mat4x4 sphereWorldMatrix = glm::translate(glm::mat4x4(), lightPosition) * glm::scale(glm::mat4x4(), glm::vec3(lightRadius, lightRadius, lightRadius));
-  fxLightPoint->ApplyModelMatrix(sphereWorldMatrix);
+  Effect_ApplyModelMatrix(&fxLightPoint, sphereWorldMatrix);
 
   //light position
-  glUniform3f(fxLightPoint->GetUniformID("lightPosition"), lightPosition.x, lightPosition.y, lightPosition.z);
+  glUniform3f(Effect_GetUniformID(&fxLightPoint, "lightPosition"), lightPosition.x, lightPosition.y, lightPosition.z);
 
   //set the color, radius and Intensity
-  glUniform3f(fxLightPoint->GetUniformID("Color"), color.x, color.y, color.z);
-  glUniform1f(fxLightPoint->GetUniformID("lightRadius"), lightRadius);
-  glUniform1f(fxLightPoint->GetUniformID("lightIntensity"), lightIntensity);
+  glUniform3f(Effect_GetUniformID(&fxLightPoint, "Color"), color.x, color.y, color.z);
+  glUniform1f(Effect_GetUniformID(&fxLightPoint, "lightRadius"), lightRadius);
+  glUniform1f(Effect_GetUniformID(&fxLightPoint, "lightIntensity"), lightIntensity);
 
   //parameters for specular computations
-  glUniform3f(fxLightPoint->GetUniformID("cameraPosition"), mainCam->Position.x, mainCam->Position.y, mainCam->Position.z);
-  glUniformMatrix4fv(fxLightPoint->GetUniformID("InvertViewProjection"), 1, GL_FALSE, glm::value_ptr(glm::inverse(mainCam->Projection * mainCam->View)));
+  glUniform3f(Effect_GetUniformID(&fxLightPoint, "cameraPosition"), mainCam->Position.x, mainCam->Position.y, mainCam->Position.z);
+  glUniformMatrix4fv(Effect_GetUniformID(&fxLightPoint, "InvertViewProjection"), 1, GL_FALSE, glm::value_ptr(glm::inverse(mainCam->Projection * mainCam->View)));
 
   //calculate the distance between the camera and light center
   float cameraToCenter = glm::distance(mainCam->Position, lightPosition);

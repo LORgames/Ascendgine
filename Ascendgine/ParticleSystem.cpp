@@ -185,7 +185,7 @@ void ParticleSystem::Render()
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
-  particleEffect->ApplyParticleSystem(settings, currentTime);
+  ParticleEffect_ApplyParticleSystem(particleEffect, settings, currentTime);
 
   //Fix the states for light rendering
   glEnable(GL_BLEND);

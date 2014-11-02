@@ -8,7 +8,7 @@ Texture::Texture(void)
 
 Texture::Texture(const char* filename)
 {
-  LoadTexture("./", filename);
+  LoadTexture(filename);
 }
 
 Texture::~Texture(void)
@@ -16,21 +16,12 @@ Texture::~Texture(void)
 
 }
 
-void Texture::LoadTexture(const char* expectedPath, const char* filename)
+void Texture::LoadTexture(const char* filename)
 {
-	printf_s("Loading texture '%s' (trying path: %s)... ", filename, expectedPath);
-
-	size_t pathLen = strlen(expectedPath);
-	size_t fileLen = strlen(filename);
-
-	char* fullLocation = new char[(pathLen + fileLen + 1)];
-	memcpy(fullLocation, expectedPath, pathLen);
-	memcpy(fullLocation+pathLen, filename, fileLen);
-
-	fullLocation[pathLen+fileLen] = 0;
+	printf_s("Loading texture '%s'... ", filename);
 
   int depth;
-	unsigned char* data = stbi_load(fullLocation, &m_width, &m_height, &depth, 0);
+  unsigned char* data = stbi_load(filename, &m_width, &m_height, &depth, 0);
 
 	if(data) {
 		glGenTextures(1, &textureID);
@@ -64,6 +55,22 @@ void Texture::LoadTexture(const char* expectedPath, const char* filename)
 	printf_s("\tID:%i, W:%i, H:%i, D:%i\n", textureID, m_width, m_height, depth);
 
 	stbi_image_free(data);
+}
+
+void Texture::LoadTextureFromPath(const char* filename, const char* path)
+{
+  printf_s("Loading texture '%s' (from path: %s)... ", filename, path);
+
+  size_t pathLen = strlen(path);
+  size_t fileLen = strlen(filename);
+
+  char* fullLocation = new char[(pathLen + fileLen + 2)];
+  strcpy(fullLocation, path);
+  strcat(fullLocation, "\\");
+  strcat(fullLocation, filename);
+
+  LoadTexture(fullLocation);
+  delete[] fullLocation;
 }
 
 void Texture::CreateTexture(int width, int height, GLenum colorMode, char* initialData)

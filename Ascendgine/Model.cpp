@@ -78,7 +78,7 @@ void Model::LoadFromFile(char* filename)
       {
 				char* textureName = f.ReadCharString();
 				Materials[i]->diffuseTexture = new Texture();
-				Materials[i]->diffuseTexture->LoadTexture(expectedPath, textureName);
+        Materials[i]->diffuseTexture->LoadTextureFromPath(textureName, expectedPath);
 				delete[] textureName;
 			}
 			
@@ -86,7 +86,7 @@ void Model::LoadFromFile(char* filename)
       {
 				char* textureName = f.ReadCharString();
 				Materials[i]->normalsTexture = new Texture();
-				Materials[i]->normalsTexture->LoadTexture(expectedPath, textureName);
+        Materials[i]->normalsTexture->LoadTextureFromPath(textureName, expectedPath);
 				delete[] textureName;
 			}
 			
@@ -94,7 +94,7 @@ void Model::LoadFromFile(char* filename)
       {
 				char* textureName = f.ReadCharString();
 				Materials[i]->specularTexture = new Texture();
-				Materials[i]->specularTexture->LoadTexture(expectedPath, textureName);
+        Materials[i]->specularTexture->LoadTextureFromPath(textureName, expectedPath);
 				delete[] textureName;
 			}
 		}

@@ -1,6 +1,7 @@
 #include "Font.h"
 
 #include "BinaryReaderX.h"
+#include "StringHelper.h"
 
 struct FChar
 {
@@ -14,9 +15,9 @@ struct FChar
   int16_t xadvance;
 };
 
-Font::Font(char* filename)
+void Font_Create(Font* font, char* filename)
 {
-  validFont = false;
+  font->validFont = false;
 
   BinaryReaderX file = BinaryReaderX(nullptr);
   if (!file.LoadFile(filename))
@@ -44,23 +45,23 @@ Font::Font(char* filename)
 
     if (blockType == 1) //Block 1: Info
     {
-      fontSize = file.ReadShort();
-      fontFlags = file.ReadByte();
+      font->fontSize = file.ReadShort();
+      font->fontFlags = file.ReadByte();
       file.ReadAhead(11); //Skip the rest of the info
-      file.ReadNullTerminatedString(&fontName);
+      file.ReadNullTerminatedString(&font->fontName);
 
-      printf("Loaded font '%s' at size %d\n", fontName, fontSize);
+      printf("Loaded font '%s' at size %d\n", font->fontName, font->fontSize);
     }
     else if (blockType == 2)  //Block 2: Common
     {
-      lineHeight = file.ReadUnsignedShort();
-      base = file.ReadUnsignedShort();
+      font->lineHeight = file.ReadUnsignedShort();
+      font->base = file.ReadUnsignedShort();
       file.ReadAhead(4);  //Skip some texture information
       uint16_t pages = file.ReadUnsignedShort();
 
       if (pages != 1)
       {
-        printf_s("Font '%s' failed to load because its on %s pages, export again as 1 page!\n", fontName, pages);
+        printf_s("Font '%s' failed to load because its on %s pages, export again as 1 page!\n", font->fontName, pages);
         return;
       }
 
@@ -69,7 +70,8 @@ Font::Font(char* filename)
 
       if (((flags & 0x40) > 0) && (alphaChnl != 1))
       {
-        printf_s("Font '%s' could not load as it isn't monochrome! %d\n", fontName, alphaChnl);
+        //TODO: Add support for the other channels
+        printf_s("Font '%s' could not load as it isn't monochrome! (%d)\n", font->fontName, alphaChnl);
         return;
       }
 
@@ -80,30 +82,33 @@ Font::Font(char* filename)
       char *textureName;
       file.ReadNullTerminatedString(&textureName);
 
-      printf_s("Font '%s' uses texture '%s'\n", fontName, textureName);
+      printf_s("Font '%s' uses texture '%s'\n", font->fontName, textureName);
+      char pathBuffer[512];
 
-      texture = new Texture();
-      texture->LoadTexture("../content/", textureName);
+      GetPathFromString(filename, pathBuffer);
+
+      font->texture = new Texture();
+      font->texture->LoadTextureFromPath(textureName, pathBuffer);
 
       delete[] textureName;
     }
     else if (blockType == 4) //Block 4: Characters
     {
-      totalCharacters = blockSize / 20;
-      characters = new FChar[totalCharacters];
+      font->totalCharacters = blockSize / 20;
+      font->characters = new FChar[font->totalCharacters];
 
-      printf_s("Found %d characters in font '%s'.\n", totalCharacters, fontName);
+      printf_s("Found %d characters in font '%s'.\n", font->totalCharacters, font->fontName);
 
-      for (int i = 0; i < totalCharacters; i++)
+      for (int i = 0; i < font->totalCharacters; i++)
       {
-        characters[i].id = file.ReadInt();
-        characters[i].x = file.ReadUnsignedShort();
-        characters[i].y = file.ReadUnsignedShort();
-        characters[i].width = file.ReadUnsignedShort();
-        characters[i].height = file.ReadUnsignedShort();
-        characters[i].xoffset = file.ReadShort();
-        characters[i].yoffset = file.ReadShort();
-        characters[i].xadvance = file.ReadShort();
+        font->characters[i].id = file.ReadInt();
+        font->characters[i].x = file.ReadUnsignedShort();
+        font->characters[i].y = file.ReadUnsignedShort();
+        font->characters[i].width = file.ReadUnsignedShort();
+        font->characters[i].height = file.ReadUnsignedShort();
+        font->characters[i].xoffset = file.ReadShort();
+        font->characters[i].yoffset = file.ReadShort();
+        font->characters[i].xadvance = file.ReadShort();
         file.ReadAhead(2);
       }
 
@@ -115,32 +120,33 @@ Font::Font(char* filename)
     }
   }
 
-  renderer = new QuadRenderer(texture);
-  validFont = true;
+  font->renderer = new QuadRenderer(font->texture);
+  font->validFont = true;
 }
 
 
-Font::~Font()
+void Font_Destroy(Font* font)
 {
-  delete renderer;
-  delete texture;
+  delete font->renderer;
+  delete font->texture;
 
-  delete fontName;
-  delete[] characters;
+  delete font->fontName;
+  delete[] font->characters;
 }
 
-int Font::GetIDOfCharacter(int c)
+int GetIDOfCharacter(Font* font, int c)
 {
-  for (int i = 0; i < totalCharacters; i++)
+  //TODO: Make this a binary search tree
+  for (int i = 0; i < font->totalCharacters; i++)
   {
-    if (characters[i].id == c)
+    if (font->characters[i].id == c)
       return i;
   }
 
   return -1;
 }
 
-void Font::DrawString(char* str, int x, int y)
+void Font_DrawString(Font* font, char* str, int x, int y, uint32_t colour)
 {
   float rX = (float)x;
   float rY = (float)y;
@@ -152,24 +158,25 @@ void Font::DrawString(char* str, int x, int y)
   {
     if (str[i] != 10)
     {
-      id = GetIDOfCharacter(str[i]);
+      id = GetIDOfCharacter(font, str[i]);
 
       if (id != -1)
       {
-        renderer->AddQuadToRender(rX + characters[id].xoffset, rY + characters[id].yoffset, characters[id].x, characters[id].y, characters[id].width, characters[id].height);
-        rX += characters[id].xadvance;
+        font->renderer->AddQuadToRender(rX + font->characters[id].xoffset, rY + font->characters[id].yoffset, font->characters[id].x, font->characters[id].y, font->characters[id].width, font->characters[id].height);
+        rX += font->characters[id].xadvance;
       }
       else
       {
-        printf_s("'%s' cannot represent character %d.\n", fontName, str[i]);
+        printf_s("'%s' cannot represent character %d.\n", font->fontName, str[i]);
       }
     }
     else
     {
       //Newline
       rX = (float)x;
-      rY += lineHeight;
+      rY += font->lineHeight;
     }
   }
-  renderer->Render();
+
+  font->renderer->Render();
 }

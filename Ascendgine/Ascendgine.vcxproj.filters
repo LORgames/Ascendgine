@@ -170,5 +170,8 @@
     <ClInclude Include="XboxController.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
+    <ClInclude Include="StringHelper.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,7 +5,7 @@
 Mesh::Mesh(RenderMaterial* _mat)
 {
 	Material = _mat;
-  fx = nullptr;
+  fx = { 0 };
 
 	canRender = false;
 }
@@ -13,7 +13,7 @@ Mesh::Mesh(RenderMaterial* _mat)
 Mesh::Mesh(RenderMaterial* _mat, Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices)
 {
 	Material = _mat;
-  fx = nullptr;
+  fx = { 0 };
 
 	CreateMesh(_verts, _totalVerts, _indices, _totalIndices);
 }
@@ -84,7 +84,7 @@ void Mesh::RenderOpaque()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
   if(Material)
-  	fx->BindMaterial(Material);
+  	Effect_BindMaterial(&fx, Material);
 	
 	// Draw the triangles!
   glDrawElements(GL_TRIANGLES, totalIndices, GL_UNSIGNED_INT, 0);

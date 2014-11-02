@@ -17,7 +17,8 @@ class Texture {
 
     Texture(const char* filename);
 
-		void LoadTexture(const char* expectedPath, const char* filename);
+		void LoadTexture(const char* filename);
+    void LoadTextureFromPath(const char* filename, const char* path);
     
     void CreateTexture(int width, int height, GLenum colorMode, char* initialData = nullptr);
     void SetData(char* data);

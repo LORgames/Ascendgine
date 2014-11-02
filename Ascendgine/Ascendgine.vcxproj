@@ -184,6 +184,7 @@
     <ClInclude Include="Renderman.h" />
     <ClInclude Include="RenderMaterial.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="StringHelper.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="XboxController.h" />
   </ItemGroup>

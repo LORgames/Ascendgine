@@ -27,7 +27,7 @@ class Mesh {
 		int totalIndices;
 		int totalVertices;
 
-    Effect* fx;
+    Effect fx;
 		RenderMaterial* Material;
 
 		bool canRender;
@@ -38,8 +38,8 @@ class Mesh {
 
 		void CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices);
 
-    Effect* GetEffect(){ return fx; }
-    void SetEffect(Effect* newEffect) { fx = newEffect; }
+    Effect* GetEffect(){ return &fx; }
+    void SetEffect(Effect* newEffect) { fx = *newEffect; }
 		
 		void RenderOpaque();
 };

@@ -3,12 +3,11 @@
 #include <GL/glew.h>
 #include <SDL/SDL.h>
 #include <glm/glm.hpp>
+#include <vector>
 
 #include "Model.h"
 #include "Camera.h"
 #include "Effect.h"
-
-#include <vector>
 
 struct LightInfo
 {

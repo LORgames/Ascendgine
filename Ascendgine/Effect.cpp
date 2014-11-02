@@ -1,11 +1,9 @@
 #include "Effect.h"
 
-Effect::Effect(const char* vertexFile, const char* fragmentFile)
+void Effect_CreateFromFile(Effect* ef, const char* vertexFile, const char* fragmentFile)
 {
-	// Create the shaders
-  GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-  GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
- 
+  printf("Compiling shader files:\n\t%s\n\t%s\n", vertexFile, fragmentFile);
+  
   // Read the Vertex Shader code from the file
   std::string VertexShaderCode;
   std::ifstream VertexShaderStream(vertexFile, std::ios::in);
@@ -29,136 +27,146 @@ Effect::Effect(const char* vertexFile, const char* fragmentFile)
     FragmentShaderStream.close();
   }
  
+  Effect_CreateFromText(ef, VertexShaderCode.c_str(), FragmentShaderCode.c_str());
+}
+
+void Effect_CreateFromText(Effect* ef, const char* VertexSourcePointer, const char* FragmentSourcePointer)
+{
+  // Create the shaders
+  GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+  GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
   GLint Result = GL_FALSE;
   int InfoLogLength;
- 
+
   // Compile Vertex Shader
-  printf("Compiling shader : %s\n", vertexFile);
-  char const * VertexSourcePointer = VertexShaderCode.c_str();
-  glShaderSource(VertexShaderID, 1, &VertexSourcePointer , NULL);
+  printf("Compiling vertex shader:\n");
+  glShaderSource(VertexShaderID, 1, &VertexSourcePointer, NULL);
   glCompileShader(VertexShaderID);
- 
+
   // Check Vertex Shader
   glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
   glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
   if (InfoLogLength > 0)
   {
-    std::vector<char> VertexShaderErrorMessage(InfoLogLength);
+    char* VertexShaderErrorMessage = new char[InfoLogLength];
     glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
     if (VertexShaderErrorMessage[0])
       fprintf(stdout, "Message: %s\n", &VertexShaderErrorMessage[0]);
+    delete[] VertexShaderErrorMessage;
   }
- 
+
   // Compile Fragment Shader
-  printf("Compiling shader : %s\n", fragmentFile);
-  char const * FragmentSourcePointer = FragmentShaderCode.c_str();
-  glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , NULL);
+  printf("Compiling fragment shader:\n");
+  glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer, NULL);
   glCompileShader(FragmentShaderID);
- 
+
   // Check Fragment Shader
   glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
   glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
   if (InfoLogLength > 0)
   {
-    std::vector<char> FragmentShaderErrorMessage(InfoLogLength);
+    char* FragmentShaderErrorMessage = new char[InfoLogLength];
     glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
     if (FragmentShaderErrorMessage[0])
       fprintf(stdout, "Message: %s\n", &FragmentShaderErrorMessage[0]);
+    delete FragmentShaderErrorMessage;
   }
- 
+
   // Link the program
   fprintf(stdout, "Linking program\n");
-  id = glCreateProgram();
-  glAttachShader(id, VertexShaderID);
-  glAttachShader(id, FragmentShaderID);
-  glLinkProgram(id);
- 
+  ef->id = glCreateProgram();
+  glAttachShader(ef->id, VertexShaderID);
+  glAttachShader(ef->id, FragmentShaderID);
+  glLinkProgram(ef->id);
+
   // Check the program
-  glGetProgramiv(id, GL_LINK_STATUS, &Result);
-  glGetProgramiv(id, GL_INFO_LOG_LENGTH, &InfoLogLength);
-  std::vector<char> ProgramErrorMessage(std::max(InfoLogLength, int(1)));
-  glGetProgramInfoLog(id, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+  glGetProgramiv(ef->id, GL_LINK_STATUS, &Result);
+  glGetProgramiv(ef->id, GL_INFO_LOG_LENGTH, &InfoLogLength);
+  char* ProgramErrorMessage = new char[InfoLogLength>1 ? InfoLogLength : 1];
+  glGetProgramInfoLog(ef->id, InfoLogLength, NULL, &ProgramErrorMessage[0]);
   fprintf(stdout, "%s\n", &ProgramErrorMessage[0]);
+  delete[] ProgramErrorMessage;
 
   //Get the references
-  this->vsModelIndex = glGetUniformLocation(id, "World");
-  this->vsViewIndex = glGetUniformLocation(id, "View");
-  this->vsProjectionIndex = glGetUniformLocation(id, "Projection");
+  ef->vsModelIndex = glGetUniformLocation(ef->id, "World");
+  ef->vsViewIndex = glGetUniformLocation(ef->id, "View");
+  ef->vsProjectionIndex = glGetUniformLocation(ef->id, "Projection");
 
-  this->psDiffuse = glGetUniformLocation(id, "diffuse");
-  this->psNormals = glGetUniformLocation(id, "normals");
-  this->psSpecular = glGetUniformLocation(id, "specular");
+  ef->psDiffuse = glGetUniformLocation(ef->id, "diffuse");
+  ef->psNormals = glGetUniformLocation(ef->id, "normals");
+  ef->psSpecular = glGetUniformLocation(ef->id, "specular");
 
   //Clean up
   glDeleteShader(VertexShaderID);
   glDeleteShader(FragmentShaderID);
 }
 
-Effect::~Effect(void)
+void Effect_Destroy(Effect* ef)
 {
-	glDeleteProgram(id);
+  glDeleteProgram(ef->id);
 }
 
-void Effect::Apply(Camera* cam)
+void Effect_Apply(Effect* ef, Camera* cam)
 {
-	glUseProgram(id);
+  glUseProgram(ef->id);
 
   if(cam)
   {
-	  glUniformMatrix4fv(vsModelIndex,		  1, GL_FALSE, glm::value_ptr(cam->Model));
-	  glUniformMatrix4fv(vsViewIndex,			  1, GL_FALSE, glm::value_ptr(cam->View));
-	  glUniformMatrix4fv(vsProjectionIndex,	1, GL_FALSE, glm::value_ptr(cam->Projection));
+    glUniformMatrix4fv(ef->vsModelIndex, 1, GL_FALSE, glm::value_ptr(cam->Model));
+    glUniformMatrix4fv(ef->vsViewIndex, 1, GL_FALSE, glm::value_ptr(cam->View));
+    glUniformMatrix4fv(ef->vsProjectionIndex, 1, GL_FALSE, glm::value_ptr(cam->Projection));
   }
   else
   {
     glm::mat4 proj = glm::ortho(-1.f, 1.f, -1.f, 1.f, -1.f, 1.f);
-    glUniformMatrix4fv(vsProjectionIndex,	1, GL_FALSE, glm::value_ptr(proj));
+    glUniformMatrix4fv(ef->vsProjectionIndex, 1, GL_FALSE, glm::value_ptr(proj));
   }
 }
 
-void Effect::ApplyModelMatrix(glm::mat4x4 modelMatrix)
+void Effect_ApplyModelMatrix(Effect* ef, glm::mat4x4 modelMatrix)
 {
-  glUniformMatrix4fv(vsModelIndex, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+  glUniformMatrix4fv(ef->vsModelIndex, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 }
 
-void Effect::BindMaterial(RenderMaterial* material)
+void Effect_BindMaterial(Effect* ef, RenderMaterial* material)
 {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, material->diffuseTexture->textureID);
 
-	glUniform1i(psDiffuse, 0);
+  glUniform1i(ef->psDiffuse, 0);
 
   if(material->normalsTexture)
   {
 	  glActiveTexture(GL_TEXTURE0 + 1);
     glBindTexture(GL_TEXTURE_2D, material->normalsTexture->textureID);
-	  glUniform1i(psNormals, 1);
+    glUniform1i(ef->psNormals, 1);
   }
 
   if(material->specularTexture)
   {
 	  glActiveTexture(GL_TEXTURE0 + 2);
     glBindTexture(GL_TEXTURE_2D, material->normalsTexture->textureID);
-  	glUniform1i(psSpecular, 2);
+    glUniform1i(ef->psSpecular, 2);
   }
 }
 
-void Effect::BindTextureAdvanced(int shaderTextureID, int bindedTextureID)
+void Effect_BindTextureAdvanced(Effect* ef, int shaderTextureID, int bindedTextureID)
 {
   glUniform1i(shaderTextureID, bindedTextureID);
 }
 
-void Effect::BindTexture(int simpleBindID)
+void Effect_BindTexture(Effect* ef, int simpleBindID)
 {
   if (simpleBindID == 0)
-    glUniform1i(psDiffuse, simpleBindID);
+    glUniform1i(ef->psDiffuse, simpleBindID);
   else if (simpleBindID == 1)
-    glUniform1i(psNormals, simpleBindID);
+    glUniform1i(ef->psNormals, simpleBindID);
   else if (simpleBindID == 2)
-    glUniform1i(psSpecular, simpleBindID);
+    glUniform1i(ef->psSpecular, simpleBindID);
 }
 
-int Effect::GetUniformID(char* name)
+int Effect_GetUniformID(Effect* ef, char* name)
 {
-  return glGetUniformLocation(id, name);
+  return glGetUniformLocation(ef->id, name);
 }

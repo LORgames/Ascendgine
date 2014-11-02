@@ -3,7 +3,7 @@
 #include "Effect.h"
 #include "Camera.h"
 
-static Effect* g_QuadRendererShader = nullptr;
+static Effect g_QuadRendererShader = { 0 };
 static Camera* g_QuadCam = nullptr;
 
 QuadRenderer::QuadRenderer(Texture* texture, int overloadMaxQuads, Effect* overloadedEffect)
@@ -30,11 +30,11 @@ QuadRenderer::QuadRenderer(Texture* texture, int overloadMaxQuads, Effect* overl
 
   CreateBuffers();
 
-  if (g_QuadRendererShader == nullptr)
+  if (g_QuadRendererShader.id == 0)
   {
     if (overloadedEffect == nullptr)
     {
-      g_QuadRendererShader = new Effect("../shaders/ScreenRenderer.vs", "../shaders/ScreenRenderer.ps");
+      Effect_CreateFromFile(&g_QuadRendererShader, "../shaders/ScreenRenderer.vs", "../shaders/ScreenRenderer.ps");
     }
     else
     {
@@ -94,7 +94,7 @@ bool QuadRenderer::AddQuadToRender(float x, float y, float texX, float texY, flo
 
 void QuadRenderer::Render()
 {
-  g_QuadRendererShader->Apply(g_QuadCam);
+  Effect_Apply(&g_QuadRendererShader, g_QuadCam);
 
   glEnable(GL_BLEND);
   glDisable(GL_DEPTH_TEST);
@@ -158,5 +158,5 @@ void QuadRenderer::Resized(int width, int height)
 
 void QuadRenderer::OverrideDefaultEffect(Effect* effect)
 {
-  g_QuadRendererShader = effect;
+  g_QuadRendererShader = *effect;
 }

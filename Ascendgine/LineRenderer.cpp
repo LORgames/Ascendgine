@@ -1,95 +1,152 @@
 #include "LineRenderer.h"
+#include <GL/glew.h>
 
-static Effect* g_LineRendererShader = nullptr;
-
-LineRenderer::LineRenderer(uint32_t maxLines, bool isStatic, Effect* differentEffect)
+struct LineVertex
 {
-  this->isStatic = isStatic;
-  this->maxLines = maxLines;
+  float Position[3];
+  uint8_t Colour[3];
+};
 
-  vertices = new LineVertex[maxLines * 2];
-  totalVertices = maxLines * 2;
-  usedLines = 0;
+struct LineRenderer
+{
+  //Other magic
+  Effect* lineEffect;
 
-  CreateBuffers();
+  //Variables
+  int32_t usedLines;
+  int32_t maxLines;
+
+  //Texture info
+  uint32_t texID;
+
+  //Ascengine variables
+  uint32_t vaoID;
+  uint32_t bufferID;
+
+  LineVertex* vertices;
+  int32_t totalVertices;
+
+  bool isStatic;
+  bool hasChanged;
+};
+
+static Effect g_LineRendererShader = { 0 };
+
+void LR_CreateBuffers(LineRenderer* lr);
+
+void LineRenderer_Create(LineRenderer* lr, uint32_t maxLines, bool isStatic, Effect* differentEffect)
+{
+  lr->isStatic = isStatic;
+  lr->maxLines = maxLines;
+
+  lr->vertices = new LineVertex[maxLines * 2];
+  lr->totalVertices = maxLines * 2;
+  lr->usedLines = 0;
+
+  LR_CreateBuffers(lr);
 
   if (differentEffect != nullptr)
   {
-    lineEffect = differentEffect;
+    lr->lineEffect = differentEffect;
   }
   else
   {
-    if (g_LineRendererShader == nullptr)
-      g_LineRendererShader = new Effect("../shaders/Line.vs", "../shaders/Line.ps");
+    if (g_LineRendererShader.id == 0)
+      Effect_CreateFromFile(&g_LineRendererShader, "../shaders/Line.vs", "../shaders/Line.ps");
 
-    lineEffect = g_LineRendererShader;
+    lr->lineEffect = &g_LineRendererShader;
   }
 }
 
-LineRenderer::~LineRenderer()
+void LineRenderer_Destroy(LineRenderer* lr)
 {
-  delete[] vertices;
+  delete[] lr->vertices;
 }
 
-bool LineRenderer::AddLineToRender(float x0, float y0, float z0, float x1, float y1, float z1, uint32_t colour)
+bool LineRenderer_AddLine(LineRenderer* lr, const float &x0, const float &y0, const float &z0, const float &x1, const float &y1, const float &z1, const uint32_t &colour)
 {
-  if (usedLines == maxLines)
+  if (lr->usedLines == lr->maxLines)
     return false;
 
-  vertices[usedLines * 2 + 0].Position[0] = x0;
-  vertices[usedLines * 2 + 0].Position[1] = y0;
-  vertices[usedLines * 2 + 0].Position[2] = z0;
-  vertices[usedLines * 2 + 0].Colour[0] = ((colour >> 16) & 0xFF);
-  vertices[usedLines * 2 + 0].Colour[1] = ((colour >> 8) & 0xFF);
-  vertices[usedLines * 2 + 0].Colour[2] = (colour & 0xFF);
+  lr->vertices[lr->usedLines * 2 + 0].Position[0] = x0;
+  lr->vertices[lr->usedLines * 2 + 0].Position[1] = y0;
+  lr->vertices[lr->usedLines * 2 + 0].Position[2] = z0;
+  lr->vertices[lr->usedLines * 2 + 0].Colour[0] = ((colour >> 16) & 0xFF);
+  lr->vertices[lr->usedLines * 2 + 0].Colour[1] = ((colour >> 8) & 0xFF);
+  lr->vertices[lr->usedLines * 2 + 0].Colour[2] = (colour & 0xFF);
 
-  vertices[usedLines * 2 + 1].Position[0] = x1;
-  vertices[usedLines * 2 + 1].Position[1] = y1;
-  vertices[usedLines * 2 + 1].Position[2] = z1;
-  vertices[usedLines * 2 + 1].Colour[0] = ((colour >> 16) & 0xFF);
-  vertices[usedLines * 2 + 1].Colour[1] = ((colour >> 8) & 0xFF);
-  vertices[usedLines * 2 + 1].Colour[2] = (colour & 0xFF);
+  lr->vertices[lr->usedLines * 2 + 1].Position[0] = x1;
+  lr->vertices[lr->usedLines * 2 + 1].Position[1] = y1;
+  lr->vertices[lr->usedLines * 2 + 1].Position[2] = z1;
+  lr->vertices[lr->usedLines * 2 + 1].Colour[0] = ((colour >> 16) & 0xFF);
+  lr->vertices[lr->usedLines * 2 + 1].Colour[1] = ((colour >> 8) & 0xFF);
+  lr->vertices[lr->usedLines * 2 + 1].Colour[2] = (colour & 0xFF);
 
-  hasChanged = true;
+  lr->hasChanged = true;
+  lr->usedLines++;
 
-  usedLines++;
   return true;
 }
 
-void LineRenderer::Render(glm::mat4 wvp)
+bool LineRenderer_AddLine(LineRenderer* lr, const glm::vec3 &p0, const glm::vec3 &p1, const uint32_t &colour)
+{
+  if (lr->usedLines == lr->maxLines)
+    return false;
+
+  lr->vertices[lr->usedLines * 2 + 0].Position[0] = p0.x;
+  lr->vertices[lr->usedLines * 2 + 0].Position[1] = p0.y;
+  lr->vertices[lr->usedLines * 2 + 0].Position[2] = p0.z;
+  lr->vertices[lr->usedLines * 2 + 0].Colour[0] = ((colour >> 16) & 0xFF);
+  lr->vertices[lr->usedLines * 2 + 0].Colour[1] = ((colour >> 8) & 0xFF);
+  lr->vertices[lr->usedLines * 2 + 0].Colour[2] = (colour & 0xFF);
+
+  lr->vertices[lr->usedLines * 2 + 1].Position[0] = p1.x;
+  lr->vertices[lr->usedLines * 2 + 1].Position[1] = p1.y;
+  lr->vertices[lr->usedLines * 2 + 1].Position[2] = p1.z;
+  lr->vertices[lr->usedLines * 2 + 1].Colour[0] = ((colour >> 16) & 0xFF);
+  lr->vertices[lr->usedLines * 2 + 1].Colour[1] = ((colour >> 8) & 0xFF);
+  lr->vertices[lr->usedLines * 2 + 1].Colour[2] = (colour & 0xFF);
+
+  lr->hasChanged = true;
+  lr->usedLines++;
+
+  return true;
+}
+
+void LineRenderer_Render(LineRenderer* lr, const glm::mat4 &wvp)
 {
   Camera c = Camera();
   c.Projection = wvp;
 
-  lineEffect->Apply(&c);
+  Effect_Apply(lr->lineEffect, &c);
 
   glDisable(GL_DEPTH_TEST);
   glDepthMask(GL_FALSE);
 
-  glBindVertexArray(vaoID);
-  glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+  glBindVertexArray(lr->vaoID);
+  glBindBuffer(GL_ARRAY_BUFFER, lr->bufferID);
 
-  if (!isStatic || hasChanged)
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(LineVertex) * 2 * usedLines, vertices);
+  if (!lr->isStatic || lr->hasChanged)
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(LineVertex)* 2 * lr->usedLines, lr->vertices);
 
-  glDrawArrays(GL_LINES, 0, usedLines*2);
+  glDrawArrays(GL_LINES, 0, lr->usedLines * 2);
 
-  if (!isStatic)
-    usedLines = 0;
+  if (!lr->isStatic)
+    lr->usedLines = 0;
 }
 
-void LineRenderer::CreateBuffers()
+void LR_CreateBuffers(LineRenderer* lr)
 {
-  glGenVertexArrays(1, &vaoID);
-  glBindVertexArray(vaoID);
+  glGenVertexArrays(1, &lr->vaoID);
+  glBindVertexArray(lr->vaoID);
 
   GLenum ErrorCheckValue = glGetError();
-  const size_t BufferSize = sizeof(LineVertex) * totalVertices;
+  const size_t BufferSize = sizeof(LineVertex)* lr->totalVertices;
   const size_t VertexSize = sizeof(LineVertex);
 
-  glGenBuffers(1, &bufferID);
-  glBindBuffer(GL_ARRAY_BUFFER, bufferID);
-  glBufferData(GL_ARRAY_BUFFER, BufferSize, vertices, GL_STATIC_DRAW);
+  glGenBuffers(1, &lr->bufferID);
+  glBindBuffer(GL_ARRAY_BUFFER, lr->bufferID);
+  glBufferData(GL_ARRAY_BUFFER, BufferSize, lr->vertices, GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(0 * sizeof(float)));
   glVertexAttribPointer(1, 3, GL_UNSIGNED_BYTE, GL_TRUE, VertexSize, (GLvoid*)(3 * sizeof(float)));
@@ -98,7 +155,8 @@ void LineRenderer::CreateBuffers()
   glEnableVertexAttribArray(1);
 
   ErrorCheckValue = glGetError();
-  if (ErrorCheckValue != GL_NO_ERROR) {
+  if (ErrorCheckValue != GL_NO_ERROR)
+  {
     fprintf(stderr, "ERROR: Could not create a VBO: %s \n", gluErrorString(ErrorCheckValue));
     exit(-1);
   }

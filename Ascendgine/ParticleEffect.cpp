@@ -1,60 +1,62 @@
 #include "ParticleEffect.h"
 
 
-ParticleEffect::ParticleEffect(const char* vertexFile, const char* fragmentFile) : Effect(vertexFile, fragmentFile)
+void ParticleEffect_CreateFromFile(ParticleEffect* pe, const char* vertexFile, const char* fragmentFile)
 {
-  vsViewportScaleIndex = GetUniformID("ViewportScale");
-  vsTimeIndex = GetUniformID("CurrentTime");
+  Effect_CreateFromFile(pe, vertexFile, fragmentFile);
 
-  vsDuration = GetUniformID("Duration");
-  vsDurationRandomness = GetUniformID("DurationRandomness");
-  vsGravity = GetUniformID("Gravity");
+  pe->vsViewportScaleIndex = Effect_GetUniformID(pe, "ViewportScale");
+  pe->vsTimeIndex = Effect_GetUniformID(pe, "CurrentTime");
 
-  vsEndVelocity = GetUniformID("EndVelocity");
-  vsMinColour = GetUniformID("MinColour");
-  vsMaxColour = GetUniformID("MaxColour");
+  pe->vsDuration = Effect_GetUniformID(pe, "Duration");
+  pe->vsDurationRandomness = Effect_GetUniformID(pe, "DurationRandomness");
+  pe->vsGravity = Effect_GetUniformID(pe, "Gravity");
 
-  vsRotateSpeed = GetUniformID("RotateSpeed");
+  pe->vsEndVelocity = Effect_GetUniformID(pe, "EndVelocity");
+  pe->vsMinColour = Effect_GetUniformID(pe, "MinColour");
+  pe->vsMaxColour = Effect_GetUniformID(pe, "MaxColour");
 
-  vsStartSize = GetUniformID("StartSize");
-  vsEndSize = GetUniformID("EndSize");
+  pe->vsRotateSpeed = Effect_GetUniformID(pe, "RotateSpeed");
 
-  vsDepthIndex = GetUniformID("DepthMap");
+  pe->vsStartSize = Effect_GetUniformID(pe, "StartSize");
+  pe->vsEndSize = Effect_GetUniformID(pe, "EndSize");
+
+  pe->vsDepthIndex = Effect_GetUniformID(pe, "DepthMap");
 }
 
 
-ParticleEffect::~ParticleEffect()
+void ParticleEffect_Destroy(ParticleEffect* pe)
 {
-
+  Effect_Destroy(pe);
 }
 
-void ParticleEffect::ApplyRenderer(Camera* cam, GLuint depthMap, float aspectRatio)
+void ParticleEffect_ApplyRenderer(ParticleEffect* pe, Camera* cam, GLuint depthMap, float aspectRatio)
 {
-  this->Apply(cam);
+  Effect_Apply(pe, cam);
 
   glActiveTexture(GL_TEXTURE0 + 1);
   glBindTexture(GL_TEXTURE_2D, depthMap);
-  glUniform1i(vsDepthIndex, 1);
+  glUniform1i(pe->vsDepthIndex, 1);
   
-  glUniform2f(vsViewportScaleIndex, 1.f / aspectRatio, -1.f);
+  glUniform2f(pe->vsViewportScaleIndex, 1.f / aspectRatio, -1.f);
 }
 
-void ParticleEffect::ApplyParticleSystem(ParticleSettings &settings, float currentTime)
+void ParticleEffect_ApplyParticleSystem(ParticleEffect* pe, ParticleSettings &settings, float currentTime)
 {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, settings.TextureID);
-  glUniform1i(psDiffuse, 0);
-  glUniform1f(vsTimeIndex, currentTime);
+  glUniform1i(pe->psDiffuse, 0);
+  glUniform1f(pe->vsTimeIndex, currentTime);
 
-  glUniform1f(vsDuration, settings.Duration);
-  glUniform1f(vsDurationRandomness, settings.DurationRandomness);
-  glUniform3f(vsGravity, settings.Gravity.x, settings.Gravity.y, settings.Gravity.z);
-  glUniform1f(vsEndVelocity, settings.EndVelocity);
+  glUniform1f(pe->vsDuration, settings.Duration);
+  glUniform1f(pe->vsDurationRandomness, settings.DurationRandomness);
+  glUniform3f(pe->vsGravity, settings.Gravity.x, settings.Gravity.y, settings.Gravity.z);
+  glUniform1f(pe->vsEndVelocity, settings.EndVelocity);
 
-  glUniform4f(vsMinColour, settings.MinColor[0], settings.MinColor[1], settings.MinColor[2], settings.MinColor[3]);
-  glUniform4f(vsMinColour, settings.MaxColor[0], settings.MaxColor[1], settings.MaxColor[2], settings.MaxColor[3]);
+  glUniform4f(pe->vsMinColour, settings.MinColor[0], settings.MinColor[1], settings.MinColor[2], settings.MinColor[3]);
+  glUniform4f(pe->vsMinColour, settings.MaxColor[0], settings.MaxColor[1], settings.MaxColor[2], settings.MaxColor[3]);
 
-  glUniform2f(vsRotateSpeed, settings.MinRotateSpeed, settings.MaxRotateSpeed);
-  glUniform2f(vsStartSize, settings.MinStartSize, settings.MaxStartSize);
-  glUniform2f(vsEndSize, settings.MinEndSize, settings.MaxEndSize);
+  glUniform2f(pe->vsRotateSpeed, settings.MinRotateSpeed, settings.MaxRotateSpeed);
+  glUniform2f(pe->vsStartSize, settings.MinStartSize, settings.MaxStartSize);
+  glUniform2f(pe->vsEndSize, settings.MinEndSize, settings.MaxEndSize);
 }
