@@ -47,16 +47,17 @@ void Model::LoadFromFile(char* filename)
 		file.read(memblock, size);
 		file.close();
 
-		BinaryReaderX f = BinaryReaderX(memblock);
+    BinaryReaderX f;
+    BRX_Create(&f, memblock);
 
-		unsigned short version = f.ReadUnsignedShort();
-		short embeddedinfo = f.ReadShort();
+		unsigned short version = BRX_ReadUnsignedShort(&f);
+    short embeddedinfo = BRX_ReadShort(&f);
 
-		int totalVerts = f.ReadInt();
-		int totalIndcs = f.ReadInt();
+    int totalVerts = BRX_ReadInt(&f);
+    int totalIndcs = BRX_ReadInt(&f);
 
-		TotalMaterials = f.ReadUnsignedShort();
-		TotalMeshes = f.ReadUnsignedShort();
+    TotalMaterials = BRX_ReadUnsignedShort(&f);
+    TotalMeshes = BRX_ReadUnsignedShort(&f);
 
 		fprintf(stdout, "\tLGM Version: v%i\n\tVertices: %i\n\tIndices: %i\n\tMaterials: %i\n\tMeshes: %i\n", version, totalVerts, totalIndcs, TotalMaterials, TotalMeshes);
 
@@ -64,19 +65,19 @@ void Model::LoadFromFile(char* filename)
 		for(int i = 0; i < TotalMaterials; i++) {
 			Materials[i] = new RenderMaterial();
 
-			Materials[i]->flags = f.ReadShort();
+      Materials[i]->flags = BRX_ReadShort(&f);
 
-			Materials[i]->red = f.ReadByte();
-			Materials[i]->green = f.ReadByte();
-			Materials[i]->blue = f.ReadByte();
-			Materials[i]->opacity = f.ReadByte();
-			Materials[i]->specularPower = f.ReadByte();
+      Materials[i]->red = BRX_ReadByte(&f);
+      Materials[i]->green = BRX_ReadByte(&f);
+      Materials[i]->blue = BRX_ReadByte(&f);
+      Materials[i]->opacity = BRX_ReadByte(&f);
+      Materials[i]->specularPower = BRX_ReadByte(&f);
 
 			//printf_s("\tReading Material: %i/%i\n\t\tRGBA: %i, %i, %i, %i\n", (i+1), TotalMaterials, Materials[i]->red, Materials[i]->green, Materials[i]->blue, Materials[i]->opacity);
 
 			if((Materials[i]->flags & (1 << 0)) > 0)
       {
-				char* textureName = f.ReadCharString();
+        char* textureName = BRX_ReadCharString(&f);
 				Materials[i]->diffuseTexture = new Texture();
         Materials[i]->diffuseTexture->LoadTextureFromPath(textureName, expectedPath);
 				delete[] textureName;
@@ -84,7 +85,7 @@ void Model::LoadFromFile(char* filename)
 			
 			if((Materials[i]->flags & (1 << 1)) > 0)
       {
-				char* textureName = f.ReadCharString();
+        char* textureName = BRX_ReadCharString(&f);
 				Materials[i]->normalsTexture = new Texture();
         Materials[i]->normalsTexture->LoadTextureFromPath(textureName, expectedPath);
 				delete[] textureName;
@@ -92,7 +93,7 @@ void Model::LoadFromFile(char* filename)
 			
 			if((Materials[i]->flags & (1 << 2)) > 0)
       {
-				char* textureName = f.ReadCharString();
+        char* textureName = BRX_ReadCharString(&f);
 				Materials[i]->specularTexture = new Texture();
         Materials[i]->specularTexture->LoadTextureFromPath(textureName, expectedPath);
 				delete[] textureName;
@@ -102,12 +103,12 @@ void Model::LoadFromFile(char* filename)
 		Meshes = new Mesh*[TotalMeshes];
 		for(int i = 0; i < TotalMeshes; i++)
     {
-			short MatID = f.ReadShort();
+      short MatID = BRX_ReadShort(&f);
 
-			int totalVertices = f.ReadInt();
-			int totalIndices = f.ReadInt();
+      int totalVertices = BRX_ReadInt(&f);
+      int totalIndices = BRX_ReadInt(&f);
 
-			short flags = f.ReadShort();
+      short flags = BRX_ReadShort(&f);
 
 			Vertex* _verts = new Vertex[totalVertices];
 			int* _indices = new int[totalIndices];
@@ -118,28 +119,28 @@ void Model::LoadFromFile(char* filename)
 			//printf_s("\tReading Mesh: %i/%i\n\t\tVertices: %i\n\t\tIndices: %i\n", (i+1), TotalMeshes, totalVertices, totalIndices);
 
 			for (int j = 0; j < totalVertices; j++) {
-				_verts[j].Position[0] = f.ReadFloat();
-				_verts[j].Position[1] = f.ReadFloat();
-				_verts[j].Position[2] = f.ReadFloat();
+        _verts[j].Position[0] = BRX_ReadFloat(&f);
+        _verts[j].Position[1] = BRX_ReadFloat(&f);
+        _verts[j].Position[2] = BRX_ReadFloat(&f);
 
         if (_Normals)
         {
-          _verts[j].Normals[0] = f.ReadFloat();
-          _verts[j].Normals[1] = f.ReadFloat();
-          _verts[j].Normals[2] = f.ReadFloat();
+          _verts[j].Normals[0] = BRX_ReadFloat(&f);
+          _verts[j].Normals[1] = BRX_ReadFloat(&f);
+          _verts[j].Normals[2] = BRX_ReadFloat(&f);
         }
 
         if (_Unwrapd)
         {
-          _verts[j].UVs[0] = f.ReadFloat();
-          _verts[j].UVs[1] = f.ReadFloat();
+          _verts[j].UVs[0] = BRX_ReadFloat(&f);
+          _verts[j].UVs[1] = BRX_ReadFloat(&f);
         }
 				//printf_s("Vertex %i: %f, %f, %f, %f, %f, %f, %f, %f\n", j, _verts[j].Position[0], _verts[j].Position[1], _verts[j].Position[2], _verts[j].Normals[0], _verts[j].Normals[1], _verts[j].Normals[2], _verts[j].UVs[0], _verts[j].UVs[1]);
 			}
 
 			for(int j = 0; j < totalIndices; j++)
       {
-				_indices[j] = f.ReadInt();
+        _indices[j] = BRX_ReadInt(&f);
 				//printf_s("Index %i: %i\n", j, _indices[j]);
 			}
 
@@ -148,6 +149,7 @@ void Model::LoadFromFile(char* filename)
 		}
 
 		delete[] memblock;
+    BRX_Destroy(&f);
 
 		fprintf(stdout, "\tFlushed memory. %i bytes\n\n", (unsigned int)size);
 	}

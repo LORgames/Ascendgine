@@ -19,16 +19,17 @@ void Font_Create(Font* font, char* filename)
 {
   font->validFont = false;
 
-  BinaryReaderX file = BinaryReaderX(nullptr);
-  if (!file.LoadFile(filename))
+  BinaryReaderX file;
+  BRX_Create(&file, nullptr);
+  if (!BRX_LoadFile(&file, filename))
   {
     printf_s("Could not load font! '%s'", filename);
     return;
   }
 
-  int version = file.ReadInt();
+  int version = BRX_ReadInt(&file);
 
-  if (version != 0x03464D42)
+  if (version != 0x03464D42)  //Validate header "BMF3"
   {
     printf_s("Sorry, '%s' does not appear to be a font file! %d", filename, version);
     return;
@@ -39,25 +40,25 @@ void Font_Create(Font* font, char* filename)
 
   while (true)
   {
-    blockType = file.ReadByte();
-    blockSize = file.ReadInt();
+    blockType = BRX_ReadByte(&file);
+    blockSize = BRX_ReadInt(&file);
     printf("Reading block type=%d, size=%d\n", blockType, blockSize);
 
     if (blockType == 1) //Block 1: Info
     {
-      font->fontSize = file.ReadShort();
-      font->fontFlags = file.ReadByte();
-      file.ReadAhead(11); //Skip the rest of the info
-      file.ReadNullTerminatedString(&font->fontName);
+      font->fontSize = BRX_ReadShort(&file);
+      font->fontFlags = BRX_ReadByte(&file);
+      BRX_ReadAhead(&file, 11); //Skip the rest of the info
+      BRX_ReadNullTerminatedString(&file, &font->fontName);
 
       printf("Loaded font '%s' at size %d\n", font->fontName, font->fontSize);
     }
     else if (blockType == 2)  //Block 2: Common
     {
-      font->lineHeight = file.ReadUnsignedShort();
-      font->base = file.ReadUnsignedShort();
-      file.ReadAhead(4);  //Skip some texture information
-      uint16_t pages = file.ReadUnsignedShort();
+      font->lineHeight = BRX_ReadUnsignedShort(&file);
+      font->base = BRX_ReadUnsignedShort(&file);
+      BRX_ReadAhead(&file, 4);  //Skip some texture information
+      uint16_t pages = BRX_ReadUnsignedShort(&file);
 
       if (pages != 1)
       {
@@ -65,8 +66,8 @@ void Font_Create(Font* font, char* filename)
         return;
       }
 
-      char flags = file.ReadByte();       //bits 0-6: reserved, bit 7: packed
-      char alphaChnl = file.ReadByte();
+      char flags = BRX_ReadByte(&file);       //bits 0-6: reserved, bit 7: packed
+      char alphaChnl = BRX_ReadByte(&file);
 
       if (((flags & 0x40) > 0) && (alphaChnl != 1))
       {
@@ -75,12 +76,12 @@ void Font_Create(Font* font, char* filename)
         return;
       }
 
-      file.ReadAhead(3);
+      BRX_ReadAhead(&file, 3);
     }
     else if (blockType == 3) //Block 3: Pages
     {
       char *textureName;
-      file.ReadNullTerminatedString(&textureName);
+      BRX_ReadNullTerminatedString(&file, &textureName);
 
       printf_s("Font '%s' uses texture '%s'\n", font->fontName, textureName);
       char pathBuffer[512];
@@ -101,29 +102,28 @@ void Font_Create(Font* font, char* filename)
 
       for (int i = 0; i < font->totalCharacters; i++)
       {
-        font->characters[i].id = file.ReadInt();
-        font->characters[i].x = file.ReadUnsignedShort();
-        font->characters[i].y = file.ReadUnsignedShort();
-        font->characters[i].width = file.ReadUnsignedShort();
-        font->characters[i].height = file.ReadUnsignedShort();
-        font->characters[i].xoffset = file.ReadShort();
-        font->characters[i].yoffset = file.ReadShort();
-        font->characters[i].xadvance = file.ReadShort();
-        file.ReadAhead(2);
+        font->characters[i].id = BRX_ReadInt(&file);
+        font->characters[i].x = BRX_ReadUnsignedShort(&file);
+        font->characters[i].y = BRX_ReadUnsignedShort(&file);
+        font->characters[i].width = BRX_ReadUnsignedShort(&file);
+        font->characters[i].height = BRX_ReadUnsignedShort(&file);
+        font->characters[i].xoffset = BRX_ReadShort(&file);
+        font->characters[i].yoffset = BRX_ReadShort(&file);
+        font->characters[i].xadvance = BRX_ReadShort(&file);
+        BRX_ReadAhead(&file, 2);
       }
 
       break;
     }
     else if (blockType == 5) //Block 5: Kerning Pairs
     {
-      file.ReadAhead(blockSize);
+      BRX_ReadAhead(&file, blockSize);
     }
   }
 
   font->renderer = new QuadRenderer(font->texture);
   font->validFont = true;
 }
-
 
 void Font_Destroy(Font* font)
 {
@@ -137,6 +137,7 @@ void Font_Destroy(Font* font)
 int GetIDOfCharacter(Font* font, int c)
 {
   //TODO: Make this a binary search tree
+  //Alternatively, add a usage amount counter to the letters, inc when used and swap the character order so more used characters are at the front
   for (int i = 0; i < font->totalCharacters; i++)
   {
     if (font->characters[i].id == c)

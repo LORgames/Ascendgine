@@ -23,7 +23,8 @@ void Texture::LoadTexture(const char* filename)
   int depth;
   unsigned char* data = stbi_load(filename, &m_width, &m_height, &depth, 0);
 
-	if(data) {
+	if(data)
+  {
 		glGenTextures(1, &textureID);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -48,12 +49,13 @@ void Texture::LoadTexture(const char* filename)
     {
 			printf_s("Failed (depth)!\n");
 		}
-	} else {
+	}
+  else
+  {
 		printf_s("Failed!\n");
 	}
 
 	printf_s("\tID:%i, W:%i, H:%i, D:%i\n", textureID, m_width, m_height, depth);
-
 	stbi_image_free(data);
 }
 

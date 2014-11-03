@@ -1,11 +1,11 @@
 #ifndef STRINGHELPER_H
 #define STRINGHELPER_H 1
 
-#include <string>
+#include <string.h>
 
-void GetPathFromString(const char* filename, char* path)
+static void GetPathFromString(const char* filename, char* path)
 {
-  int strlength = strlen(filename);
+  int strlength = (int)strlen(filename);
 
   int lastSlash = 0;
 
