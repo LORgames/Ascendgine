@@ -201,18 +201,16 @@ void ParticleSystem::Render()
   // If there are any active particles, draw them now!
   if (firstActiveParticle != firstFreeParticle) {
     if (firstActiveParticle < firstFreeParticle) {
-      glDrawElements(GL_TRIANGLES, (firstFreeParticle - firstActiveParticle) * 6, GL_UNSIGNED_INT, (void*)(firstActiveParticle * 6));
+      glDrawElements(GL_TRIANGLES, (firstFreeParticle - firstActiveParticle) * 6, GL_UNSIGNED_INT, (void*)(firstActiveParticle * 6 * 4));
     }
     else
     {
-      glDrawElements(GL_TRIANGLES, (settings.MaxParticles - firstActiveParticle) * 6, GL_UNSIGNED_INT, indices + (firstActiveParticle * 6));
+      glDrawElements(GL_TRIANGLES, (settings.MaxParticles - firstActiveParticle) * 6, GL_UNSIGNED_INT, indices + (firstActiveParticle * 6 * 4));
   
       if (firstFreeParticle > 0)
         glDrawElements(GL_TRIANGLES, firstFreeParticle * 6, GL_UNSIGNED_INT, 0);
     }
   }
-
-  //glDrawElements(GL_TRIANGLES, settings.MaxParticles*6, GL_UNSIGNED_INT, 0);
 
   drawCounter++;
 }
