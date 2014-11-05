@@ -12,7 +12,7 @@
 
 #include "Renderman.h"
 
-const int TICK_INTERVAL = 30;
+const int TICK_INTERVAL = 16;
 
 //Functions
 extern void(*Engine_Resized)(int width, int height);
