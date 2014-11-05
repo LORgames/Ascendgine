@@ -34,33 +34,35 @@ static Effect g_LineRendererShader = { 0 };
 
 void LR_CreateBuffers(LineRenderer* lr);
 
-void LineRenderer_Create(LineRenderer* lr, uint32_t maxLines, bool isStatic, Effect* differentEffect)
+void LineRenderer_Create(LineRenderer** lr, uint32_t maxLines, bool isStatic, Effect* differentEffect)
 {
-  lr->isStatic = isStatic;
-  lr->maxLines = maxLines;
+  *lr = new LineRenderer;
+  (*lr)->isStatic = isStatic;
+  (*lr)->maxLines = maxLines;
 
-  lr->vertices = new LineVertex[maxLines * 2];
-  lr->totalVertices = maxLines * 2;
-  lr->usedLines = 0;
+  (*lr)->vertices = new LineVertex[maxLines * 2];
+  (*lr)->totalVertices = maxLines * 2;
+  (*lr)->usedLines = 0;
 
-  LR_CreateBuffers(lr);
+  LR_CreateBuffers(*lr);
 
   if (differentEffect != nullptr)
   {
-    lr->lineEffect = differentEffect;
+    (*lr)->lineEffect = differentEffect;
   }
   else
   {
     if (g_LineRendererShader.id == 0)
       Effect_CreateFromFile(&g_LineRendererShader, "../shaders/Line.vs", "../shaders/Line.ps");
 
-    lr->lineEffect = &g_LineRendererShader;
+    (*lr)->lineEffect = &g_LineRendererShader;
   }
 }
 
 void LineRenderer_Destroy(LineRenderer* lr)
 {
   delete[] lr->vertices;
+  delete lr;
 }
 
 bool LineRenderer_AddLine(LineRenderer* lr, const float &x0, const float &y0, const float &z0, const float &x1, const float &y1, const float &z1, const uint32_t &colour)

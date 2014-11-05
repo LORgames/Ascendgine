@@ -30,6 +30,9 @@ GLuint InputRT[TOTAL_BUFFERS];	//GBUFFER TEXTURES
 GLuint Lightfbo;    //Lighting Frame Buffer
 GLuint LightRT;     //Lighting Texture
 
+//Light blending effect
+GLuint Light_DepthMap;
+
 //Stored objects
 Mesh* screenQuad;
 Camera* mainCam;
@@ -50,6 +53,7 @@ void Render_Init(int width, int height)
   Effect_CreateFromFile(&fxLightPoint, "../shaders/PointLight.vs", "../shaders/PointLight.ps");
 
   fxpp_lightMapID = Effect_GetUniformID(&fxPostProcessing, "lightQQ");
+  Light_DepthMap = Effect_GetUniformID(&fxLightPoint, "depthMap");
 
 	mainCam = new Camera();
 	mainCam->Projection = glm::mat4();
@@ -94,13 +98,7 @@ void Render_Render(SDL_Window* window)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
 
-  //glDepthMask(GL_FALSE);
-  //glDisable(GL_DEPTH_TEST);
-
   glDisable(GL_BLEND);
-  //glBlendEquation(GL_FUNC_ADD);
-  //glBlendFunc(GL_ONE, GL_ONE);
-  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   //Apply the camera
   Effect_Apply(&fxOpaque, mainCam);
@@ -116,8 +114,6 @@ void Render_Render(SDL_Window* window)
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_ONE, GL_ONE);
-  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glBlendFunc(GL_ONE, GL_ONE);
 	glDepthMask(GL_FALSE);
   glDisable(GL_DEPTH_TEST);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -130,7 +126,10 @@ void Render_Render(SDL_Window* window)
     glActiveTexture(GL_TEXTURE0 + i);
     glBindTexture(GL_TEXTURE_2D, InputRT[i]);
 
-    Effect_BindTexture(&fxLightPoint, i);
+    if (i != BUFFER_DEPTH)
+      Effect_BindTexture(&fxLightPoint, i);
+    else
+      Effect_BindTextureAdvanced(&fxLightPoint, Light_DepthMap, i);
   }
 
   for (unsigned int i = 0; i < Render_Lights.size(); i++)
@@ -189,8 +188,11 @@ void Render_FixGBuffer(int width, int height)
 
 	// generate depth texture object
 	glBindTexture(GL_TEXTURE_2D, InputRT[BUFFER_DEPTH]);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
   glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, InputRT[BUFFER_DEPTH], 0);
+
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
   GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 }; 
   glDrawBuffers(2, DrawBuffers);
