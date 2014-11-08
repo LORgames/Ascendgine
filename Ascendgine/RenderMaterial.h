@@ -3,23 +3,13 @@
 #include <string.h>
 #include "Texture.h"
 
-class RenderMaterial {
-public:
+struct RenderMaterial
+{
 	short flags;
 	unsigned char red, green, blue, opacity, specularPower, emission;
 
-	Texture* diffuseTexture;
-	Texture* normalsTexture;
-	Texture* specularTexture;
-
-	RenderMaterial(void) {
-    diffuseTexture = nullptr;
-    normalsTexture = nullptr;
-    specularTexture = nullptr;
-	}
-
-	~RenderMaterial(void) {
-
-	}
+	GLuint diffuseTexture;
+	GLuint normalsTexture;
+	GLuint specularTexture;
 };
 

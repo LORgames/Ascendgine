@@ -132,21 +132,21 @@ void Effect_ApplyModelMatrix(Effect* ef, glm::mat4x4 modelMatrix)
 void Effect_BindMaterial(Effect* ef, RenderMaterial* material)
 {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, material->diffuseTexture->textureID);
+	glBindTexture(GL_TEXTURE_2D, material->diffuseTexture);
 
   glUniform1i(ef->psDiffuse, 0);
 
   if(material->normalsTexture)
   {
 	  glActiveTexture(GL_TEXTURE0 + 1);
-    glBindTexture(GL_TEXTURE_2D, material->normalsTexture->textureID);
+    glBindTexture(GL_TEXTURE_2D, material->normalsTexture);
     glUniform1i(ef->psNormals, 1);
   }
 
   if(material->specularTexture)
   {
 	  glActiveTexture(GL_TEXTURE0 + 2);
-    glBindTexture(GL_TEXTURE_2D, material->normalsTexture->textureID);
+    glBindTexture(GL_TEXTURE_2D, material->specularTexture);
     glUniform1i(ef->psSpecular, 2);
   }
 }

@@ -1,27 +1,23 @@
 #include "Texture.h"
 #include <stb_image.c> //Need this for image loading :)
 
-Texture::Texture(void)
-{
+#include <stdio.h>
+#include <fstream>
 
+void Texture_Destroy(GLuint textureID)
+{
+  glDeleteTextures(1, &textureID);
 }
 
-Texture::Texture(const char* filename)
-{
-  LoadTexture(filename);
-}
-
-Texture::~Texture(void)
-{
-
-}
-
-void Texture::LoadTexture(const char* filename)
+GLuint Texture_Load(const char* filename, int *pWidth, int *pHeight, GLenum *pColourMode)
 {
 	printf_s("Loading texture '%s'... ", filename);
 
-  int depth;
-  unsigned char* data = stbi_load(filename, &m_width, &m_height, &depth, 0);
+  int width, height, depth;
+  GLuint colourMode;
+  GLuint textureID;
+
+  unsigned char* data = stbi_load(filename, &width, &height, &depth, 0);
 
 	if(data)
   {
@@ -31,18 +27,20 @@ void Texture::LoadTexture(const char* filename)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
 		if(depth == 3)
     {
-      m_colorMode = GL_RGB;
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+      colourMode = GL_RGB;
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 			printf_s("Loaded!\n");
     }
     else if (depth == 4)
     {
-      m_colorMode = GL_RGBA;
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+      colourMode = GL_RGBA;
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       printf_s("Loaded!\n");
     }
     else
@@ -55,11 +53,17 @@ void Texture::LoadTexture(const char* filename)
 		printf_s("Failed!\n");
 	}
 
-	printf_s("\tID:%i, W:%i, H:%i, D:%i\n", textureID, m_width, m_height, depth);
+  printf_s("\tID:%i, W:%i, H:%i, D:%i\n", textureID, width, height, depth);
 	stbi_image_free(data);
+
+  if (pWidth) *pWidth = width;
+  if (pHeight) *pHeight = height;
+  if (pColourMode) *pColourMode = colourMode;
+
+  return textureID;
 }
 
-void Texture::LoadTextureFromPath(const char* filename, const char* path)
+GLuint Texture_LoadFromPath(const char* filename, const char* path, int *pWidth, int *pHeight, GLenum *pColourMode)
 {
   printf_s("Loading texture '%s' (from path: %s)... ", filename, path);
 
@@ -71,17 +75,17 @@ void Texture::LoadTextureFromPath(const char* filename, const char* path)
   strcat(fullLocation, "\\");
   strcat(fullLocation, filename);
 
-  LoadTexture(fullLocation);
+  GLuint textureID = Texture_Load(fullLocation, pWidth, pHeight, pColourMode);
   delete[] fullLocation;
+
+  return textureID;
 }
 
-void Texture::CreateTexture(int width, int height, GLenum colorMode, char* initialData)
+GLuint Texture_CreateTexture(int width, int height, GLenum colorMode, char* initialData)
 {
 	printf_s("Creating empty texture... ");
 
-  m_width = width;
-  m_height = height;
-  m_colorMode = colorMode;
+  GLuint textureID;
 
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
@@ -89,17 +93,20 @@ void Texture::CreateTexture(int width, int height, GLenum colorMode, char* initi
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
   if(initialData != nullptr)
-  {
-	  SetData(initialData);
-  }
+	  Texture_SetData(textureID, initialData, width, height, colorMode);
 	
 	printf_s("\tID:%i, W:%i, H:%i, C:%i\n", textureID, width, height, colorMode);
+
+  return textureID;
 }
 
-void Texture::SetData(char* data)
+void Texture_SetData(GLuint textureID, char* data, int m_width, int m_height, GLenum m_colorMode)
 {
+  glBindTexture(GL_TEXTURE_2D, textureID);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, m_colorMode, GL_UNSIGNED_BYTE, data);
 }

@@ -6,7 +6,7 @@
 static Effect g_QuadRendererShader = { 0 };
 static Camera* g_QuadCam = nullptr;
 
-QuadRenderer::QuadRenderer(Texture* texture, int overloadMaxQuads, Effect* overloadedEffect)
+QuadRenderer::QuadRenderer(GLuint textureID, int textureWidth, int textureHeight, int overloadMaxQuads, Effect* overloadedEffect)
 {
   if (overloadMaxQuads <= 0)
     maxQuads = MAXIMUM_QUADS_PER_RENDERER;
@@ -16,9 +16,9 @@ QuadRenderer::QuadRenderer(Texture* texture, int overloadMaxQuads, Effect* overl
   vertices = new QuadVertex[maxQuads * 4];
   indices = new int[maxQuads * 6];
 
-  texID = texture->textureID;
-  textureWidth = (float)texture->Width();
-  textureHeight = (float)texture->Height();
+  texID = textureID;
+  textureWidth = (float)textureWidth;
+  textureHeight = (float)textureHeight;
 
   usedQuads = 0;
 

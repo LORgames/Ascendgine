@@ -1,31 +1,11 @@
 #pragma once
 
-#include <stdio.h>
-#include <fstream>
-
 #include <GL/glew.h>
 
-class Texture {
-	private:
-		int m_width;
-		int m_height;
+void Texture_Destroy(GLuint textureID);
 
-    GLenum m_colorMode;
-	public:
-		Texture(void);
-		~Texture(void);
-
-    Texture(const char* filename);
-
-		void LoadTexture(const char* filename);
-    void LoadTextureFromPath(const char* filename, const char* path);
+GLuint Texture_Load(const char* filename, int *width = nullptr, int *height = nullptr, GLenum *colourMode = nullptr);
+GLuint Texture_LoadFromPath(const char* filename, const char* path, int *pWidth = nullptr, int *pHeight = nullptr, GLenum *pColourMode = nullptr);
     
-    void CreateTexture(int width, int height, GLenum colorMode, char* initialData = nullptr);
-    void SetData(char* data);
-
-    int Width() { return m_width; }
-    int Height() { return m_height; }
-
-		GLuint textureID;
-};
-
+GLuint Texture_CreateTexture(int width, int height, GLenum colorMode, char* initialData = nullptr);
+void Texture_SetData(GLuint textureID, char* data, int m_width, int m_height, GLenum m_colorMode);

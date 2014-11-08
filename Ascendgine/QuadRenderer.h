@@ -16,7 +16,7 @@ struct QuadVertex
 class QuadRenderer
 {
 public:
-  QuadRenderer(Texture* texture, int overloadMaxQuads = 0, Effect* overloadedEffect = nullptr);
+  QuadRenderer(GLuint textureID, int textureWidth, int textureHeight, int overloadMaxQuads = 0, Effect* overloadedEffect = nullptr);
   ~QuadRenderer();
 
   bool AddQuadToRender(float x, float y, float texX, float texY, float scrW, float scrH, float texW = 0.f, float texH = 0.f);

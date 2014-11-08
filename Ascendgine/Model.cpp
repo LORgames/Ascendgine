@@ -78,24 +78,21 @@ void Model::LoadFromFile(char* filename)
 			if((Materials[i]->flags & (1 << 0)) > 0)
       {
         char* textureName = BRX_ReadCharString(&f);
-				Materials[i]->diffuseTexture = new Texture();
-        Materials[i]->diffuseTexture->LoadTextureFromPath(textureName, expectedPath);
+				Materials[i]->diffuseTexture = Texture_LoadFromPath(textureName, expectedPath);
 				delete[] textureName;
 			}
 			
 			if((Materials[i]->flags & (1 << 1)) > 0)
       {
         char* textureName = BRX_ReadCharString(&f);
-				Materials[i]->normalsTexture = new Texture();
-        Materials[i]->normalsTexture->LoadTextureFromPath(textureName, expectedPath);
+				Materials[i]->normalsTexture = Texture_LoadFromPath(textureName, expectedPath);
 				delete[] textureName;
 			}
 			
 			if((Materials[i]->flags & (1 << 2)) > 0)
       {
         char* textureName = BRX_ReadCharString(&f);
-				Materials[i]->specularTexture = new Texture();
-        Materials[i]->specularTexture->LoadTextureFromPath(textureName, expectedPath);
+        Materials[i]->specularTexture = Texture_LoadFromPath(textureName, expectedPath);
 				delete[] textureName;
 			}
 		}

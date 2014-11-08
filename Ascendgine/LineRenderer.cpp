@@ -53,7 +53,11 @@ void LineRenderer_Create(LineRenderer** lr, uint32_t maxLines, bool isStatic, Ef
   else
   {
     if (g_LineRendererShader.id == 0)
-      Effect_CreateFromFile(&g_LineRendererShader, "../shaders/Line.vs", "../shaders/Line.ps");
+    {
+      Effect_CreateFromText(&g_LineRendererShader,
+        "#version 330 core\n\n//Input Format\nlayout(location = 0) in vec3 vertexPosition_modelspace;\nlayout(location = 1) in vec3 vertexColours;\n\n//Ouput Format\nout vec3 ex_Colour;\n\n//Uniforms\nuniform mat4 Projection;\n\nvoid main()\n{\n  gl_Position = Projection * vec4(vertexPosition_modelspace, 1.0);\n  ex_Colour = vertexColours;\n}",
+        "#version 330 core\n\n//Input Format\nin vec3 ex_Colour;\n\n//Output Format\nout vec4 out_Colour;\n\nvoid main()\n{\n  out_Colour = vec4(ex_Colour, 1);\n}");
+    }
 
     (*lr)->lineEffect = &g_LineRendererShader;
   }

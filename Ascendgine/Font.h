@@ -6,26 +6,16 @@
 #include <stdint.h>
 
 struct FChar;
+struct Font;
 
-struct Font
-{
-  QuadRenderer *renderer;
-  Texture* texture;
-
-  short fontSize;     //The Font size
-  char fontFlags;     //Some flags
-  char* fontName;
-
-  uint16_t lineHeight;  //This is the distance in pixels between each line of text.
-  uint16_t base;        //The number of pixels from the absolute top of the line to the base of the characters.
-
-  bool validFont;
-
-  int totalCharacters;
-  FChar* characters;
-};
-
-void Font_Create(Font* font, char* filename);
+void Font_Create(Font** ppFont, char* filename, uint32_t maxCharactersSimulatenously = 512);
 void Font_Destroy(Font* font);
+
+//Draw string methods
 void Font_DrawString(Font* font, char* str, int x, int y, uint32_t colour);
 
+void Font_AddString(Font* font, char* str, float x, float y, uint32_t colour);
+//void Font_AddStaticString(Font* font, char* str, int x, int t, uint32_t colour);  //This function 'bakes' a string into the list so every time you run the render function this will be drawn as well
+void Font_Render(Font* font);
+
+void Engine_FontResized(int width, int height);

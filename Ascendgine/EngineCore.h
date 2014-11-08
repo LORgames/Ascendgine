@@ -14,6 +14,9 @@
 
 const int TICK_INTERVAL = 16;
 
+extern int window_width;
+extern int window_height;
+
 //Functions
 extern void(*Engine_Resized)(int width, int height);
 

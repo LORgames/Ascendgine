@@ -1,6 +1,7 @@
 #include "EngineCore.h"
 
 #include "QuadRenderer.h"
+#include "Font.h"
 
 //Functions
 void(*Engine_Resized)(int width, int height) = nullptr;
@@ -16,8 +17,8 @@ void(*Engine_TouchDown)(int x, int y, int fingerID, float pressure) = nullptr;
 void(*Engine_TouchMove)(int x, int y, int fingerID, float pressure) = nullptr;
 void(*Engine_TouchUp)(int x, int y, int fingerID, float pressure) = nullptr;
 
-int width;
-int height;
+int window_width;
+int window_height;
 
 Uint32 nextTime;
 SDL_Window *window;					// Declare a pointer to an SDL_Window
@@ -75,16 +76,17 @@ void ProcessMessageQueue(SDL_Event* event)
 				case SDL_WINDOWEVENT_RESIZED:
         {
 					printf("Window %d resized to %dx%d\n", event->window.windowID, event->window.data1, event->window.data2);
-					width = event->window.data1;
-					height = event->window.data2;
-					glViewport(0, 0, width, height); 
-					Render_FixCamera(width, height);
-					Render_FixGBuffer(width, height);
+					window_width = event->window.data1;
+					window_height = event->window.data2;
+          glViewport(0, 0, window_width, window_height);
+          Render_FixCamera(window_width, window_height);
+          Render_FixGBuffer(window_width, window_height);
 
-          QuadRenderer::Resized(width, height);
+          QuadRenderer::Resized(window_width, window_height);
+          Engine_FontResized(window_width, window_height);
 
           if (Engine_Resized)
-            (*Engine_Resized)(width, height);
+            (*Engine_Resized)(window_width, window_height);
 				} break;
 			}
 		}
