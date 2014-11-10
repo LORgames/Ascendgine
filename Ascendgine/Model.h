@@ -9,18 +9,17 @@
 #include "Mesh.h"
 #include "Effect.h"
 
-class Model {
-	public:
+struct Model
+{
 		RenderMaterial** Materials;
 		Mesh** Meshes;
 
 		int TotalMaterials;
 		int TotalMeshes;
-
-		Model(void);
-		~Model(void);
-
-		void LoadFromFile(char* filename);
-
-		virtual void RenderOpaque(int passID);
 };
+
+void Model_Create(Model **ppModel);
+void Model_Destroy(Model* pModel);
+
+void Model_LoadFromFile(Model **ppModel, char* filename);
+void Model_RenderOpaque(Model* pModel, int passID);

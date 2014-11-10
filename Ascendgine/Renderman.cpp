@@ -1,5 +1,8 @@
 ﻿#include "Renderman.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Effect.h"
 #include "Quad.h"
 #include "Sphere.h"
@@ -65,10 +68,10 @@ void Render_Init(int width, int height)
 	
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 
-  screenQuad = new Quad();
-  screenQuad->SetEffect(&fxPostProcessing);
+  screenQuad = Create_Quad();
+  Mesh_SetEffect(screenQuad, &fxPostProcessing);
 
-  lightingSphere = new Sphere();
+  lightingSphere = Create_Sphere();
   glClearColor(0, 0, 0, 0);
 }
 
@@ -106,7 +109,7 @@ void Render_Render(SDL_Window* window)
 	//Render the models
   for (int i = (int)Render_Models.size()-1; i >= 0; i--)
   {
-    Render_Models[i]->RenderOpaque(1);
+    Model_RenderOpaque(Render_Models[i], 1);
   }
 
 	//Fix the states for light rendering
@@ -159,12 +162,12 @@ void Render_Render(SDL_Window* window)
 	}
 
   //Render to screen :)
-  screenQuad->RenderOpaque();
+  Mesh_RenderOpaque(screenQuad);
 }
 
 void Render_FixCamera(int width, int height)
 {
-	mainCam->CreatePerspectiveProjection((float)width, (float)height, 30, 100.0f, 2500.0f);
+  Camera_CreatePerspectiveProjection(mainCam, (float)width, (float)height, 30, 100.0f, 2500.0f);
 	mainCam->View = glm::lookAt(glm::vec3(50,50,250), glm::vec3(0,100,0), glm::vec3(0,1,0));
 	mainCam->Model = glm::mat4();
 }
@@ -265,7 +268,7 @@ void Renderman_DrawPointLight(glm::vec3 lightPosition, glm::vec3 color, float li
   if (cameraToCenter < lightRadius)
     glCullFace(GL_FRONT);
 
-  lightingSphere->RenderOpaque();
+  Mesh_RenderOpaque(lightingSphere);
 
   glCullFace(GL_BACK);
 }

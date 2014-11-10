@@ -2,29 +2,39 @@
 
 #include "EngineCore.h"
 
-Model::Model(void) {
-  TotalMeshes = 0;
-  TotalMaterials = 0;
-}
-
-Model::~Model(void) {
-	for(int i = 0; i < TotalMeshes; i++) {
-		delete Meshes[i];
-	}
-
-	for(int i = 0; i < TotalMaterials; i++) {
-		delete Materials[i];
-	}
-
-  if (TotalMeshes > 0)
-    delete[] Meshes;
-
-  if (TotalMaterials > 0)
-    delete[] Materials;
-}
-
-void Model::LoadFromFile(char* filename)
+void Model_Create(Model **ppModel)
 {
+  *ppModel = new Model();
+  (*ppModel)->TotalMeshes = 0;
+  (*ppModel)->TotalMaterials = 0;
+}
+
+void Model_Destroy(Model* pModel)
+{
+  for (int i = 0; i < pModel->TotalMeshes; i++)
+  {
+    delete pModel->Meshes[i];
+	}
+
+  for (int i = 0; i < pModel->TotalMaterials; i++)
+  {
+    delete pModel->Materials[i];
+	}
+
+  if (pModel->TotalMeshes > 0)
+    delete[] pModel->Meshes;
+
+  if (pModel->TotalMaterials > 0)
+    delete[] pModel->Materials;
+
+  delete pModel;
+}
+
+void Model_LoadFromFile(Model** ppModel, char* filename)
+{
+  *ppModel = new Model();
+  Model* model = *ppModel;
+
 	std::ifstream file (filename, std::ios::in|std::ios::binary|std::ios::ate);
 
 	std::streampos size;
@@ -56,49 +66,49 @@ void Model::LoadFromFile(char* filename)
     int totalVerts = BRX_ReadInt(&f);
     int totalIndcs = BRX_ReadInt(&f);
 
-    TotalMaterials = BRX_ReadUnsignedShort(&f);
-    TotalMeshes = BRX_ReadUnsignedShort(&f);
+    model->TotalMaterials = BRX_ReadUnsignedShort(&f);
+    model->TotalMeshes = BRX_ReadUnsignedShort(&f);
 
-		fprintf(stdout, "\tLGM Version: v%i\n\tVertices: %i\n\tIndices: %i\n\tMaterials: %i\n\tMeshes: %i\n", version, totalVerts, totalIndcs, TotalMaterials, TotalMeshes);
+    fprintf(stdout, "\tLGM Version: v%i\n\tVertices: %i\n\tIndices: %i\n\tMaterials: %i\n\tMeshes: %i\n", version, totalVerts, totalIndcs, model->TotalMaterials, model->TotalMeshes);
 
-		Materials = new RenderMaterial*[TotalMaterials];
-		for(int i = 0; i < TotalMaterials; i++) {
-			Materials[i] = new RenderMaterial();
+    model->Materials = new RenderMaterial*[model->TotalMaterials];
+    for (int i = 0; i < model->TotalMaterials; i++) {
+      model->Materials[i] = new RenderMaterial();
 
-      Materials[i]->flags = BRX_ReadShort(&f);
+      model->Materials[i]->flags = BRX_ReadShort(&f);
 
-      Materials[i]->red = BRX_ReadByte(&f);
-      Materials[i]->green = BRX_ReadByte(&f);
-      Materials[i]->blue = BRX_ReadByte(&f);
-      Materials[i]->opacity = BRX_ReadByte(&f);
-      Materials[i]->specularPower = BRX_ReadByte(&f);
+      model->Materials[i]->red = BRX_ReadByte(&f);
+      model->Materials[i]->green = BRX_ReadByte(&f);
+      model->Materials[i]->blue = BRX_ReadByte(&f);
+      model->Materials[i]->opacity = BRX_ReadByte(&f);
+      model->Materials[i]->specularPower = BRX_ReadByte(&f);
 
 			//printf_s("\tReading Material: %i/%i\n\t\tRGBA: %i, %i, %i, %i\n", (i+1), TotalMaterials, Materials[i]->red, Materials[i]->green, Materials[i]->blue, Materials[i]->opacity);
 
-			if((Materials[i]->flags & (1 << 0)) > 0)
+      if ((model->Materials[i]->flags & (1 << 0)) > 0)
       {
         char* textureName = BRX_ReadCharString(&f);
-				Materials[i]->diffuseTexture = Texture_LoadFromPath(textureName, expectedPath);
+        model->Materials[i]->diffuseTexture = Texture_LoadFromPath(textureName, expectedPath);
 				delete[] textureName;
 			}
 			
-			if((Materials[i]->flags & (1 << 1)) > 0)
+      if ((model->Materials[i]->flags & (1 << 1)) > 0)
       {
         char* textureName = BRX_ReadCharString(&f);
-				Materials[i]->normalsTexture = Texture_LoadFromPath(textureName, expectedPath);
+        model->Materials[i]->normalsTexture = Texture_LoadFromPath(textureName, expectedPath);
 				delete[] textureName;
 			}
 			
-			if((Materials[i]->flags & (1 << 2)) > 0)
+      if ((model->Materials[i]->flags & (1 << 2)) > 0)
       {
         char* textureName = BRX_ReadCharString(&f);
-        Materials[i]->specularTexture = Texture_LoadFromPath(textureName, expectedPath);
+        model->Materials[i]->specularTexture = Texture_LoadFromPath(textureName, expectedPath);
 				delete[] textureName;
 			}
 		}
 
-		Meshes = new Mesh*[TotalMeshes];
-		for(int i = 0; i < TotalMeshes; i++)
+    model->Meshes = new Mesh*[model->TotalMeshes];
+    for (int i = 0; i < model->TotalMeshes; i++)
     {
       short MatID = BRX_ReadShort(&f);
 
@@ -141,8 +151,8 @@ void Model::LoadFromFile(char* filename)
 				//printf_s("Index %i: %i\n", j, _indices[j]);
 			}
 
-			Meshes[i] = new Mesh(Materials[MatID], _verts, totalVertices, _indices, totalIndices);
-      Meshes[i]->SetEffect(Render_GetSimpleEffect());
+      Mesh_Create(&model->Meshes[i], model->Materials[MatID], _verts, totalVertices, _indices, totalIndices);
+      Mesh_SetEffect(model->Meshes[i], Render_GetSimpleEffect());
 		}
 
 		delete[] memblock;
@@ -158,13 +168,13 @@ void Model::LoadFromFile(char* filename)
 	delete[] expectedPath;
 }
 
-void Model::RenderOpaque(int passID)
+void Model_RenderOpaque(Model* pModel, int passID)
 {
 	if(passID == 1) //Opaque
   {
-		for(int i = 0; i < TotalMeshes; i++)
+		for(int i = 0; i < pModel->TotalMeshes; i++)
     {
-			Meshes[i]->RenderOpaque();
+      Mesh_RenderOpaque(pModel->Meshes[i]);
 		}
 	}
   else

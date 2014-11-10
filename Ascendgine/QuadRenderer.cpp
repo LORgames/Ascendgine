@@ -152,7 +152,7 @@ void QuadRenderer::Resized(int width, int height)
   if (g_QuadCam == nullptr)
     g_QuadCam = new Camera();
 
-  g_QuadCam->CreateOrthographicProjection((float)width, (float)height, -1.f, 1.f);
+  Camera_CreateOrthographicProjection(g_QuadCam, (float)width, (float)height, -1.f, 1.f);
 }
 
 

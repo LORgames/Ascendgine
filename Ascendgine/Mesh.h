@@ -9,38 +9,33 @@
 #include "RenderMaterial.h"
 #include "Effect.h"
 
-typedef struct {
+typedef struct
+{
 	float Position[3];
 	float Normals[3];
 	float UVs[2];
 } Vertex;
 
-class Mesh {
-	protected:
-		GLuint vaoID;
-		GLuint bufferID;
-		GLuint indexBufferID;
+struct Mesh
+{
+  GLuint vaoID;
+  GLuint bufferID;
+  GLuint indexBufferID;
 
-		int* indices;
-		Vertex* vertices;
+  int* indices;
+  Vertex* vertices;
 
-		int totalIndices;
-		int totalVertices;
+  int totalIndices;
+  int totalVertices;
 
-    Effect fx;
-		RenderMaterial* Material;
-
-		bool canRender;
-	public:
-		Mesh(RenderMaterial* _mat = nullptr);
-		Mesh(RenderMaterial* _mat, Vertex* _verts, int totalVerts, int* _indices, int totalIndices);
-		~Mesh(void);
-
-		void CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices);
-
-    Effect* GetEffect(){ return &fx; }
-    void SetEffect(Effect* newEffect) { fx = *newEffect; }
-		
-		void RenderOpaque();
+  Effect fx;
+  RenderMaterial* Material;
 };
 
+void Mesh_Create(Mesh** ppMesh, RenderMaterial* _mat, Vertex* _verts, int totalVerts, int* _indices, int totalIndices);
+void Mesh_Destroy(Mesh* mesh);
+
+static Effect* Mesh_GetEffect(Mesh* mesh){ return &mesh->fx; }
+static void Mesh_SetEffect(Mesh* mesh, Effect* newEffect) { mesh->fx = *newEffect; }
+
+void Mesh_RenderOpaque(Mesh* mesh);

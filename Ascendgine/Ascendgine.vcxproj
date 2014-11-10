@@ -79,6 +79,7 @@
     <OutDir>$(SolutionDir)\Libraries\</OutDir>
     <TargetExt>.lib</TargetExt>
     <TargetName>$(ProjectName)_$(Platform)$(Configuration)</TargetName>
+    <IntDir>$(Platform)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>..\..\..\Common Assets\Includes;$(IncludePath)</IncludePath>
@@ -94,6 +95,7 @@
     <LibraryPath>..\..\..\Common Assets\Libraries\x64;$(LibraryPath)</LibraryPath>
     <TargetExt>.lib</TargetExt>
     <TargetName>$(ProjectName)_$(Platform)$(Configuration)</TargetName>
+    <IntDir>$(Platform)\$(Configuration)</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

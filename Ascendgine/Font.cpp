@@ -1,5 +1,8 @@
 #include "Font.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "BinaryReaderX.h"
 #include "StringHelper.h"
 #include "EngineCore.h"
@@ -292,7 +295,7 @@ bool Font_AddQuadToRender(Font* font, float x, float y, float texX, float texY, 
 
 void Font_DrawString(Font* font, char* str, int x, int y, uint32_t colour)
 {
-  Font_AddString(font, str, x, y, colour);
+  Font_AddString(font, str, (float)x, (float)y, colour);
   Font_Render(font);
 }
 
@@ -360,5 +363,5 @@ void Font_Render(Font* font)
 
 void Engine_FontResized(int width, int height)
 {
-  font_proj = glm::ortho<float>(0, width, height, 0, -1.f, 1.f);
+  font_proj = glm::ortho<float>(0.f, (float)width, (float)height, 0.f, -1.f, 1.f);
 }

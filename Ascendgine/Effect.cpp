@@ -1,5 +1,8 @@
 #include "Effect.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 void Effect_CreateFromFile(Effect* ef, const char* vertexFile, const char* fragmentFile)
 {
   printf("Compiling shader files:\n\t%s\n\t%s\n", vertexFile, fragmentFile);

@@ -2,39 +2,29 @@
 
 #include "EngineCore.h"
 
-Mesh::Mesh(RenderMaterial* _mat)
+void Mesh_Create(Mesh** ppMesh, RenderMaterial* _mat, Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices)
 {
-	Material = _mat;
-  fx = { 0 };
+  *ppMesh = new Mesh();
+  Mesh* mesh = *ppMesh;
 
-	canRender = false;
-}
+  mesh->Material = _mat;
+  mesh->fx = { 0 };
 
-Mesh::Mesh(RenderMaterial* _mat, Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices)
-{
-	Material = _mat;
-  fx = { 0 };
+  mesh->vertices = _verts;
+  mesh->totalVertices = _totalVerts;
+  mesh->indices = _indices;
+  mesh->totalIndices = _totalIndices;
 
-	CreateMesh(_verts, _totalVerts, _indices, _totalIndices);
-}
-
-void Mesh::CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _totalIndices)
-{
-	vertices = _verts;
-	totalVertices = _totalVerts;
-	indices = _indices;
-	totalIndices = _totalIndices;
-
-	glGenVertexArrays(1, &vaoID);
-	glBindVertexArray(vaoID);
+  glGenVertexArrays(1, &mesh->vaoID);
+  glBindVertexArray(mesh->vaoID);
     
 	GLenum ErrorCheckValue = glGetError();
-	const size_t BufferSize = sizeof(Vertex)*totalVertices;
+  const size_t BufferSize = sizeof(Vertex)*mesh->totalVertices;
 	const size_t VertexSize = sizeof(Vertex);
 	
-	glGenBuffers(1, &bufferID);
-	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
-	glBufferData(GL_ARRAY_BUFFER, BufferSize, vertices, GL_STATIC_DRAW);
+  glGenBuffers(1, &mesh->bufferID);
+  glBindBuffer(GL_ARRAY_BUFFER, mesh->bufferID);
+  glBufferData(GL_ARRAY_BUFFER, BufferSize, mesh->vertices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(0*sizeof(float)));
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)(3*sizeof(float)));
@@ -44,9 +34,9 @@ void Mesh::CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _total
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
-	glGenBuffers(1, &indexBufferID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*totalIndices, indices, GL_STATIC_DRAW);
+  glGenBuffers(1, &mesh->indexBufferID);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indexBufferID);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*mesh->totalIndices, mesh->indices, GL_STATIC_DRAW);
 
 	ErrorCheckValue = glGetError();
 	if (ErrorCheckValue != GL_NO_ERROR)
@@ -54,11 +44,9 @@ void Mesh::CreateMesh(Vertex* _verts, int _totalVerts, int* _indices, int _total
 		fprintf(stderr, "ERROR: Could not create a VBO: %s \n", gluErrorString(ErrorCheckValue));
 		exit(-1);
 	}
-
-	canRender = true;
 }
 
-Mesh::~Mesh(void)
+void Mesh_Destroy(Mesh* mesh)
 {
 	GLenum ErrorCheckValue = glGetError();
 
@@ -66,26 +54,26 @@ Mesh::~Mesh(void)
 	glDisableVertexAttribArray(0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDeleteBuffers(1, &bufferID);
+	glDeleteBuffers(1, &mesh->bufferID);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glDeleteBuffers(1, &indexBufferID);
+  glDeleteBuffers(1, &mesh->indexBufferID);
 
 	glBindVertexArray(0);
-	glDeleteVertexArrays(1, &vaoID);
+  glDeleteVertexArrays(1, &mesh->vaoID);
+
+  delete mesh;
 }
 
-void Mesh::RenderOpaque()
+void Mesh_RenderOpaque(Mesh* mesh)
 {
-	if(!canRender) return;
+  glBindVertexArray(mesh->vaoID);
+  glBindBuffer(GL_ARRAY_BUFFER, mesh->bufferID);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indexBufferID);
 
-	glBindVertexArray(vaoID);
-	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-
-  if(Material)
-  	Effect_BindMaterial(&fx, Material);
+  if (mesh->Material)
+    Effect_BindMaterial(&mesh->fx, mesh->Material);
 	
 	// Draw the triangles!
-  glDrawElements(GL_TRIANGLES, totalIndices, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, mesh->totalIndices, GL_UNSIGNED_INT, 0);
 }
