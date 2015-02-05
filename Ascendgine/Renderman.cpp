@@ -109,7 +109,8 @@ void Render_Render(SDL_Window* window)
 	//Render the models
   for (int i = (int)Render_Models.size()-1; i >= 0; i--)
   {
-    Model_RenderOpaque(Render_Models[i], 1);
+    if (Render_Models[i]->renderFunction != nullptr)
+      Render_Models[i]->renderFunction(Render_Models[i], RenderPass_Standard);
   }
 
 	//Fix the states for light rendering

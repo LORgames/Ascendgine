@@ -17,6 +17,9 @@ struct FChar
   int16_t xoffset;
   int16_t yoffset;
   int16_t xadvance;
+
+  uint8_t pageNumber;
+  uint8_t channelNumber;
 };
 
 struct FontVertex
@@ -57,6 +60,9 @@ struct Font
 };
 
 Effect font_defaultShader = { 0 };
+
+//File format BMF3 from:
+//http://www.angelcode.com/products/bmfont/doc/file_format.html#bin
 
 void Font_Create(Font** ppFont, char* filename, uint32_t maxCharactersSimulatenously)
 {
@@ -114,16 +120,18 @@ void Font_Create(Font** ppFont, char* filename, uint32_t maxCharactersSimulateno
       }
 
       char flags = BRX_ReadByte(&file);       //bits 0-6: reserved, bit 7: packed
-      char alphaChnl = BRX_ReadByte(&file);
 
-      if (((flags & 0x40) > 0) && (alphaChnl != 1))
+      char aChnl = BRX_ReadByte(&file);
+      char rChnl = BRX_ReadByte(&file);
+      char gChnl = BRX_ReadByte(&file);
+      char bChnl = BRX_ReadByte(&file);
+
+      if (((flags & 0x40) > 0) && (aChnl != 1))
       {
         //TODO: Add support for the other channels
-        printf_s("Font '%s' could not load as it isn't monochrome! (%d)\n", font->fontName, alphaChnl);
+        printf_s("Font '%s' could not load as it isn't monochrome! (%d)\n", font->fontName, aChnl);
         return;
       }
-
-      BRX_ReadAhead(&file, 3);
     }
     else if (blockType == 3) //Block 3: Pages
     {
@@ -160,7 +168,8 @@ void Font_Create(Font** ppFont, char* filename, uint32_t maxCharactersSimulateno
         font->characters[i].xoffset = BRX_ReadShort(&file);
         font->characters[i].yoffset = BRX_ReadShort(&file);
         font->characters[i].xadvance = BRX_ReadShort(&file);
-        BRX_ReadAhead(&file, 2);
+        font->characters[i].pageNumber = BRX_ReadByte(&file);
+        font->characters[i].channelNumber = BRX_ReadByte(&file);
       }
 
       break;
@@ -208,7 +217,7 @@ void Font_Create(Font** ppFont, char* filename, uint32_t maxCharactersSimulateno
   glVertexAttribPointer(0, 2, GL_FLOAT,         GL_FALSE, VertexSize, (GLvoid*)(0 * sizeof(float)));
   glVertexAttribPointer(1, 2, GL_FLOAT,         GL_FALSE, VertexSize, (GLvoid*)(2 * sizeof(float)));
   glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE,  VertexSize, (GLvoid*)(4 * sizeof(float)));  //BGRA
-
+  
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
   glEnableVertexAttribArray(2);
@@ -304,6 +313,9 @@ void Font_DrawString(Font* font, char* str, int x, int y, uint32_t colour)
 
 void Font_AddString(Font* font, char* str, float x, float y, uint32_t colour)
 {
+  if ((colour & 0xFF000000) == 0)
+    colour = 0xFF000000 | colour;
+
   float rX = (float)x;
   float rY = (float)y;
   int len = (int)strlen(str);

@@ -159,6 +159,8 @@ void Model_LoadFromFile(Model** ppModel, char* filename)
     BRX_Destroy(&f);
 
 		fprintf(stdout, "\tFlushed memory. %i bytes\n\n", (unsigned int)size);
+
+    (*ppModel)->renderFunction = Model_RenderOpaque;
 	}
   else
   {
@@ -170,7 +172,7 @@ void Model_LoadFromFile(Model** ppModel, char* filename)
 
 void Model_RenderOpaque(Model* pModel, int passID)
 {
-	if(passID == 1) //Opaque
+	if(passID == RenderPass_Standard)
   {
 		for(int i = 0; i < pModel->TotalMeshes; i++)
     {

@@ -9,6 +9,16 @@
 #include "Mesh.h"
 #include "Effect.h"
 
+enum RenderPassType
+{
+  RenderPass_Standard,
+  RenderPass_Shadows,
+};
+
+struct Model;
+
+typedef void (ModelRenderFunc)(Model* pModel, RenderPassType passType);
+
 struct Model
 {
 		RenderMaterial** Materials;
@@ -16,10 +26,12 @@ struct Model
 
 		int TotalMaterials;
 		int TotalMeshes;
+
+    ModelRenderFunc* renderFunction;
 };
 
 void Model_Create(Model **ppModel);
 void Model_Destroy(Model* pModel);
 
 void Model_LoadFromFile(Model **ppModel, char* filename);
-void Model_RenderOpaque(Model* pModel, int passID);
+void Model_RenderOpaque(Model* pModel, RenderPassType passID);
