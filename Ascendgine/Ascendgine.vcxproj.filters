@@ -1,177 +1,143 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\Graphics">
-      <UniqueIdentifier>{9e6c0a67-6bc8-4dbc-a745-1244d44a3566}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Graphics">
-      <UniqueIdentifier>{76a94abc-2e94-487f-8fba-9729befccdef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Timing">
-      <UniqueIdentifier>{3e3bd946-cda0-4005-b781-982908ef926b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Timing">
-      <UniqueIdentifier>{5f991c2e-f243-4117-953d-90d590131b30}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Helpers">
-      <UniqueIdentifier>{c7c049aa-6673-4cdc-bbd2-af71125211fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Graphics\CustomMeshes">
-      <UniqueIdentifier>{11f60823-2a49-40bd-914b-66301ced7075}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Game">
-      <UniqueIdentifier>{6559d143-968f-42de-93c2-d99ba610debd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\UserInterface">
-      <UniqueIdentifier>{e4b64a19-94bb-422f-9d3e-d7dfa21ca267}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\UserInterface">
-      <UniqueIdentifier>{c19a245b-33d6-4d4d-a585-1b1df9fe146f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Particles">
-      <UniqueIdentifier>{e5237b1c-d612-4fce-be3f-8981db89a2ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Particles">
-      <UniqueIdentifier>{46373785-fb72-41c7-8fd3-af507b3a6788}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Audio">
+    <Filter Include="Audio">
       <UniqueIdentifier>{80523341-c94f-4805-be5b-da37f501d9fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Audio">
-      <UniqueIdentifier>{de325f7d-4c2a-4861-a737-9cc58d84ee87}</UniqueIdentifier>
+    <Filter Include="Game">
+      <UniqueIdentifier>{6559d143-968f-42de-93c2-d99ba610debd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Input">
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{9e6c0a67-6bc8-4dbc-a745-1244d44a3566}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\CustomMeshes">
+      <UniqueIdentifier>{11f60823-2a49-40bd-914b-66301ced7075}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{c7c049aa-6673-4cdc-bbd2-af71125211fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
       <UniqueIdentifier>{4d809997-3986-464b-93a2-dbdb72c6ae09}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Input">
-      <UniqueIdentifier>{d6065b07-567c-4980-bb9c-0e81a1fffb3f}</UniqueIdentifier>
+    <Filter Include="Particles">
+      <UniqueIdentifier>{46373785-fb72-41c7-8fd3-af507b3a6788}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Timing">
+      <UniqueIdentifier>{3e3bd946-cda0-4005-b781-982908ef926b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface">
+      <UniqueIdentifier>{e4b64a19-94bb-422f-9d3e-d7dfa21ca267}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Effect.cpp">
-      <Filter>Source Files\Graphics</Filter>
+    <ClCompile Include="Audio.cpp">
+      <Filter>Audio</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Graphics</Filter>
+      <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderman.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineCore.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QuadRenderer.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Font.cpp">
-      <Filter>Source Files\UserInterface</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
-      <Filter>Source Files\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleEffect.cpp">
-      <Filter>Source Files\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleEmitter.cpp">
-      <Filter>Source Files\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio.cpp">
-      <Filter>Source Files\Audio</Filter>
+    <ClCompile Include="Effect.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="LineRenderer.cpp">
-      <Filter>Source Files\Graphics</Filter>
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadRenderer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderman.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="XboxController.cpp">
-      <Filter>Source Files\Input</Filter>
+      <Filter>Input</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleEffect.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEmitter.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineCore.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model.h">
-      <Filter>Header Files\Graphics</Filter>
+      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Effect.h">
-      <Filter>Header Files\Graphics</Filter>
+      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>Header Files\Graphics</Filter>
+      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Header Files\Graphics</Filter>
+      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="BinaryReaderX.h">
-      <Filter>Header Files\Helpers</Filter>
+      <Filter>Helpers</Filter>
     </ClInclude>
     <ClInclude Include="RenderMaterial.h">
-      <Filter>Header Files\Graphics</Filter>
+      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
-      <Filter>Header Files\Graphics</Filter>
+      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Renderman.h">
-      <Filter>Header Files\Graphics</Filter>
+      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Quad.h">
-      <Filter>Header Files\Graphics\CustomMeshes</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineCore.h">
-      <Filter>Header Files</Filter>
+      <Filter>Graphics\CustomMeshes</Filter>
     </ClInclude>
     <ClInclude Include="QuadRenderer.h">
-      <Filter>Header Files\Graphics</Filter>
+      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Rect.h">
-      <Filter>Header Files\Helpers</Filter>
+      <Filter>Helpers</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">
-      <Filter>Header Files\UserInterface</Filter>
+      <Filter>UserInterface</Filter>
     </ClInclude>
     <ClInclude Include="ParticleSystem.h">
-      <Filter>Header Files\Particles</Filter>
+      <Filter>Particles</Filter>
     </ClInclude>
     <ClInclude Include="ParticleSettings.h">
-      <Filter>Header Files\Particles</Filter>
+      <Filter>Particles</Filter>
     </ClInclude>
     <ClInclude Include="ParticleEffect.h">
-      <Filter>Header Files\Particles</Filter>
+      <Filter>Particles</Filter>
     </ClInclude>
     <ClInclude Include="ParticleEmitter.h">
-      <Filter>Header Files\Particles</Filter>
+      <Filter>Particles</Filter>
     </ClInclude>
     <ClInclude Include="Sphere.h">
-      <Filter>Header Files\Graphics\CustomMeshes</Filter>
+      <Filter>Graphics\CustomMeshes</Filter>
     </ClInclude>
     <ClInclude Include="Audio.h">
-      <Filter>Header Files\Audio</Filter>
+      <Filter>Audio</Filter>
     </ClInclude>
     <ClInclude Include="LineRenderer.h">
-      <Filter>Header Files\Graphics</Filter>
+      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="XboxController.h">
-      <Filter>Header Files\Input</Filter>
+      <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="StringHelper.h">
-      <Filter>Header Files\Helpers</Filter>
+      <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="EngineCore.h" />
   </ItemGroup>
 </Project>

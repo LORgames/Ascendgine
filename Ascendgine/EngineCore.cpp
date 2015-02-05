@@ -83,7 +83,8 @@ void ProcessMessageQueue(SDL_Event* event)
           Render_FixGBuffer(window_width, window_height);
 
           QuadRenderer::Resized(window_width, window_height);
-          Engine_FontResized(window_width, window_height);
+
+          Font_ResizeAll(window_width, window_height);
 
           if (Engine_Resized)
             (*Engine_Resized)(window_width, window_height);
@@ -117,8 +118,8 @@ void ProcessMessageQueue(SDL_Event* event)
             printf_s("Mouse button pressed (x=%d, y=%d, button=%d)\n", event->motion.x, event->motion.y, event->button.button);
           break;
         case SDL_MOUSEBUTTONUP:
-          if (Engine_MouseDown)
-            (*Engine_MouseDown)(event->motion.x, event->motion.y, event->button.button);
+          if (Engine_MouseUp)
+            (*Engine_MouseUp)(event->motion.x, event->motion.y, event->button.button);
           else
             printf_s("Mouse button released (x=%d, y=%d, button=%d)\n", event->motion.x, event->motion.y, event->button.button);
           break;

@@ -43,7 +43,7 @@ void Effect_CreateFromText(Effect* ef, const char* VertexSourcePointer, const ch
   int InfoLogLength;
 
   // Compile Vertex Shader
-  printf("Compiling vertex shader:\n");
+  printf("Compiling vertex shader (from text)\n");
   glShaderSource(VertexShaderID, 1, &VertexSourcePointer, NULL);
   glCompileShader(VertexShaderID);
 
@@ -60,7 +60,7 @@ void Effect_CreateFromText(Effect* ef, const char* VertexSourcePointer, const ch
   }
 
   // Compile Fragment Shader
-  printf("Compiling fragment shader:\n");
+  printf("Compiling fragment shader (from text)\n");
   glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer, NULL);
   glCompileShader(FragmentShaderID);
 

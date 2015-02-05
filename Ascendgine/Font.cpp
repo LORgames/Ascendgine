@@ -52,10 +52,11 @@ struct Font
   int maxQuads;
   int usedQuads;
   int staticQuads;
+
+  glm::mat4 font_proj;
 };
 
 Effect font_defaultShader = { 0 };
-glm::mat4 font_proj = glm::ortho<float>(0, 1, 1, 0, -1.f, 1.f);
 
 void Font_Create(Font** ppFont, char* filename, uint32_t maxCharactersSimulatenously)
 {
@@ -170,7 +171,6 @@ void Font_Create(Font** ppFont, char* filename, uint32_t maxCharactersSimulateno
     }
   }
 
-  
   //Prepare CPU memory
   font->maxQuads = maxCharactersSimulatenously;
   
@@ -230,6 +230,9 @@ void Font_Create(Font** ppFont, char* filename, uint32_t maxCharactersSimulateno
       "#version 330 core\n\n//Input Format\nlayout(location = 0) in vec2 vertexPosition_screenSpace;\nlayout(location = 1) in vec2 vertexTextureUVs;\nlayout(location = 2) in vec4 vertexColours;\n\n//Ouput Format\nout vec2 ex_TextureUVs;\nout vec4 ex_Colour;\n\n//Uniforms\nuniform mat4 Projection;\n\nvoid main()\n{\n  gl_Position = Projection * vec4(vertexPosition_screenSpace, 0.0, 1.0);\n  ex_TextureUVs = vertexTextureUVs;\n  ex_Colour = vertexColours;\n}",
       "#version 330 core\n\n//Other Stuff\nuniform sampler2D diffuse;\n\n//Input Format\nin vec2 ex_TextureUVs;\nin vec4 ex_Colour;\n\n//Output Format\nout vec4 out_Colour;\n\nvoid main()\n{\n  out_Colour = texture2D(diffuse, ex_TextureUVs);\n  out_Colour.rgb = ex_Colour.bgr;\n  out_Colour.a = out_Colour.a * ex_Colour.a;\n}");
   }
+
+  font->font_proj = glm::ortho<float>(0.f, 1.f, 1.f, 0.f, -1.f, 1.f);
+  Font_UIResize(font, window_width, window_height);
 
 epilogue:
   BRX_Destroy(&file);
@@ -336,7 +339,7 @@ void Font_Render(Font* font)
 {
   //Render (originally from QuadRenderer)
   Effect_Apply(&font_defaultShader);
-  glUniformMatrix4fv(font_defaultShader.vsProjectionIndex, 1, GL_FALSE, glm::value_ptr(font_proj));
+  glUniformMatrix4fv(font_defaultShader.vsProjectionIndex, 1, GL_FALSE, glm::value_ptr(font->font_proj));
 
   //Engine_FontResized(window_width, window_height);
 
@@ -361,7 +364,12 @@ void Font_Render(Font* font)
   font->usedQuads = 0;
 }
 
-void Engine_FontResized(int width, int height)
+void Font_UIResize(Font* font, int width, int height)
 {
-  font_proj = glm::ortho<float>(0.f, (float)width, (float)height, 0.f, -1.f, 1.f);
+  font->font_proj = glm::ortho<float>(0.f, (float)width, (float)height, 0.f, -1.f, 1.f);
+}
+
+void Font_ResizeAll(int width, int height)
+{
+  //TODO: Somehow store all the fonts so I can use them again later...
 }
